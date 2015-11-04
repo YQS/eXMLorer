@@ -57,7 +57,7 @@ def getNameOfTag(xTag):
 def addXMLToTree(xBase, xBaseID, dicIDsTreeView, appTreeView):
 	for xChild in xBase:
 		xID = getIDForTreeView(xChild.tag, dicIDsTreeView)
-		dicIDsTreeView[xID] = appTreeView.insert(xBaseID, 'end', xID, text="<" + xChild.tag + ">")
+		dicIDsTreeView[xID] = appTreeView.insert(xBaseID, 'end', xID, text="<" + xChild.tag + "> " + getNameOfTag(xChild))
 		appTreeView.set(xID, 'name', xID)
 		appTreeView.set(xID, 'data', xChild.text)
 		appTreeView.set(xID, 'size', getNameOfTag(xChild))
@@ -73,18 +73,23 @@ def getTreeView(mainApp, band_buttons):
 	myscrollbar.pack(side="right",fill="y")
 	
 	appTreeView.column('data', width=500, anchor='w')
-	appTreeView.column('name', width=100, anchor='e')
-	appTreeView.column('size', width=100, anchor='e')
+	appTreeView.column('name', width=0, anchor='e')
+	appTreeView.column('size', width=0, anchor='e')
 	appTreeView.heading('data', text='Data')
 	appTreeView.heading('name', text='Nombre')
 	appTreeView.heading('size', text='Tamanio')
 	
-	def getLabel(band_buttons, appTreeView):
+	#indico que solo muestre la columna 'data'
+	appTreeView.configure(displaycolumns=('data'))
+	
+	
+	def getLabel(band_buttons, appTreeView, xFocus):
 		#for widget in band_buttons.winfo_children():
 		#	widget.destroy()
 		cleanFrame(band_buttons)
 		
 		xIDFocus = appTreeView.focus()
+		#xIDFocus = xFocus
 		print 'focus in ' + xIDFocus
 		
 		xRow = 0
@@ -92,7 +97,9 @@ def getTreeView(mainApp, band_buttons):
 		xGotLabel = False
 		for xIDChild in appTreeView.get_children(xIDFocus):
 			xGotLabel = True
-			Label(band_buttons, text=appTreeView.item( xIDChild, 'text')).grid(column=0, row=xRow)
+			xLabelText = appTreeView.item( xIDChild, 'text')
+			xLabelText = xLabelText[0 : xLabelText.find('>', 0) + 1]
+			Label(band_buttons, text = xLabelText ).grid(column=0, row=xRow)
 			#xStringVar.set( appTreeView.item( xIDChild, 'values')[0] )
 			try:
 				value = appTreeView.item( xIDChild, 'values')[0]
@@ -118,7 +125,7 @@ def getTreeView(mainApp, band_buttons):
 			xEntry.insert(0, value)
 			
 		
-	appTreeView.bind('<1>', lambda event, band_buttons = band_buttons, appTreeView = appTreeView: getLabel(band_buttons, appTreeView))
+	appTreeView.bind('<1>', lambda event, band_buttons = band_buttons, appTreeView = appTreeView, xFocus=appTreeView.focus(): getLabel(band_buttons, appTreeView, xFocus))
 	
 	return appTreeView
 
@@ -138,20 +145,31 @@ def main():
 	band_buttons = Frame(mainApp)
 	band_buttons.pack(side=RIGHT, fill=BOTH, ipadx=50, ipady=50)
 	
-	button_open = Button(band_menu, text = "Abrir", width=15, command= lambda band_treeview=band_treeview, band_buttons=band_buttons: openXML(band_treeview, band_buttons))
+	label_filename = Label(band_menu, padding=(10,0,0,0))
+	label_filename.grid(column=1, row=0)
+	
+	button_open = Button(band_menu, 
+						 text = "Abrir", 
+						 width=15, 
+						 command = lambda band_treeview=band_treeview, 
+										  band_buttons=band_buttons,
+										  label_filename=label_filename: 
+										  openXML(band_treeview, band_buttons, label_filename))
 	button_open.grid(column=0, row=0)
 	
-	openXML(band_treeview, band_buttons)
+	openXML(band_treeview, band_buttons, label_filename)
 	mainApp.focus_set()
 	mainApp.mainloop()
 
-def openXML(band_treeview, band_buttons):
+def openXML(band_treeview, band_buttons, label_filename):
 	cleanFrame(band_treeview)
 	cleanFrame(band_buttons)
 	
 	filename = getFilename()
 	root = getXML(filename)
 	#root = getXML('stylers.xml')
+	
+	label_filename.config(text=filename)
 	
 	appTreeView = getTreeView(band_treeview, band_buttons)
 	
