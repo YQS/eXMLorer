@@ -128,17 +128,20 @@ def main():
 	mainApp = Tk()
 	mainApp.update()		#hace que el getFilename no deje abierta una ventana
 	
+	band_menu = Frame(mainApp)
+	band_menu.pack(side=TOP, fill=X)
+	
+	
 	band_treeview = Frame(mainApp)
 	band_treeview.pack(side=LEFT, fill=BOTH)
 	
 	band_buttons = Frame(mainApp)
 	band_buttons.pack(side=RIGHT, fill=BOTH, ipadx=50, ipady=50)
 	
-	band_menu = Frame(mainApp)
-	band_menu.pack(side=TOP, fill=X)
 	button_open = Button(band_menu, text = "Abrir", width=15, command= lambda band_treeview=band_treeview, band_buttons=band_buttons: openXML(band_treeview, band_buttons))
 	button_open.grid(column=0, row=0)
-
+	
+	openXML(band_treeview, band_buttons)
 	mainApp.focus_set()
 	mainApp.mainloop()
 
