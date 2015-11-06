@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 from Tkinter import *
 from ttk import *
 import tkFileDialog
+import TagInTree as TIG
 
 ################
 def getFilename():
@@ -12,16 +13,6 @@ def getFilename():
 def cleanFrame(frame):
 	for widget in frame.winfo_children():
 		widget.destroy()
-		
-def inList(list, selectedElement):
-	found = False
-	for element in list:
-		if element == selectedElement:
-			found = True
-			break
-			
-	return found
-	
 
 def getXML(filename):
 	#parseo el xml y instancio el root, para analizarlo todo
@@ -45,11 +36,11 @@ def getXML(filename):
 	
 	return root
 
-def getIDForTreeView(xTag, dicIDsTreeView):
+def getIDForTreeView(xTag, dicTagsInTree):
 	i = 0
-	while dicIDsTreeView.has_key(xTag + str(i)):
+	while dicTagsInTree.has_key(xTag + str(i)):
 		i += 1
-	dicIDsTreeView[xTag + str(i)] = 0
+	dicTagsInTree[xTag + str(i)] = 0
 	return xTag + str(i)
 	
 def getNameOfTag(xTag):
@@ -64,17 +55,20 @@ def getNameOfTag(xTag):
 		
 	return xName
 
-def addXMLToTree(xBase, xBaseID, dicIDsTreeView, appTreeView):
+def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 	for xChild in xBase:
-		xID = getIDForTreeView(xChild.tag, dicIDsTreeView)
-		dicIDsTreeView[xID] = appTreeView.insert(xBaseID, 'end', xID, text="<" + xChild.tag + "> " + getNameOfTag(xChild))
-		appTreeView.set(xID, 'name', xID)
-		appTreeView.set(xID, 'data', xChild.text)
-		appTreeView.set(xID, 'size', getNameOfTag(xChild))
+		xID = getIDForTreeView(xChild.tag, dicTagsInTree)
 		
-		addXMLToTree(xChild, xID, dicIDsTreeView, appTreeView)
+		dicTagsInTree[xID] = TIG.generateTagInTree(xBaseID, xID, xChild, appTreeView)
 		
-def getTreeView(mainApp, band_buttons):
+		#dicTagsInTree[xID] = appTreeView.insert(xBaseID, 'end', xID, text="<" + xChild.tag + "> " + getNameOfTag(xChild))
+		#appTreeView.set(xID, 'name', xID)
+		#appTreeView.set(xID, 'data', xChild.text)
+		#appTreeView.set(xID, 'size', getNameOfTag(xChild))
+		
+		addXMLToTree(xChild, xID, dicTagsInTree, appTreeView)
+		
+def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	appTreeView = Treeview(mainApp, columns=('data','name', 'size')) #, height=20
 	appTreeView.pack(side="left",fill=BOTH)
 	
@@ -93,23 +87,21 @@ def getTreeView(mainApp, band_buttons):
 	appTreeView.configure(displaycolumns=('data'))
 	
 	
-	def getLabels(event, band_buttons):
+	def fillBandButtons(event, band_buttons, dicTagsInTree):
 		cleanFrame(band_buttons)
 		
-		appTreeView = event.widget
-		xIDFocus = appTreeView.focus()
-		print 'focus in ' + xIDFocus 
+		def testValidate(entry, oTagInTree):
+			print entry.get()
+			oTagInTree.getTag().text = entry.get()
+			#oTagInTree.getNode().config('values')[0] = entry.get()
+			oTagInTree.setDataColumn(entry.get())
+			return True
 		
-		xRow = 0
-		xStringVar = StringVar()
-		xGotLabel = False
-		
-		#******
-		
-		def getButton(value, band_buttons, xRow):
+		#######
+		def getEntry(value, band_buttons, xRow, oTagInTree):
 			xBoolOptions = ('True', 'False')
 			xButtonWidth = 50
-			if inList(xBoolOptions, value):
+			if value in xBoolOptions:
 				'''
 				print 'OptionMenu'
 				xStringVar = StringVar()
@@ -121,46 +113,52 @@ def getTreeView(mainApp, band_buttons):
 				xCombobox.grid(column=1, row=xRow)
 				xCombobox.set(value)
 			elif value == '':
-				print 'disButton'
+				print 'disEntry'
 				xEntry = Entry(band_buttons, width=xButtonWidth, state=DISABLED)
 				xEntry.grid(column=1, row=xRow)
 				#xEntry.insert(0, value)
 			else:
-				print 'Button'
-				xEntry = Entry(band_buttons, width=xButtonWidth)
+				print 'Entry'
+				xEntry = Entry(band_buttons, width=xButtonWidth, validate='focus')
+				xEntry.configure(validatecommand = lambda xEntry=xEntry, oTagInTree=oTagInTree: testValidate(xEntry, oTagInTree))
 				xEntry.grid(column=1, row=xRow)
 				xEntry.insert(0, value)
 		
-		#*****
+		def getLabel(name, band_buttons, xRow):
+			Label(band_buttons, text=name).grid(column=0, row=xRow, sticky='w')
+			
+		def getButtonRow(id, band_buttons, xRow):
+			getLabel(dicTagsInTree[id].tagname, band_buttons, xRow)
+			try:
+				value = dicTagsInTree[id].getTag().text.strip()
+			except:
+				value = ''
+			getEntry(value, band_buttons, xRow, dicTagsInTree[id])
+		#######
+		
+		appTreeView = event.widget
+		xIDFocus = appTreeView.focus()
+		print 'focus in ' + xIDFocus 
+		print 'is in dicTagsInTree? ' + str(xIDFocus in dicTagsInTree)
+		
+		xRow = 0
+		xStringVar = StringVar()
+		xGotItems = False
 		
 		for xIDChild in appTreeView.get_children(xIDFocus):
-			xGotLabel = True
-			xLabelText = appTreeView.item( xIDChild, 'text')
-			xLabelText = xLabelText[0 : xLabelText.find('>', 0) + 1]
-			Label(band_buttons, text = xLabelText ).grid(column=0, row=xRow, sticky='w')
-			#xStringVar.set( appTreeView.item( xIDChild, 'values')[0] )
-			try:
-				value = appTreeView.item( xIDChild, 'values')[0].strip()
-			except:
-				value = ''
-			print value
-			getButton(value, band_buttons, xRow)
+			xGotItems = True
+			getButtonRow(xIDChild, band_buttons, xRow)
 			xRow += 1
 		
-		if not xGotLabel:
-			Label(band_buttons, text=appTreeView.item(xIDFocus, 'text')).grid(column=0, row=0)
-			try:
-				value = appTreeView.item( xIDFocus, 'values')[0].strip()
-			except:
-				value = ''
-			print value
-			getButton(value, band_buttons, xRow)
-			xRow += 1
+		if not xGotItems:
+			getButtonRow(xIDFocus, band_buttons, xRow)
 			
 		
 	#appTreeView.bind('<1>', lambda event, band_buttons = band_buttons, appTreeView = appTreeView, xFocus=appTreeView.focus(): getLabel(event, band_buttons, appTreeView, xFocus))
-	appTreeView.bind('<<TreeviewSelect>>', lambda event, band_buttons = band_buttons: getLabels(event, band_buttons))
-	
+	appTreeView.bind('<<TreeviewSelect>>', lambda event, 
+												  band_buttons = band_buttons,
+												  dicTagsInTree = dicTagsInTree:
+												  fillBandButtons(event, band_buttons, dicTagsInTree))
 	
 	return appTreeView
 
@@ -174,16 +172,21 @@ def openXML(band_treeview, band_buttons, label_filename):
 	
 	label_filename.config(text=filename)
 	
-	appTreeView = getTreeView(band_treeview, band_buttons)
+	dicTagsInTree = {}
+	appTreeView = getTreeView(band_treeview, band_buttons, dicTagsInTree)
 	
-	dicIDsTreeView = {}
-	dicIDsTreeView[root.tag] = appTreeView.insert('', 0, root.tag, text="<" + root.tag + ">")
-	addXMLToTree(root, root.tag, dicIDsTreeView, appTreeView)
-		
+	#dicTagsInTree[root.tag] = appTreeView.insert('', 0, root.tag, text="<" + root.tag + ">")
+	dicTagsInTree[root.tag] = TIG.generateTagInTree('', root.tag, root, appTreeView)
+	addXMLToTree(root, root.tag, dicTagsInTree, appTreeView)
+	
+def checkEntries(band_buttons):
+	for widget in band_buttons.winfo_children():
+		if isinstance(widget, Entry):
+			print widget.get()
 	
 def main():
 	mainApp = Tk()
-	mainApp.title('eXMLplorer')
+	mainApp.title('eXMLorer')
 	mainApp.update()		#hace que el getFilename no deje abierta una ventana
 	
 	band_menu = Frame(mainApp)
@@ -199,13 +202,16 @@ def main():
 	label_filename.grid(column=1, row=0)
 	
 	button_open = Button(band_menu, 
-						 text = "Abrir", 
+						 text = 'Abrir', 
 						 width=15, 
 						 command = lambda band_treeview=band_treeview, 
 										  band_buttons=band_buttons,
 										  label_filename=label_filename: 
 										  openXML(band_treeview, band_buttons, label_filename))
 	button_open.grid(column=0, row=0)
+	
+	button_analyze = Button(band_menu, text= 'Print band_buttons', width=15, command= lambda band_buttons = band_buttons: checkEntries(band_buttons))
+	button_analyze.grid(column=0, row=1)
 	
 	openXML(band_treeview, band_buttons, label_filename)
 	mainApp.focus_set()
