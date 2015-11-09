@@ -5,6 +5,12 @@ from Tkinter import *
 from ttk import *
 import tkFileDialog
 import TagInTree as TIG
+#from PIL import Image, ImageTk
+
+# GLOBALS
+
+gl_filename = ''
+gl_XMLTree = None
 
 ################
 def getFilename():
@@ -17,10 +23,11 @@ def cleanFrame(frame):
 		widget.destroy()
 
 def getXML(filename):
+	global gl_XMLTree
 	#parseo el xml y instancio el root, para analizarlo todo
-	tree = ET.parse(filename)
+	gl_XMLTree = ET.parse(filename)
 	#tree = ET.parse('stylers.xml')
-	root = tree.getroot()
+	root = gl_XMLTree.getroot()
 
 	print root.tag
 	print root.attrib
@@ -108,6 +115,7 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 				print 'Entry'
 				xEntry = Entry(band_buttons, width=xButtonWidth, validate='focus')
 				xEntry.configure(validatecommand = lambda xEntry=xEntry, oTagInTree=oTagInTree: updateTreeNode(xEntry.get(), oTagInTree))
+				xEntry.bind('<Return>', lambda event, xEntry=xEntry, oTagInTree=oTagInTree:updateTreeNode(xEntry.get(), oTagInTree))
 				xEntry.grid(column=1, row=xRow)
 				xEntry.insert(0, value)
 		
@@ -148,16 +156,29 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 												  fillBandButtons(event, band_buttons, dicTagsInTree))
 	
 	return appTreeView
+	
+	
+	
+def copyTagInTree(oldTagInTree, dicTagsInTree):
+	xBaseID = oldTagInTree.parent_id
+	xNewTag = *******
+	xID = getIDForTreeView( xNewTag, dicTagsInTree)
+	xTreeView = oldTagInTree.getTreeView()
+
+	return TIG.TagInTree(xBaseID, xID, xNewTag, xTreeView)
+	
+	
 
 def openXML(band_treeview, band_buttons, label_filename):
+	global gl_filename
 	cleanFrame(band_treeview)
 	cleanFrame(band_buttons)
 	
-	filename = getFilename()
-	root = getXML(filename)
+	gl_filename = getFilename()
+	root = getXML(gl_filename)
 	#root = getXML('stylers.xml')
 	
-	label_filename.config(text=filename)
+	label_filename.config(text= gl_filename)
 	
 	dicTagsInTree = {}
 	appTreeView = getTreeView(band_treeview, band_buttons, dicTagsInTree)
@@ -165,15 +186,36 @@ def openXML(band_treeview, band_buttons, label_filename):
 	dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, appTreeView)
 	addXMLToTree(root, root.tag, dicTagsInTree, appTreeView)
 	
-def checkEntries(band_buttons):
+def bCheckEntries(band_buttons):
 	for widget in band_buttons.winfo_children():
 		if isinstance(widget, Entry):
 			print widget.get()
 	
+def saveXML(mainApp, modo):
+	global gl_filename, gl_XMLTree
+	
+	if modo == 'SAVEAS':
+		save_filename = tkFileDialog.asksaveasfilename( filetypes=[('Archivos XML', '.xml'), ('Todos los archivos', '.*')], 
+														initialfile = gl_filename,
+														parent = mainApp)
+	else:
+		save_filename = gl_filename
+	
+	if save_filename:
+		print 'saving in ' + save_filename
+		gl_XMLTree.write(save_filename)
+		gl_filename = save_filename
+	
 	
 def main():
+	global ico_mainApp
 	mainApp = Tk()
 	mainApp.title('eXMLorer')
+	#img = PhotoImage(file='test.gif')
+	#mainApp.tk.call('wm', 'iconphoto', mainApp._w, img)
+	ico_mainApp = PhotoImage(file='test.gif')
+	mainApp.tk.call('wm', 'iconphoto', mainApp._w, ico_mainApp)
+	
 	mainApp.update()		#hace que el getFilename no deje abierta una ventana
 	
 	band_menu = Frame(mainApp)
@@ -186,10 +228,12 @@ def main():
 	band_buttons.pack(side=LEFT, fill=BOTH, ipadx=0, pady=20)
 	
 	label_filename = Label(band_menu, padding=(10,0,0,0))
-	label_filename.grid(column=1, row=0)
+	label_filename.grid(column=3, row=0)
 	
+	#ico_open = PhotoImage(file='OPEN2.gif').subsample(2,2)
 	button_open = Button(band_menu, 
 						 text = 'Abrir', 
+						 #image = ico_open,
 						 width=15, 
 						 command = lambda band_treeview=band_treeview, 
 										  band_buttons=band_buttons,
@@ -197,8 +241,14 @@ def main():
 										  openXML(band_treeview, band_buttons, label_filename))
 	button_open.grid(column=0, row=0)
 	
-	button_analyze = Button(band_menu, text= 'Print band_buttons', width=15, command= lambda band_buttons = band_buttons: checkEntries(band_buttons))
-	button_analyze.grid(column=0, row=1)
+	button_save = Button(band_menu, text= 'Guardar', width= 15, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVE'))
+	button_save.grid(column=1, row=0)
+	
+	button_saveAs = Button(band_menu, text= 'Guardar como...', width= 15, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVEAS'))
+	button_saveAs.grid(column=2, row=0)
+	
+	#button_analyze = Button(band_menu, text= 'Print band_buttons', width=15, command= lambda band_buttons = band_buttons: bCheckEntries(band_buttons))
+	#button_analyze.grid(column=0, row=1)
 	
 	openXML(band_treeview, band_buttons, label_filename)
 	mainApp.focus_set()
