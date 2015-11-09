@@ -1,20 +1,20 @@
 # encoding: UTF-8
 
-
 class TagInTree(object):
-	def __init__(self, parent_id, id, xmltag, treeview):
+	def __init__(self, parent_id, id, xmltag, treeview, order='end'):
 		print 'new TagInTree'
 		#inicializo las variables del objeto
 		self.id = id
+		self.parent_tag = None	#######
 		self.xmltag = None
 		self.tagname = ''
 		self.subname = ''
-		#self.haschild = None
 		self.treenode = None
 		self.parent_treeview = None
+		self.parent_id = parent_id
 		##########
 		self.setTag(xmltag)
-		self.setNode(parent_id, id, treeview)
+		self.setNode(parent_id, id, treeview, order)
 		self.setColumn('name', self.id)
 		self.setColumn('data', self.getTag().text)
 		self.setColumn('size', self.subname)
@@ -26,9 +26,9 @@ class TagInTree(object):
 		self.subname = getSubnameOfTag(self.xmltag)
 		#self.haschild = self.hasChild()
 		
-	def setNode(self, parent_id, id, treeview):
+	def setNode(self, parent_id, id, treeview, order):
 		#Asume que self.xmltag ya está asignado (por ahí conviene hacer una verificación)
-		self.treenode = treeview.insert(parent_id, 'end', id, text= self.tagname + ' ' + getSubnameOfTag(self.xmltag) )
+		self.treenode = treeview.insert(parent_id, order, id, text= self.tagname + ' ' + getSubnameOfTag(self.xmltag) )
 		self.parent_treeview = treeview
 		
 	def setColumn(self, column, value):
@@ -50,8 +50,7 @@ class TagInTree(object):
 		return self.treenode
 		
 	def getTreeView(self):
-		return self.parent_treeview
-		
+		return self.parent_treeview		
 	
 
 
