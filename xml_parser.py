@@ -5,12 +5,17 @@ from Tkinter import *
 from ttk import *
 import tkFileDialog
 import TagInTree as TIG
+import copy
 #from PIL import Image, ImageTk
 
 # GLOBALS
 
 gl_filename = ''
 gl_XMLTree = None
+gl_XMLParentMap = {}
+gl_dicTagsInTree = {}
+gl_appTreeView = None
+gl_buttonWidth = 15
 
 ################
 def getFilename():
@@ -23,11 +28,12 @@ def cleanFrame(frame):
 		widget.destroy()
 
 def getXML(filename):
-	global gl_XMLTree
+	global gl_XMLTree, gl_XMLParentMap
 	#parseo el xml y instancio el root, para analizarlo todo
 	gl_XMLTree = ET.parse(filename)
 	#tree = ET.parse('stylers.xml')
 	root = gl_XMLTree.getroot()
+	gl_XMLParentMap = {c:p for p in gl_XMLTree.iter() for c in p}
 
 	print root.tag
 	print root.attrib
@@ -55,7 +61,7 @@ def getIDForTreeView(xTag, dicTagsInTree):
 def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 	for xChild in xBase:
 		xID = getIDForTreeView(xChild.tag, dicTagsInTree)
-		dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, appTreeView)
+		dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, xBase, appTreeView)
 		addXMLToTree(xChild, xID, dicTagsInTree, appTreeView)
 		
 def getTreeView(mainApp, band_buttons, dicTagsInTree):
@@ -159,18 +165,32 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	
 	
 	
-def copyTagInTree(oldTagInTree, dicTagsInTree):
-	xBaseID = oldTagInTree.parent_id
-	xNewTag = *******
-	xID = getIDForTreeView( xNewTag, dicTagsInTree)
-	xTreeView = oldTagInTree.getTreeView()
-
-	return TIG.TagInTree(xBaseID, xID, xNewTag, xTreeView)
+def copyTagInTree(oldTagInTree=''):
+	def payload(oldTagInTree):
+		global gl_dicTagsInTree
+		try:
+			xBaseID = oldTagInTree.parent_id
+			xParentTag = oldTagInTree.parent_tag
+			xNewTag = SubElement(xParentTag, oldTagInTree.getTag().tag, oldTagInTree.getTag().attrib)
+			
+			xID = getIDForTreeView( xNewTag, gl_dicTagsInTree)
+			xTreeView = oldTagInTree.getTreeView()
+			
+			xOrder = oldTagInTree.getTag().index()
+			print 'order ' + str(xOrder)
+			
+			gl_dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xNewTag, xParentTag, xTreeView, order = xOrder)
+			
+			for xChild in gl_dicTagsInTree[xID].getTag():
+				copyTagInTree( gl_dicTagsInTree[xID], gl_dicTagsInTree)
+		except:
+			print "error en copyTagInTree"
+	return payload(oldTagInTree)
 	
 	
 
 def openXML(band_treeview, band_buttons, label_filename):
-	global gl_filename
+	global gl_filename, gl_dicTagsInTree, gl_appTreeView
 	cleanFrame(band_treeview)
 	cleanFrame(band_buttons)
 	
@@ -180,11 +200,11 @@ def openXML(band_treeview, band_buttons, label_filename):
 	
 	label_filename.config(text= gl_filename)
 	
-	dicTagsInTree = {}
-	appTreeView = getTreeView(band_treeview, band_buttons, dicTagsInTree)
+	gl_dicTagsInTree = {}
+	gl_appTreeView = getTreeView(band_treeview, band_buttons, gl_dicTagsInTree)
 	
-	dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, appTreeView)
-	addXMLToTree(root, root.tag, dicTagsInTree, appTreeView)
+	gl_dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, gl_appTreeView)
+	addXMLToTree(root, root.tag, gl_dicTagsInTree, gl_appTreeView)
 	
 def bCheckEntries(band_buttons):
 	for widget in band_buttons.winfo_children():
@@ -208,7 +228,7 @@ def saveXML(mainApp, modo):
 	
 	
 def main():
-	global ico_mainApp
+	global ico_mainApp, gl_dicTagsInTree, gl_buttonWidth, gl_appTreeView
 	mainApp = Tk()
 	mainApp.title('eXMLorer')
 	#img = PhotoImage(file='test.gif')
@@ -230,29 +250,42 @@ def main():
 	label_filename = Label(band_menu, padding=(10,0,0,0))
 	label_filename.grid(column=3, row=0)
 	
+	openXML(band_treeview, band_buttons, label_filename)
+	
 	#ico_open = PhotoImage(file='OPEN2.gif').subsample(2,2)
 	button_open = Button(band_menu, 
 						 text = 'Abrir', 
 						 #image = ico_open,
-						 width=15, 
+						 width=gl_buttonWidth, 
 						 command = lambda band_treeview=band_treeview, 
 										  band_buttons=band_buttons,
 										  label_filename=label_filename: 
 										  openXML(band_treeview, band_buttons, label_filename))
 	button_open.grid(column=0, row=0)
 	
-	button_save = Button(band_menu, text= 'Guardar', width= 15, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVE'))
+	button_save = Button(band_menu, text= 'Guardar', width= gl_buttonWidth, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVE'))
 	button_save.grid(column=1, row=0)
 	
-	button_saveAs = Button(band_menu, text= 'Guardar como...', width= 15, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVEAS'))
+	button_saveAs = Button(band_menu, text= 'Guardar como...', width= gl_buttonWidth, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVEAS'))
 	button_saveAs.grid(column=2, row=0)
 	
-	#button_analyze = Button(band_menu, text= 'Print band_buttons', width=15, command= lambda band_buttons = band_buttons: bCheckEntries(band_buttons))
+	button_copyTag = Button(band_menu, 
+							text='Copiar tag', 
+							width= gl_buttonWidth, 
+							#command= lambda xFocusID = gl_appTreeView.focus(): 
+							#				copyTagInTree(gl_dicTagsInTree[xFocusID]) 
+							command= copyTagInTree(gl_dicTagsInTree[ gl_appTreeView.focus() ] ))
+	button_copyTag.grid(column=0, row=1)
+	
+	#button_analyze = Button(band_menu, text= 'Print band_buttons', width= gl_buttonWidth, command= lambda band_buttons = band_buttons: bCheckEntries(band_buttons))
 	#button_analyze.grid(column=0, row=1)
 	
-	openXML(band_treeview, band_buttons, label_filename)
 	mainApp.focus_set()
 	mainApp.mainloop()
+	try:
+		mainApp.destroy()
+	except:
+		pass
 
 if __name__ == '__main__':
 	main()
