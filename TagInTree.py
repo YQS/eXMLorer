@@ -1,11 +1,11 @@
 # encoding: UTF-8
 
 class TagInTree(object):
-	def __init__(self, parent_id, id, xmltag, treeview, order='end'):
+	def __init__(self, parent_id, id, xmltag, parent_tag, treeview, order='end'):
 		print 'new TagInTree'
 		#inicializo las variables del objeto
 		self.id = id
-		self.parent_tag = None	#######
+		self.parent_tag = parent_tag
 		self.xmltag = None
 		self.tagname = ''
 		self.subname = ''
