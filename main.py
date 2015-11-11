@@ -6,6 +6,7 @@ from ttk import *
 import tkFileDialog
 import TagInTree as TIG
 import copy
+import tk_app
 #from PIL import Image, ImageTk
 
 # GLOBALS
@@ -165,28 +166,60 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	
 	
 	
-def copyTagInTree(oldTagInTree=''):
-	def payload(oldTagInTree):
-		global gl_dicTagsInTree
-		try:
+def copyTagInTree(oldTagInTree, xLevel, newparent = None):
+	global gl_dicTagsInTree, gl_appTreeView
+	if oldTagInTree <> None:
+		if newparent == None:
 			xBaseID = oldTagInTree.parent_id
 			xParentTag = oldTagInTree.parent_tag
-			xNewTag = SubElement(xParentTag, oldTagInTree.getTag().tag, oldTagInTree.getTag().attrib)
+		else:
+			xBaseID = newparent.id
+			xParentTag = newparent.getTag()
+		
+		xOrder = oldTagInTree.parent_tag.getchildren().index( oldTagInTree.getTag() )
+		xOrder += 1
+		
+		#xNewTag = ET.SubElement(xParentTag, oldTagInTree.getTag().tag, oldTagInTree.getTag().attrib)
+		xNewTag = ET.Element( oldTagInTree.getTag().tag, oldTagInTree.getTag().attrib)
+		xParentTag.insert( xOrder, xNewTag)
+		xNewTag.text = oldTagInTree.getTag().text
+		
+		xID = getIDForTreeView( xNewTag.tag, gl_dicTagsInTree)
+		
+		newTagInTree = TIG.TagInTree(xBaseID, xID, xNewTag, xParentTag, gl_appTreeView, order = xOrder)
+		gl_dicTagsInTree[xID] = newTagInTree
+		
+		def getTagInTreeFromTag(xTag, dicTagsInTree):
+			xReturn = None
+			for xTuple in dicTagsInTree.items():
+				#xTuple = (key, value)
+				if xTuple[1].getTag() == xTag:
+					xReturn = xTuple[1]
+					break
+			return xReturn
 			
-			xID = getIDForTreeView( xNewTag, gl_dicTagsInTree)
-			xTreeView = oldTagInTree.getTreeView()
+		for xChildTag in oldTagInTree.getTag():
+			xChildTagInTree = getTagInTreeFromTag(xChildTag, gl_dicTagsInTree)
+			copyTagInTree( xChildTagInTree, xLevel + 1, newparent = newTagInTree)
 			
-			xOrder = oldTagInTree.getTag().index()
-			print 'order ' + str(xOrder)
-			
-			gl_dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xNewTag, xParentTag, xTreeView, order = xOrder)
-			
-			for xChild in gl_dicTagsInTree[xID].getTag():
-				copyTagInTree( gl_dicTagsInTree[xID], gl_dicTagsInTree)
-		except:
-			print "error en copyTagInTree"
-	return payload(oldTagInTree)
+	else:
+		print 'oldTagInTree is None'
+
+
+def refreshTreeView(event, band_treeview, band_buttons):
+	global gl_dicTagsInTree, gl_appTreeView
+	mainApp = event.widget
+	cleanFrame(band_treeview)
+	cleanFrame(band_buttons)
 	
+	gl_dicTagsInTree = {}
+	gl_appTreeView = getTreeView(band_treeview, band_buttons, gl_dicTagsInTree)
+	
+	root = gl_XMLTree.getroot()
+	
+	gl_dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, gl_appTreeView)
+	addXMLToTree(root, root.tag, gl_dicTagsInTree, gl_appTreeView)
+	mainApp.update()
 	
 
 def openXML(band_treeview, band_buttons, label_filename):
@@ -227,61 +260,70 @@ def saveXML(mainApp, modo):
 		gl_filename = save_filename
 	
 	
-def main():
+def main(mode = 'main'):
 	global ico_mainApp, gl_dicTagsInTree, gl_buttonWidth, gl_appTreeView
-	mainApp = Tk()
-	mainApp.title('eXMLorer')
-	#img = PhotoImage(file='test.gif')
-	#mainApp.tk.call('wm', 'iconphoto', mainApp._w, img)
-	ico_mainApp = PhotoImage(file='test.gif')
-	mainApp.tk.call('wm', 'iconphoto', mainApp._w, ico_mainApp)
 	
-	mainApp.update()		#hace que el getFilename no deje abierta una ventana
-	
-	band_menu = Frame(mainApp)
-	band_menu.pack(side=TOP, fill=X)
-	
-	band_treeview = Frame(mainApp)
-	band_treeview.pack(side=LEFT, fill=BOTH)
-	
-	band_buttons = Frame(mainApp)
-	band_buttons.pack(side=LEFT, fill=BOTH, ipadx=0, pady=20)
-	
-	label_filename = Label(band_menu, padding=(10,0,0,0))
-	label_filename.grid(column=3, row=0)
-	
-	openXML(band_treeview, band_buttons, label_filename)
-	
-	#ico_open = PhotoImage(file='OPEN2.gif').subsample(2,2)
-	button_open = Button(band_menu, 
-						 text = 'Abrir', 
-						 #image = ico_open,
-						 width=gl_buttonWidth, 
-						 command = lambda band_treeview=band_treeview, 
-										  band_buttons=band_buttons,
-										  label_filename=label_filename: 
-										  openXML(band_treeview, band_buttons, label_filename))
-	button_open.grid(column=0, row=0)
-	
-	button_save = Button(band_menu, text= 'Guardar', width= gl_buttonWidth, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVE'))
-	button_save.grid(column=1, row=0)
-	
-	button_saveAs = Button(band_menu, text= 'Guardar como...', width= gl_buttonWidth, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVEAS'))
-	button_saveAs.grid(column=2, row=0)
-	
-	button_copyTag = Button(band_menu, 
-							text='Copiar tag', 
-							width= gl_buttonWidth, 
-							#command= lambda xFocusID = gl_appTreeView.focus(): 
-							#				copyTagInTree(gl_dicTagsInTree[xFocusID]) 
-							command= copyTagInTree(gl_dicTagsInTree[ gl_appTreeView.focus() ] ))
-	button_copyTag.grid(column=0, row=1)
-	
-	#button_analyze = Button(band_menu, text= 'Print band_buttons', width= gl_buttonWidth, command= lambda band_buttons = band_buttons: bCheckEntries(band_buttons))
-	#button_analyze.grid(column=0, row=1)
-	
+	if mode == 'main':
+		mainApp = Tk()
+		mainApp.title('eXMLorer')
+		#img = PhotoImage(file='test.gif')
+		#mainApp.tk.call('wm', 'iconphoto', mainApp._w, img)
+		ico_mainApp = PhotoImage(file='test.gif')
+		mainApp.tk.call('wm', 'iconphoto', mainApp._w, ico_mainApp)
+		
+		mainApp.update()		#hace que el getFilename no deje abierta una ventana
+		
+		band_menu = Frame(mainApp)
+		band_menu.pack(side=TOP, fill=X)
+		
+		band_treeview = Frame(mainApp)
+		band_treeview.pack(side=LEFT, fill=BOTH)
+		
+		band_buttons = Frame(mainApp)
+		band_buttons.pack(side=LEFT, fill=BOTH, ipadx=0, pady=20)
+		
+		label_filename = Label(band_menu, padding=(10,0,0,0))
+		label_filename.grid(column=3, row=0)
+		
+		openXML(band_treeview, band_buttons, label_filename)
+		
+		#ico_open = PhotoImage(file='OPEN2.gif').subsample(2,2)
+		button_open = Button(band_menu, 
+							 text = 'Abrir', 
+							 #image = ico_open,
+							 width=gl_buttonWidth, 
+							 command = lambda band_treeview=band_treeview, 
+											  band_buttons=band_buttons,
+											  label_filename=label_filename: 
+											  openXML(band_treeview, band_buttons, label_filename))
+		button_open.grid(column=0, row=0)
+		
+		button_save = Button(band_menu, text= 'Guardar', width= gl_buttonWidth, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVE'))
+		button_save.grid(column=1, row=0)
+		
+		button_saveAs = Button(band_menu, text= 'Guardar como...', width= gl_buttonWidth, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVEAS'))
+		button_saveAs.grid(column=2, row=0)
+		
+		button_copyTag = Button(band_menu, 
+								text='Copiar tag', 
+								width= gl_buttonWidth, 
+								command= lambda #gl_appTreeView = gl_appTreeView,
+												gl_dicTagsInTree = gl_dicTagsInTree:
+												copyTagInTree(gl_dicTagsInTree.setdefault( gl_appTreeView.focus(), None), 0 ))
+		button_copyTag.grid(column=0, row=1)
+		
+		#button_analyze = Button(band_menu, text= 'Print band_buttons', width= gl_buttonWidth, command= lambda band_buttons = band_buttons: bCheckEntries(band_buttons))
+		#button_analyze.grid(column=0, row=1)
+		
+		mainApp.bind('<F5>', lambda event, band_treeview=band_treeview, band_buttons=band_buttons: refreshTreeView(event, band_treeview, band_buttons))
+	else:	
+		mainApp = tk_app.MainApp()
+		
+		
 	mainApp.focus_set()
 	mainApp.mainloop()
+		
+		
 	try:
 		mainApp.destroy()
 	except:
