@@ -4,23 +4,13 @@ import xml.etree.ElementTree as ET
 from Tkinter import *
 from ttk import *
 import tkFileDialog
+import globals as GL
 import TagInTree as TIG
-import copy
 import tk_app
-#from PIL import Image, ImageTk
-
-# GLOBALS
-
-gl_filename = ''
-gl_XMLTree = None
-gl_XMLParentMap = {}
-gl_dicTagsInTree = {}
-gl_appTreeView = None
-gl_buttonWidth = 15
 
 ################
 def getFilename():
-	filename = tkFileDialog.askopenfilename(defaultextension='xml')
+	filename = tkFileDialog.askopenfilename(defaultextension='.xml', filetypes = [('XML files', '.xml'), ('all files', '.*')])
 	print filename
 	return filename
 
@@ -29,12 +19,11 @@ def cleanFrame(frame):
 		widget.destroy()
 
 def getXML(filename):
-	global gl_XMLTree, gl_XMLParentMap
 	#parseo el xml y instancio el root, para analizarlo todo
-	gl_XMLTree = ET.parse(filename)
+	GL.XMLTree = ET.parse(filename)
 	#tree = ET.parse('stylers.xml')
-	root = gl_XMLTree.getroot()
-	gl_XMLParentMap = {c:p for p in gl_XMLTree.iter() for c in p}
+	root = GL.XMLTree.getroot()
+	GL.XMLParentMap = {c:p for p in GL.XMLTree.iter() for c in p}
 
 	print root.tag
 	print root.attrib
@@ -86,6 +75,7 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	
 	def fillBandButtons(event, band_buttons, dicTagsInTree):
 		cleanFrame(band_buttons)
+		appTreeView = event.widget
 		
 		def updateTreeNode(value, oTagInTree):
 			#print entry.get()
@@ -93,6 +83,19 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 			oTagInTree.getTag().text = value
 			oTagInTree.setColumn( 'data', value)
 			return True
+			
+		def copyTextBoxToClipboard(text, appTreeView):
+			pass
+			
+		def selectAllText(event):
+			xTextbox = event.widget
+			print 'selectAllText'
+			xTextbox.tag_add(SEL, "1.0", END)
+			xTextbox.mark_set(INSERT, "1.0")
+			xTextbox.see(INSERT)
+			return 'break'		#porque si no, el tkinter lee el siguiente evento
+			
+			
 		
 		#######
 		def getEntry(value, band_buttons, xRow, oTagInTree):
@@ -119,15 +122,31 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 				xEntry.configure(state=DISABLED)
 				#xEntry.insert(0, value)
 			else:
-				print 'Entry'
-				xEntry = Entry(band_buttons, width=xButtonWidth, validate='focus')
-				xEntry.configure(validatecommand = lambda xEntry=xEntry, oTagInTree=oTagInTree: updateTreeNode(xEntry.get(), oTagInTree))
-				xEntry.bind('<Return>', lambda event, xEntry=xEntry, oTagInTree=oTagInTree:updateTreeNode(xEntry.get(), oTagInTree))
-				xEntry.grid(column=1, row=xRow)
-				xEntry.insert(0, value)
+				if len(value) < (xButtonWidth + GL.marginToExtendToText):
+					print 'Entry'
+					xEntry = Entry(band_buttons, width=xButtonWidth, validate='focus')
+					xEntry.configure(validatecommand = lambda xEntry=xEntry, oTagInTree=oTagInTree: updateTreeNode(xEntry.get(), oTagInTree))
+					xEntry.bind('<Return>', lambda event, xEntry=xEntry, oTagInTree=oTagInTree:updateTreeNode(xEntry.get(), oTagInTree))
+					xEntry.grid(column=1, row=xRow)
+					xEntry.insert(0, value)
+				else:
+					def tbMade(widget,text):
+						widget.focus_set()
+						print text
+				
+					print 'Textbox'
+					xHeight = 10 #len(value) % xButtonWidth
+					xTextbox = Text(band_buttons, width=xButtonWidth-7, height=xHeight)
+					xTextbox.bind('<KeyRelease>', lambda event: updateTreeNode(event.widget.get('1.0', 'end'), oTagInTree ))
+					xTextbox.bind('<Control-Key-a>', lambda event: selectAllText(event) )
+					xTextbox.bind('<Control-Key-A>', lambda event: selectAllText(event) )
+					xTextbox.grid(column=1, row=xRow)
+					xTextbox.insert('1.0', value)
+					
+					
 		
 		def getLabel(name, band_buttons, xRow):
-			Label(band_buttons, text=name).grid(column=0, row=xRow, sticky='w')
+			Label(band_buttons, text=name).grid(column=0, row=xRow, sticky='wn')
 			
 		def getButtonRow(id, band_buttons, xRow):
 			getLabel(dicTagsInTree[id].tagname, band_buttons, xRow)
@@ -138,7 +157,6 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 			getEntry(value, band_buttons, xRow, dicTagsInTree[id])
 		#######
 		
-		appTreeView = event.widget
 		xIDFocus = appTreeView.focus()
 		print 'focus in ' + xIDFocus 
 		print 'is in dicTagsInTree? ' + str(xIDFocus in dicTagsInTree)
@@ -164,10 +182,18 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	
 	return appTreeView
 	
+
+def deleteTagInTree(xID):
+	xTagInTree = GL.dicTagsInTree[xID]
+	xTagInTree.parent_tag.remove( xTagInTree.getTag() )
+	GL.appTreeView.delete( xTagInTree.id )
+	del GL.dicTagsInTree[xID]
+	del xTagInTree
+	print 'Deleted %s' % xID
+	
 	
 	
 def copyTagInTree(oldTagInTree, xLevel, newparent = None):
-	global gl_dicTagsInTree, gl_appTreeView
 	if oldTagInTree <> None:
 		if newparent == None:
 			xBaseID = oldTagInTree.parent_id
@@ -184,10 +210,10 @@ def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 		xParentTag.insert( xOrder, xNewTag)
 		xNewTag.text = oldTagInTree.getTag().text
 		
-		xID = getIDForTreeView( xNewTag.tag, gl_dicTagsInTree)
+		xID = getIDForTreeView( xNewTag.tag, GL.dicTagsInTree)
 		
-		newTagInTree = TIG.TagInTree(xBaseID, xID, xNewTag, xParentTag, gl_appTreeView, order = xOrder)
-		gl_dicTagsInTree[xID] = newTagInTree
+		newTagInTree = TIG.TagInTree(xBaseID, xID, xNewTag, xParentTag, GL.appTreeView, order = xOrder)
+		GL.dicTagsInTree[xID] = newTagInTree
 		
 		def getTagInTreeFromTag(xTag, dicTagsInTree):
 			xReturn = None
@@ -199,7 +225,7 @@ def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 			return xReturn
 			
 		for xChildTag in oldTagInTree.getTag():
-			xChildTagInTree = getTagInTreeFromTag(xChildTag, gl_dicTagsInTree)
+			xChildTagInTree = getTagInTreeFromTag(xChildTag, GL.dicTagsInTree)
 			copyTagInTree( xChildTagInTree, xLevel + 1, newparent = newTagInTree)
 			
 	else:
@@ -207,37 +233,35 @@ def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 
 
 def refreshTreeView(event, band_treeview, band_buttons):
-	global gl_dicTagsInTree, gl_appTreeView
 	mainApp = event.widget
 	cleanFrame(band_treeview)
 	cleanFrame(band_buttons)
 	
-	gl_dicTagsInTree = {}
-	gl_appTreeView = getTreeView(band_treeview, band_buttons, gl_dicTagsInTree)
+	GL.dicTagsInTree = {}
+	GL.appTreeView = getTreeView(band_treeview, band_buttons, GL.dicTagsInTree)
 	
-	root = gl_XMLTree.getroot()
+	root = GL.XMLTree.getroot()
 	
-	gl_dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, gl_appTreeView)
-	addXMLToTree(root, root.tag, gl_dicTagsInTree, gl_appTreeView)
+	GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
+	addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
 	mainApp.update()
 	
 
 def openXML(band_treeview, band_buttons, label_filename):
-	global gl_filename, gl_dicTagsInTree, gl_appTreeView
 	cleanFrame(band_treeview)
 	cleanFrame(band_buttons)
 	
-	gl_filename = getFilename()
-	root = getXML(gl_filename)
+	GL.filename = getFilename()
+	root = getXML(GL.filename)
 	#root = getXML('stylers.xml')
 	
-	label_filename.config(text= gl_filename)
+	label_filename.config(text= GL.filename)
 	
-	gl_dicTagsInTree = {}
-	gl_appTreeView = getTreeView(band_treeview, band_buttons, gl_dicTagsInTree)
+	GL.dicTagsInTree = {}
+	GL.appTreeView = getTreeView(band_treeview, band_buttons, GL.dicTagsInTree)
 	
-	gl_dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, gl_appTreeView)
-	addXMLToTree(root, root.tag, gl_dicTagsInTree, gl_appTreeView)
+	GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
+	addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
 	
 def bCheckEntries(band_buttons):
 	for widget in band_buttons.winfo_children():
@@ -245,24 +269,20 @@ def bCheckEntries(band_buttons):
 			print widget.get()
 	
 def saveXML(mainApp, modo):
-	global gl_filename, gl_XMLTree
-	
 	if modo == 'SAVEAS':
 		save_filename = tkFileDialog.asksaveasfilename( filetypes=[('Archivos XML', '.xml'), ('Todos los archivos', '.*')], 
-														initialfile = gl_filename,
+														initialfile = GL.filename,
 														parent = mainApp)
 	else:
-		save_filename = gl_filename
+		save_filename = GL.filename
 	
 	if save_filename:
 		print 'saving in ' + save_filename
-		gl_XMLTree.write(save_filename)
-		gl_filename = save_filename
+		GL.XMLTree.write(save_filename)
+		GL.filename = save_filename
 	
 	
 def main(mode = 'main'):
-	global ico_mainApp, gl_dicTagsInTree, gl_buttonWidth, gl_appTreeView
-	
 	if mode == 'main':
 		mainApp = Tk()
 		mainApp.title('eXMLorer')
@@ -291,33 +311,34 @@ def main(mode = 'main'):
 		button_open = Button(band_menu, 
 							 text = 'Abrir', 
 							 #image = ico_open,
-							 width=gl_buttonWidth, 
+							 width=GL.buttonWidth, 
 							 command = lambda band_treeview=band_treeview, 
 											  band_buttons=band_buttons,
 											  label_filename=label_filename: 
 											  openXML(band_treeview, band_buttons, label_filename))
 		button_open.grid(column=0, row=0)
 		
-		button_save = Button(band_menu, text= 'Guardar', width= gl_buttonWidth, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVE'))
+		button_save = Button(band_menu, text= 'Guardar', width= GL.buttonWidth, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVE'))
 		button_save.grid(column=1, row=0)
 		
-		button_saveAs = Button(band_menu, text= 'Guardar como...', width= gl_buttonWidth, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVEAS'))
+		button_saveAs = Button(band_menu, text= 'Guardar como...', width= GL.buttonWidth, command= lambda mainApp=mainApp: saveXML(mainApp, 'SAVEAS'))
 		button_saveAs.grid(column=2, row=0)
 		
 		button_copyTag = Button(band_menu, 
 								text='Copiar tag', 
-								width= gl_buttonWidth, 
-								command= lambda #gl_appTreeView = gl_appTreeView,
-												gl_dicTagsInTree = gl_dicTagsInTree:
-												copyTagInTree(gl_dicTagsInTree.setdefault( gl_appTreeView.focus(), None), 0 ))
+								width= GL.buttonWidth, 
+								command= lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
 		button_copyTag.grid(column=0, row=1)
 		
-		#button_analyze = Button(band_menu, text= 'Print band_buttons', width= gl_buttonWidth, command= lambda band_buttons = band_buttons: bCheckEntries(band_buttons))
+		#button_analyze = Button(band_menu, text= 'Print band_buttons', width= GL.buttonWidth, command= lambda band_buttons = band_buttons: bCheckEntries(band_buttons))
 		#button_analyze.grid(column=0, row=1)
 		
 		mainApp.bind('<F5>', lambda event, band_treeview=band_treeview, band_buttons=band_buttons: refreshTreeView(event, band_treeview, band_buttons))
-	else:	
-		mainApp = tk_app.MainApp()
+		
+	else:
+	
+		mainApp = tk_app.MainApp(dicExcludeMenu = ['button_analyze', 'button_glTreeView'])
+		openXML(mainApp.frames.treeview, mainApp.frames.buttons, mainApp.frames.menu.dic['label_filename'])
 		
 		
 	mainApp.focus_set()
@@ -330,4 +351,4 @@ def main(mode = 'main'):
 		pass
 
 if __name__ == '__main__':
-	main()
+	main('test')
