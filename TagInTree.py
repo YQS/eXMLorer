@@ -1,4 +1,5 @@
 # encoding: UTF-8
+import globals as GL
 
 class TagInTree(object):
 	def __init__(self, parent_id, id, xmltag, parent_tag, treeview, order='end'):
@@ -15,9 +16,12 @@ class TagInTree(object):
 		##########
 		self.setTag(xmltag)
 		self.setNode(parent_id, id, treeview, order)
-		self.setColumn('name', self.id)
+		#self.setColumn('name', self.id)
 		self.setColumn('data', self.getTag().text)
-		self.setColumn('size', self.subname)
+		#self.setColumn('size', self.subname)
+		
+	def __del__(self):
+		print 'TagInTree %s destroyed' % self.id
 
 	# SETS
 	def setTag(self, xmltag):
@@ -32,7 +36,11 @@ class TagInTree(object):
 		self.parent_treeview = treeview
 		
 	def setColumn(self, column, value):
-		self.parent_treeview.set( self.id, column, value )
+		print value
+		if value <> None:
+			value = value.encode(encoding='UTF-8')
+			self.parent_treeview.set( self.id, column, value[:GL.dataColumnTextLimit] )
+			#self.parent_treeview.set( self.id, column, value )
 	
 	def hasChild(self):
 		xHasChild = False
@@ -52,7 +60,6 @@ class TagInTree(object):
 	def getTreeView(self):
 		return self.parent_treeview		
 	
-
 
 def getSubnameOfTag(xTag):
 	xName = ''
