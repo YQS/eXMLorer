@@ -1,0 +1,31 @@
+{'DependsOn': 'ColumnName',
+
+ 'ColumnDef': 'QueryFieldName',
+
+ 'SimpleAttributeDef': 'QueryFieldName',
+
+ 'FlagAttributeDef': 'TransactionTypeFieldName',
+
+ 'DataViewDef': 'DescriptionColumnName',
+
+ 'SimpleParam': 'QueryFieldName',
+
+ 'DataViewActionDef': 'Name',
+
+ 'ReferenceParam': 'TextQueryFieldName',
+
+ 'QueryDef': 'ConnectionName',
+
+ 'ActionDef': 'Name',
+
+ 'EnumFieldDef': 'FieldName',
+
+ 'ReferenceAttributeDef': 'TextQueryFieldName',
+
+ 'QueryFieldDef': 'FieldName',
+
+ 'Entity': 'Description',
+
+ 'EnumDataSourceDef': 'Name',
+
+ 'OwnershipListAttributeDef': 'QueryFieldName'}
