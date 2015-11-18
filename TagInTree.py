@@ -16,8 +16,8 @@ class TagInTree(object):
 		##########
 		self.setTag(xmltag)
 		self.setNode(parent_id, id, treeview, order)
-		#self.setColumn('name', self.id)
 		self.setColumn('data', self.getTag().text)
+		#self.setColumn('name', self.id)
 		#self.setColumn('size', self.subname)
 		
 	def __del__(self):
@@ -61,25 +61,25 @@ class TagInTree(object):
 		return self.parent_treeview		
 	
 
-def getSubnameOfTag(xTag):
-	xName = ''
-	for xChild in xTag:
-		if (xChild.tag.find('Name', 0) >= 0):
-			xName = xChild.text
-			break
+
+def getSubnameOfTag(xTag):	
+	if GL.dicTagSubnames == {}:
+		GL.getDicSubnames()
 			
-	#if xName == '':
-	#	xName = xTag.tag
+	xName = ''
+	xPossibleChildForName = None
+	xStringToFind = GL.dicTagSubnames.get(xTag.tag, '*******')	#I hope that I don't find a tag like this!
+	for xChild in xTag:
+		if (xChild.tag.find(xStringToFind, 0) >= 0):
+			xName = str(xChild.text)
+			break
+		elif (xChild.tag.find('Name', 0) >= 0):
+			xPossibleChildForName = xChild
+
+	if xName == '':
+		if xPossibleChildForName <> None:
+			xName = str(xPossibleChildForName.text)
+			GL.dicTagSubnames[xTag.tag] = xPossibleChildForName.tag
+			GL.setDicSubnames()
 		
 	return xName
-
-def generateTagInTree(parent_id, id, xmltag, treeview):			#Deprecated
-	newTagInTree = TagInTree(id)
-	newTagInTree.setTag(xmltag)
-	newTagInTree.setNode(parent_id, id, treeview)
-	
-	newTagInTree.setColumn('name', newTagInTree.id)
-	newTagInTree.setColumn('data', newTagInTree.getTag().text)
-	newTagInTree.setColumn('size', newTagInTree.subname)
-	
-	return newTagInTree
