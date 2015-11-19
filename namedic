@@ -6,11 +6,11 @@
 
  'FlagAttributeDef': 'TransactionTypeFieldName',
 
- 'DataViewDef': 'DescriptionColumnName',
+ 'DataViewDef': 'Caption',
 
  'SimpleParam': 'QueryFieldName',
 
- 'DataViewActionDef': 'Name',
+ 'DataViewActionDef': 'Caption',
 
  'ReferenceParam': 'TextQueryFieldName',
 
