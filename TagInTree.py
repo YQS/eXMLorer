@@ -71,7 +71,10 @@ def getSubnameOfTag(xTag):
 	xStringToFind = GL.dicTagSubnames.get(xTag.tag, '*******')	#I hope that I don't find a tag like this!
 	for xChild in xTag:
 		if (xChild.tag.find(xStringToFind, 0) >= 0):
-			xName = str(xChild.text)
+			try:
+				xName = str(xChild.text)
+			except UnicodeEncodeError:
+				xName = xChild.text.encode('utf-8')
 			break
 		elif (xChild.tag.find('Name', 0) >= 0):
 			xPossibleChildForName = xChild
