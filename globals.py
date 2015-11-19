@@ -7,8 +7,10 @@ XMLTree = None
 XMLParentMap = {}
 dicTagsInTree = {}
 appTreeView = None
+lastTreeViewFocus = None
 
 buttonWidth = 15
+labelButtonWidth = 50
 
 marginToExtendToText = 30
 dataColumnTextLimit = 100
