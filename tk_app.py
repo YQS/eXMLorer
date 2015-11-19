@@ -165,13 +165,25 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 			xTextbox.mark_set(INSERT, "1.0")
 			xTextbox.see(INSERT)
 			return 'break'		#porque si no, el tkinter lee el siguiente evento
+		
+		def getTextEntry(band_buttons, xButtonWidth, xColumn, xRow, oTagInTree, value):
+			xEntry = Entry(band_buttons, width=xButtonWidth, validate='focus')
+			xEntry.configure(validatecommand = lambda xEntry=xEntry, oTagInTree=oTagInTree: updateTreeNode(xEntry.get(), oTagInTree))
+			xEntry.bind('<Return>', lambda event, xEntry=xEntry, oTagInTree=oTagInTree:updateTreeNode(xEntry.get(), oTagInTree))
+			xEntry.grid(column=1, row=xRow)
+			xEntry.insert(0, value)
 			
+		def activateTextEntry(xEntry, xButton, band_buttons, xButtonWidth, xColumn, xRow, oTagInTree, value):
+			xEntry.destroy()
+			xButton.destroy()
+			getTextEntry(band_buttons, xButtonWidth, xColumn, xRow, oTagInTree, value)
 			
 		
 		#######
 		def getEntry(value, band_buttons, xRow, oTagInTree):
 			xBoolOptions = ('True', 'False')
-			xButtonWidth = 50
+			#xButtonWidth = 50
+			xButtonWidth = GL.labelButtonWidth
 			if value in xBoolOptions:
 				'''
 				print 'OptionMenu'
@@ -195,23 +207,28 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 				else:
 					xEntry.insert(0,'<\>')
 					xEntry.config(width=xButtonWidth - 15)
-					
+					xButton = Button(band_buttons, text='Abrir', width=15)
+					xButton.grid(column=1, row=xRow, sticky='e')
+					xButton.config(command= lambda xEntry=xEntry,
+												   xButton=xButton,
+												   xColumn=xEntry.grid_info()['column']:
+												   activateTextEntry(xEntry, xButton, band_buttons, xButtonWidth, xColumn, xRow, oTagInTree, value))
+					#print xButton.grid_info()['column']
 					
 				xEntry.configure(state=DISABLED)
 				#xEntry.insert(0, value)
 			else:
 				if len(value) < (xButtonWidth + GL.marginToExtendToText):
 					print 'Entry'
+					getTextEntry(band_buttons, xButtonWidth, 1, xRow, oTagInTree, value)
+					'''
 					xEntry = Entry(band_buttons, width=xButtonWidth, validate='focus')
 					xEntry.configure(validatecommand = lambda xEntry=xEntry, oTagInTree=oTagInTree: updateTreeNode(xEntry.get(), oTagInTree))
 					xEntry.bind('<Return>', lambda event, xEntry=xEntry, oTagInTree=oTagInTree:updateTreeNode(xEntry.get(), oTagInTree))
 					xEntry.grid(column=1, row=xRow)
 					xEntry.insert(0, value)
+					'''
 				else:
-					def tbMade(widget,text):
-						widget.focus_set()
-						print text
-				
 					print 'Textbox'
 					xHeight = 10 #len(value) % xButtonWidth
 					xTextbox = Text(band_buttons, width=xButtonWidth-7, height=xHeight)
@@ -236,6 +253,7 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 		#######
 		
 		xIDFocus = appTreeView.focus()
+		GL.lastTreeViewFocus = xIDFocus
 		print 'focus in ' + xIDFocus 
 		print 'is in dicTagsInTree? ' + str(xIDFocus in dicTagsInTree)
 		
@@ -366,7 +384,11 @@ def refreshTreeView(event, band_treeview, band_buttons):
 	
 	GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
 	addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
-	mainApp.update()	
+	mainApp.update()
+	
+	GL.appTreeView.see(GL.lastTreeViewFocus)
+	GL.appTreeView.focus(GL.lastTreeViewFocus)
+	GL.appTreeView.selection_set(GL.lastTreeViewFocus)
 	
 		
 def checkTreeView():
