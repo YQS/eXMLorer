@@ -1,14 +1,20 @@
-{'DependsOn': 'ColumnName',
+{'ColumnDef': 'Name',
 
- 'ColumnDef': 'QueryFieldName',
+ 'ActionDef': 'Name',
 
- 'SimpleAttributeDef': 'QueryFieldName',
+ 'EnumFieldDef': 'FieldName',
 
- 'FlagAttributeDef': 'TransactionTypeFieldName',
+ 'Entity': 'Description',
+
+ 'FlagAttributeDef': 'Caption',
+
+ 'country': 'year',
 
  'DataViewDef': 'Caption',
 
- 'SimpleParam': 'QueryFieldName',
+ 'SchemaInfo': 'Name',
+
+ 'SimpleAttributeDef': 'Caption',
 
  'DataViewActionDef': 'Caption',
 
@@ -16,16 +22,20 @@
 
  'QueryDef': 'ConnectionName',
 
- 'ActionDef': 'Name',
+ 'SimpleParam': 'QueryFieldName',
 
- 'EnumFieldDef': 'FieldName',
+ 'ReferenceAttributeDef': 'Caption',
 
- 'ReferenceAttributeDef': 'TextQueryFieldName',
+ 'CandidatesDef': 'Caption',
 
- 'QueryFieldDef': 'FieldName',
+ 'DependsOn': 'ColumnName',
 
- 'Entity': 'Description',
+ 'QueryFieldDef': 'FieldAlias',
+
+ 'main': 'value',
+
+ 'CategoryOrder': 'Section',
 
  'EnumDataSourceDef': 'Name',
 
- 'OwnershipListAttributeDef': 'QueryFieldName'}
+ 'OwnershipListAttributeDef': 'Caption'}
