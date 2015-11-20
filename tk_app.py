@@ -28,7 +28,7 @@ class BandPack(object):
 		self.buttons = None
 
 class MainApp(Tk):
-	def __init__(self, iconfile='test.gif', lExcludeMenu = []): #añadir opciones de generar botonos y bandas a eleccion
+	def __init__(self, iconfile='test.gif', lExcludeMenu = []):
 		Tk.__init__(self)
 		self.title('eXMLorer')
 		self.iconImage = PhotoImage(file= iconfile)
@@ -146,7 +146,8 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	
 	def fillBandButtons(event, band_buttons, dicTagsInTree):
 		cleanFrame(band_buttons)
-		appTreeView = event.widget
+		print 'EventType %s' % event.type
+		appTreeView = GL.appTreeView
 		
 		def updateTreeNode(value, oTagInTree):
 			#print entry.get()
@@ -184,6 +185,7 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 			xBoolOptions = ('True', 'False')
 			#xButtonWidth = 50
 			xButtonWidth = GL.labelButtonWidth
+			xExtraButtonWidth = GL.labelExtraButtonWidth
 			if value in xBoolOptions:
 				'''
 				print 'OptionMenu'
@@ -206,8 +208,8 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 					xEntry.config(width=xButtonWidth)
 				else:
 					xEntry.insert(0,'<\>')
-					xEntry.config(width=xButtonWidth - 15)
-					xButton = Button(band_buttons, text='Abrir', width=15)
+					xEntry.config(width=xButtonWidth - xExtraButtonWidth)
+					xButton = Button(band_buttons, text='Abrir', width= xExtraButtonWidth)
 					xButton.grid(column=1, row=xRow, sticky='e')
 					xButton.config(command= lambda xEntry=xEntry,
 												   xButton=xButton,
@@ -221,13 +223,6 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 				if len(value) < (xButtonWidth + GL.marginToExtendToText):
 					print 'Entry'
 					getTextEntry(band_buttons, xButtonWidth, 1, xRow, oTagInTree, value)
-					'''
-					xEntry = Entry(band_buttons, width=xButtonWidth, validate='focus')
-					xEntry.configure(validatecommand = lambda xEntry=xEntry, oTagInTree=oTagInTree: updateTreeNode(xEntry.get(), oTagInTree))
-					xEntry.bind('<Return>', lambda event, xEntry=xEntry, oTagInTree=oTagInTree:updateTreeNode(xEntry.get(), oTagInTree))
-					xEntry.grid(column=1, row=xRow)
-					xEntry.insert(0, value)
-					'''
 				else:
 					print 'Textbox'
 					xHeight = 10 #len(value) % xButtonWidth
@@ -270,11 +265,58 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 			getButtonRow(xIDFocus, band_buttons, xRow)
 			
 		
-	#appTreeView.bind('<1>', lambda event, band_buttons = band_buttons, appTreeView = appTreeView, xFocus=appTreeView.focus(): getLabel(event, band_buttons, appTreeView, xFocus))
-	appTreeView.bind('<<TreeviewSelect>>', lambda event, 
-												  band_buttons = band_buttons,
-												  dicTagsInTree = dicTagsInTree:
-												  fillBandButtons(event, band_buttons, dicTagsInTree))
+	appTreeView.bind('<<TreeviewSelect>>', lambda event: fillBandButtons(event, band_buttons, dicTagsInTree))
+	
+	def setAsParentSubname(parentTIG, childTIG):
+		GL.dicTagSubnames.updateDic( parentTIG.getTag().tag, childTIG.getTag().tag )
+		parentTIG.updateSubname( childTIG.getTag().text)
+		GL.dicTagSubnames.save()
+		
+	def cleanSubname(oTIG):
+		GL.dicTagSubnames.updateDic( oTIG.getTag().tag, '')
+		oTIG.updateSubname('')
+		GL.dicTagSubnames.deleteFromDic(oTIG.getTag().tag)
+		GL.dicTagSubnames.save()
+	
+	def contextMenu(event, band_buttons, dicTagsInTree):
+		print 'context menu'
+		xFocusIDContextMenu = GL.appTreeView.identify_row(event.y)
+		print 'identify row shows %s' % xFocusIDContextMenu
+		GL.appTreeView.focus(xFocusIDContextMenu)
+		
+		# getting variables for commands
+		focusTIG = dicTagsInTree[xFocusIDContextMenu]
+		
+		parentTIG = focusTIG.getParent()
+		subnameCmdState = ACTIVE
+		if parentTIG == None:
+			subnameCmdState = DISABLED
+		
+		cleanCmdState = DISABLED
+		if focusTIG.hasChild():
+			cleanCmdState = ACTIVE
+		
+		#menu
+		menu = Menu(GL.appTreeView, tearoff=0)
+		menu.add_command(label='Seleccionar como Subnombre del Parent', 
+						 state= subnameCmdState, 
+						 command= lambda
+								  parentTIG = parentTIG, 
+								  focusTIG = focusTIG: 
+								  setAsParentSubname(parentTIG, focusTIG)
+						)
+		menu.add_command(label='Limpiar definición de Subnombre', 
+						 state= cleanCmdState, 
+						 command= lambda 
+								  focusTIG = focusTIG: 
+								  cleanSubname(focusTIG) 
+						)
+						
+		print 'identify row shows %s' % appTreeView.identify_row(event.y)
+		menu.post(event.x_root, event.y_root)		
+		
+	appTreeView.bind('<Button-3>', lambda event: 
+										  contextMenu(event, band_buttons, dicTagsInTree))
 	
 	return appTreeView
 	
