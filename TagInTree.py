@@ -49,6 +49,10 @@ class TagInTree(object):
 			break
 			
 		return xHasChild
+		
+	def updateSubname(self, newSubname):
+		self.subname = newSubname
+		self.parent_treeview.item(self.id, text= self.tagname + ' ' + self.subname)
 
 	# GETS
 	def getTag(self):
@@ -58,17 +62,22 @@ class TagInTree(object):
 		return self.treenode
 		
 	def getTreeView(self):
-		return self.parent_treeview		
+		return self.parent_treeview
+		
+	def getParent(self):
+		try:
+			xParent = GL.dicTagsInTree[ self.parent_treeview.parent(self.id)]
+		except:
+			xParent = None
+			
+		return xParent
 	
 
 
-def getSubnameOfTag(xTag):	
-	if GL.dicTagSubnames == {}:
-		GL.getDicSubnames()
-			
+def getSubnameOfTag(xTag):
 	xName = ''
 	xPossibleChildForName = None
-	xStringToFind = GL.dicTagSubnames.get(xTag.tag, '*******')	#I hope that I don't find a tag like this!
+	xStringToFind = GL.dicTagSubnames.dic.get(xTag.tag, '*******')	#I hope that I don't find a tag like this!
 	for xChild in xTag:
 		if (xChild.tag.find(xStringToFind, 0) >= 0):
 			try:
@@ -82,7 +91,7 @@ def getSubnameOfTag(xTag):
 	if xName == '':
 		if xPossibleChildForName <> None:
 			xName = str(xPossibleChildForName.text)
-			GL.dicTagSubnames[xTag.tag] = xPossibleChildForName.tag
-			GL.setDicSubnames()
+			GL.dicTagSubnames.dic[xTag.tag] = xPossibleChildForName.tag
+			GL.dicTagSubnames.save()
 		
 	return xName
