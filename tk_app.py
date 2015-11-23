@@ -3,6 +3,7 @@
 from Tkinter import *
 from ttk import *
 import tkFileDialog
+import tkMessageBox
 import globals as GL
 import TagInTree as TIG
 import xml_man
@@ -341,16 +342,19 @@ def openXML(band_treeview, band_buttons, label_filename):
 	cleanFrame(band_buttons)
 	
 	GL.filename = getFilename()
+	label_filename.config(text= GL.filename)
+	
 	root = xml_man.getXML(GL.filename)
 	#root = xml_man.getXML('stylers.xml')
 	
-	label_filename.config(text= GL.filename)
-	
-	GL.dicTagsInTree = {}
-	GL.appTreeView = getTreeView(band_treeview, band_buttons, GL.dicTagsInTree)
-	
-	GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
-	addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
+	if root == None:
+		tkMessageBox.showerror('eXMLorer', 'El archivo %s no es un archivo XML valido' % GL.filename)
+	else:	
+		GL.dicTagsInTree = {}
+		GL.appTreeView = getTreeView(band_treeview, band_buttons, GL.dicTagsInTree)
+		
+		GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
+		addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
 
 def saveXML(mainApp, modo):
 	if modo == 'SAVEAS':
