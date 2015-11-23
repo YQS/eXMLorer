@@ -5,8 +5,11 @@ import globals as GL
 
 def getXML(filename):
 	#parseo el xml y instancio el root, para analizarlo todo
-	GL.XMLTree = ET.parse(filename)
-	#tree = ET.parse('stylers.xml')
+	try:
+		GL.XMLTree = ET.parse(filename)
+	except:
+		return None
+		
 	root = GL.XMLTree.getroot()
 	GL.XMLParentMap = {c:p for p in GL.XMLTree.iter() for c in p}
 
