@@ -61,61 +61,24 @@ def fillMenuFrame(xFrame, lExcludeMenu):
 		label_filename.configure(padding=(10,0,0,0))
 		label_filename.grid(column=3, row=0)
 	
-	if not 'button_open' in lExcludeMenu:
-		button_open = xFrame.addWidget('Button', 'button_open')
-		button_open.configure(text = 'Abrir', 
-							 #image = ico_open,
-							 width= GL.buttonWidth, 
-							 command = lambda: openXML(mainApp.frames.treeview, mainApp.frames.buttons, xFrame.dic['label_filename'] ))
-		button_open.grid(column=0, row=0)
-		
-	if not 'button_save' in lExcludeMenu:
-		button_save = xFrame.addWidget('Button', 'button_save')
-		button_save.configure(text= 'Guardar', width= GL.buttonWidth, command= lambda: saveXML(mainApp, 'SAVE'))
-		button_save.grid(column=1, row=0)
-	
-	if not 'button_saveAs' in lExcludeMenu:
-		button_saveAs = xFrame.addWidget('Button', 'button_saveAs')
-		button_saveAs.configure(text= 'Guardar como...', width= GL.buttonWidth, command= lambda: saveXML(mainApp, 'SAVEAS'))
-		button_saveAs.grid(column=2, row=0)
-	
-	if not 'button_copyTag' in lExcludeMenu:
-		button_copyTag = xFrame.addWidget('Button', 'button_copyTag')
-		button_copyTag.configure(text='Copiar tag', 
-								width= GL.buttonWidth, 
-								command= lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
-		button_copyTag.grid(column=0, row=1)
-		
-	if not 'button_deleteTag' in lExcludeMenu:
-		button_deleteTag = xFrame.addWidget('Button', 'button_deleteTag')
-		button_deleteTag.configure(text='Borrar tag',
-								   width= GL.buttonWidth, 
-								   command= lambda: deleteTagInTree( GL.appTreeView.focus() ))
-		button_deleteTag.grid(column=1, row=1)
-		
+	getButton(xFrame, 'button_open', 'Abrir', lExcludeMenu, 0, 0, command = lambda: openXML(mainApp.frames.treeview, mainApp.frames.buttons, xFrame.dic['label_filename'] ))
+	getButton(xFrame, 'button_save', 'Guardar', lExcludeMenu, 0, 1, command = lambda: saveXML(mainApp, 'SAVE'))
+	getButton(xFrame, 'button_saveAs', 'Guardar como...', lExcludeMenu, 0, 2, command = lambda: saveXML(mainApp, 'SAVEAS'))
+	getButton(xFrame, 'button_copyTag', 'Copiar tag', lExcludeMenu, 1, 0, command = lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
+	getButton(xFrame, 'button_deleteTag', 'Borrar tag', lExcludeMenu, 1, 1, command = lambda: deleteTagInTree( GL.appTreeView.focus() ))		
 		
 	## debug buttons
-	if not 'button_glTreeView' in lExcludeMenu:
-		button_glTreeView = xFrame.addWidget('Button', 'button_glTreeView')
-		button_glTreeView.configure(text='Check TreeView',
-									width= GL.buttonWidth,
-									command= lambda: checkTreeView())
-		button_glTreeView.grid(column=1, row=1)
-	
-	if not 'button_analyze' in lExcludeMenu:
-		button_analyze = xFrame.addWidget('Button', 'button_analyze')
-		button_analyze.configure(text= 'Print band_buttons', width= GL.buttonWidth, command= lambda: bCheckEntries(mainApp.frames.buttons))
-		button_analyze.grid(column=0, row=1)
+	getButton(xFrame, 'button_glTreeView', 'Check TreeView', lExcludeMenu, 1, 1, command = lambda: checkTreeView())
+	getButton(xFrame, 'button_analyze', 'Print band_buttons', lExcludeMenu, 0, 1, command = lambda: bCheckEntries(mainApp.frames.buttons))
+	getButton(xFrame, 'button_dicSubnames', 'Print dicSubnames', lExcludeMenu, 1, 3, command = lambda: bPrintDicSubnames())
+
+	getButton(xFrame, 'button_getDicSubnames', 'Consigue Subnames', lExcludeMenu, 1, 3, command = lambda: GL.getDicSubnames())
 		
-	if not 'button_dicSubnames' in lExcludeMenu:
-		button_dicSubnames = xFrame.addWidget('Button', 'button_dicSubnames')
-		button_dicSubnames.configure(text= 'Print dicSubnames', width= GL.buttonWidth, command= lambda: bPrintDicSubnames() )
-		button_dicSubnames.grid(column=2, row=1)
-		
-	if not 'button_getDicSubnames' in lExcludeMenu:
-		button_getDicSubnames = xFrame.addWidget('Button', 'button_dicSubnames')
-		button_getDicSubnames.configure(text= 'getDicSubnames', width= GL.buttonWidth, command= lambda: GL.getDicSubnames() )
-		button_getDicSubnames.grid(column=3, row=1)
+def getButton(xMaster, name, caption, lExcludeMenu, xRow, xColumn, command=''):
+	if not name in lExcludeMenu:
+		xButton = xMaster.addWidget('Button', name)
+		xButton.configure(text= caption, width= GL.buttonWidth, command=command)
+		xButton.grid(column=xColumn, row=xRow)
 		
 def cleanFrame(frame):
 	for widget in frame.winfo_children():
