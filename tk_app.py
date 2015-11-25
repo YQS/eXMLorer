@@ -32,8 +32,12 @@ class MainApp(Tk):
 	def __init__(self, iconfile='test.gif', lExcludeMenu = []):
 		Tk.__init__(self)
 		self.title('eXMLorer')
-		self.iconImage = PhotoImage(file= iconfile)
-		self.tk.call('wm', 'iconphoto', self._w, self.iconImage)
+		try:
+			self.iconImage = PhotoImage(file= iconfile)
+			self.tk.call('wm', 'iconphoto', self._w, self.iconImage)
+		except TclError:
+			print 'No se encontro el archivo de icono %s' % iconfile
+			
 		
 		#elementos del main
 		self.frames = BandPack()
