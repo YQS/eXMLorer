@@ -13,7 +13,7 @@ def main(mode = 'main'):
 	mainApp = tk_app.MainApp(lExcludeMenu=lExcludeMenu)
 	tk_app.openXML(mainApp.frames.treeview, mainApp.frames.buttons, mainApp.frames.menu.dic['label_filename'])
 		
-	mainApp.focus_set()
+	# mainApp.focus_set()
 	mainApp.mainloop()
 	
 	try:
