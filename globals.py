@@ -7,6 +7,7 @@ import dicext as DICEXT
 filename = ''
 lastFolderVisited = ''
 XMLTree = None
+XML_encoding = ''
 XMLParentMap = {}
 dicTagsInTree = {}
 appTreeView = None
