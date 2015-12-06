@@ -33,11 +33,10 @@ class MainApp(Tk):
 		Tk.__init__(self)
 		self.title('eXMLorer')
 		try:
-			self.iconImage = PhotoImage(file= iconfile)
-			self.tk.call('wm', 'iconphoto', self._w, self.iconImage)
-		except TclError:
-			print 'No se encontro el archivo de icono %s' % iconfile
-			
+-			self.iconImage = PhotoImage(file= iconfile)
+-			self.tk.call('wm', 'iconphoto', self._w, self.iconImage)
+-		except TclError:
+-			print 'No se encontro el archivo de icono %s' % iconfile
 		
 		#elementos del main
 		self.frames = BandPack()
@@ -75,8 +74,8 @@ def fillMenuFrame(xFrame, lExcludeMenu):
 	getButton(xFrame, 'button_glTreeView', 'Check TreeView', lExcludeMenu, 1, 1, command = lambda: checkTreeView())
 	getButton(xFrame, 'button_analyze', 'Print band_buttons', lExcludeMenu, 0, 1, command = lambda: bCheckEntries(mainApp.frames.buttons))
 	getButton(xFrame, 'button_dicSubnames', 'Print dicSubnames', lExcludeMenu, 1, 3, command = lambda: bPrintDicSubnames())
-
 	getButton(xFrame, 'button_getDicSubnames', 'Consigue Subnames', lExcludeMenu, 1, 3, command = lambda: GL.getDicSubnames())
+	getButton(xFrame, 'button_printEncoding', 'Encoding', lExcludeMenu, 1, 2, command = lambda: xml_man.getEncoding(GL.filename))
 		
 def getButton(xMaster, name, caption, lExcludeMenu, xRow, xColumn, command=''):
 	if not name in lExcludeMenu:
@@ -332,8 +331,9 @@ def saveXML(mainApp, modo):
 		save_filename = GL.filename
 	
 	if save_filename:
-		print 'saving in ' + save_filename
-		GL.XMLTree.write(save_filename)
+		#print 'saving in ' + save_filename
+		#GL.XMLTree.write(save_filename)
+		xml_man.saveXML(GL.XMLTree, save_filename)
 		GL.filename = save_filename
 
 		
@@ -418,6 +418,9 @@ def bCheckEntries(band_buttons):
 
 def bPrintDicSubnames():
 	print GL.dicTagSubnames
+	
+def bPrintEncoding():
+	print GL.XML_encoding
 			
 #####################
 
