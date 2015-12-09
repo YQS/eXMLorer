@@ -42,6 +42,7 @@ class TagInTree(object):
 			self.parent_treeview.set( self.id, column, value[:GL.dataColumnTextLimit] )
 			#self.parent_treeview.set( self.id, column, value )
 	
+	
 	def hasChild(self):
 		xHasChild = False
 		for xChild in self.xmltag:
@@ -54,6 +55,7 @@ class TagInTree(object):
 		self.subname = newSubname
 		self.parent_treeview.item(self.id, text= self.tagname + ' ' + self.subname)
 
+		
 	# GETS
 	def getTag(self):
 		return self.xmltag
@@ -71,6 +73,15 @@ class TagInTree(object):
 			xParent = None
 			
 		return xParent
+	
+	def getTreeViewIndex(self):
+		return self.parent_treeview.index(self.id)
+		
+	def getXMLPosition(self):
+		try:
+			return self.parent_tag.getchildren().index(self.getTag())
+		except:
+			return '<Root>'
 	
 
 
