@@ -70,3 +70,6 @@ def newElement(xParent, xTag, xText, xAttrib, xOrder):
 	xNewElement.text = xText
 	return xNewElement
 	
+def moveTag(xParent, xTag, xPosition):
+	xParent.remove(xTag)
+	xParent.insert(xPosition, xTag)
