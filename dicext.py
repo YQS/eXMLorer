@@ -1,5 +1,6 @@
 # encoding: UTF-8
 import globals as GL
+import os.path
 
 class DictionaryFile(object):
 	def __init__(self, filename):
@@ -8,6 +9,10 @@ class DictionaryFile(object):
 		self.getDic()
 		
 	def getDic(self):
+		if not os.path.exists(self.filename):
+			with open(self.filename, 'w') as txt:
+				txt.write('')
+	
 		with open(self.filename, 'r') as txt:
 			sDic = txt.read()
 			if sDic <> '':
