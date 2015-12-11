@@ -23,4 +23,4 @@ def main(mode = 'main'):
 		pass
 
 if __name__ == '__main__':
-	main('test')
+	main('testing')
