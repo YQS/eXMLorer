@@ -82,6 +82,9 @@ class TagInTree(object):
 			return self.parent_tag.getchildren().index(self.getTag())
 		except:
 			return '<Root>'
+			
+	def getNumberOfSiblings(self):
+		return len(self.parent_tag.getchildren())
 	
 
 
