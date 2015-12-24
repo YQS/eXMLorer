@@ -27,11 +27,13 @@ class FrameExt(Frame):
 		for widget in self.winfo_children():
 			widget.destroy()
 
-class BandPack(object):
-	def __init__(self):
-		self.menu = None
-		self.treeview = None
-		self.buttons = None
+class FramePack(object):
+	def __init__(self, master):
+		self.menu = FrameExt(master)
+		self.center = FrameExt(master)
+		self.treeview = FrameExt(self.center)
+		self.buttons = FrameExt(self.center)
+		self.footer = FrameExt(master)
 
 class MainApp(Tk):
 	def __init__(self, iconfile='test.gif', lExcludeMenu = []):
@@ -44,17 +46,19 @@ class MainApp(Tk):
 			print 'No se encontro el archivo de icono %s' % iconfile
 		
 		#elementos del main
-		self.frames = BandPack()
+		self.frames = FramePack(self)
 		
-		self.frames.menu = FrameExt(self)
 		self.frames.menu.pack(side=TOP, fill=X)
 		fillMenuFrame(self.frames.menu, lExcludeMenu)
 		
-		self.frames.treeview = FrameExt(self)
+		self.frames.center.pack(side=TOP, fill=BOTH, expand=1)
+		
 		self.frames.treeview.pack(side=LEFT, fill=BOTH)
 		
-		self.frames.buttons = FrameExt(self)
 		self.frames.buttons.pack(side=LEFT, fill=BOTH, ipadx=0, pady=20)
+		
+		self.frames.footer.pack(side=BOTTOM, fill=X)
+		fillFooterFrame(self.frames.footer)
 		
 		self.bind('<F5>', lambda event: refreshTreeView(event, self.frames.treeview, self.frames.buttons))
 
@@ -81,6 +85,31 @@ def fillMenuFrame(xFrame, lExcludeMenu):
 	getButton(xFrame, 'button_dicSubnames', 'Print dicSubnames', lExcludeMenu, 1, 3, command = lambda: bPrintDicSubnames())
 	getButton(xFrame, 'button_getDicSubnames', 'Consigue Subnames', lExcludeMenu, 1, 3, command = lambda: GL.getDicSubnames())
 	getButton(xFrame, 'button_printEncoding', 'Encoding', lExcludeMenu, 1, 2, command = lambda: xml_man.getEncoding(GL.filename))
+	
+def fillFooterFrame(xFrame, lExcludeMenu=[]):
+	getButton(xFrame, 'button_moveUp', 'Mover Tag Arriba', lExcludeMenu, 0, 1, command = lambda: tk_treeview.moveNode(
+																						 GL.appTreeView.focus(),
+																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
+																						 GL.dicTagsInTree[GL.appTreeView.focus()].getTreeViewIndex() - 1,
+																						 GL.dicTagsInTree))
+																						 
+	getButton(xFrame, 'button_moveDown', 'Mover Tag Abajo', lExcludeMenu, 0, 2, command = lambda: tk_treeview.moveNode(
+																						 GL.appTreeView.focus(),
+																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
+																						 GL.dicTagsInTree[GL.appTreeView.focus()].getTreeViewIndex() + 1,
+																						 GL.dicTagsInTree))
+																						 
+	getButton(xFrame, 'button_moveBeginnnig', 'Mover Tag Inicio', lExcludeMenu, 0, 3, command = lambda: tk_treeview.moveNode(
+																						 GL.appTreeView.focus(),
+																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
+																						 0,
+																						 GL.dicTagsInTree))
+																						 
+	getButton(xFrame, 'button_moveEnd', 'Mover Tag Final', lExcludeMenu, 0, 4, command = lambda: tk_treeview.moveNode(
+																						 GL.appTreeView.focus(),
+																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
+																						 'end',
+																						 GL.dicTagsInTree))
 		
 def getButton(xMaster, name, caption, lExcludeMenu, xRow, xColumn, command=''):
 	if not name in lExcludeMenu:
