@@ -28,8 +28,8 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	#events
 	appTreeView.bind('<<TreeviewSelect>>', lambda event: fillBandButtons(event, band_buttons, dicTagsInTree))	
 	appTreeView.bind('<Button-3>', lambda event: contextMenu(event, band_buttons, dicTagsInTree))	
-	appTreeView.bind('<Shift-Up>', lambda event: moveNode(event, dicTagsInTree))
-	appTreeView.bind('<Shift-Down>', lambda event: moveNode(event, dicTagsInTree))
+	appTreeView.bind('<Shift-Up>', lambda event: moveNodeBind(event, dicTagsInTree))
+	appTreeView.bind('<Shift-Down>', lambda event: moveNodeBind(event, dicTagsInTree))
 	
 	return appTreeView
 	
@@ -154,7 +154,7 @@ def updateTreeNode(value, oTagInTree):
 		oTagInTree.setColumn( 'data', value)
 		return True
 
-def moveNode(event, dicTagsInTree):
+def moveNodeBind(event, dicTagsInTree):
 		if event.keycode == 38:		#Up
 			xDirection = -1
 		elif event.keycode == 40:	#Down
@@ -164,10 +164,19 @@ def moveNode(event, dicTagsInTree):
 		xIDFocus = appTreeView.focus()
 		xIDParent = dicTagsInTree[xIDFocus].getParent().id
 		xPosition = dicTagsInTree[xIDFocus].getTreeViewIndex() + xDirection
-		appTreeView.move( xIDFocus, xIDParent, xPosition)
-		xml_man.moveTag( dicTagsInTree[xIDParent].getTag(), dicTagsInTree[xIDFocus].getTag(), xPosition)
+		moveNode( xIDFocus, xIDParent, xPosition, dicTagsInTree)
+		#appTreeView.move( xIDFocus, xIDParent, xPosition)
+		#xml_man.moveTag( dicTagsInTree[xIDParent].getTag(), dicTagsInTree[xIDFocus].getTag(), xPosition)
 		
 		return 'break'
+		
+def moveNode(xIDFocus, xIDParent, xPosition, dicTagsInTree):
+	GL.appTreeView.move( xIDFocus, xIDParent, xPosition)
+	
+	if xPosition == 'end':
+		xPosition = dicTagsInTree[xIDFocus].getNumberOfSiblings()
+	
+	xml_man.moveTag( dicTagsInTree[xIDParent].getTag(), dicTagsInTree[xIDFocus].getTag(), xPosition)
 
 def contextMenu(event, band_buttons, dicTagsInTree):
 	print 'context menu'
