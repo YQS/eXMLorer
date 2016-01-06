@@ -18,9 +18,9 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	appTreeView.column('data', width=500, anchor='w')
 	appTreeView.column('name', width=200, anchor='e')
 	appTreeView.column('size', width=200, anchor='e')
-	appTreeView.heading('data', text='Data')
-	appTreeView.heading('name', text='Nombre')
-	appTreeView.heading('size', text='Tamanio')
+	appTreeView.heading('data', text= GL.names['column-data'])
+	appTreeView.heading('name', text= GL.names['column-name'])
+	appTreeView.heading('size', text= GL.names['column-size'])
 	
 	#indico que solo muestre la columna 'data'
 	appTreeView.configure(displaycolumns=('data'))
@@ -198,14 +198,14 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	
 	#menu
 	menu = Menu(GL.appTreeView, tearoff=0)
-	menu.add_command(label='Seleccionar como Subnombre del Parent', 
+	menu.add_command(label= GL.names['submenu-selectParentSubname'], 
 					 state= subnameCmdState, 
 					 command= lambda
 							  parentTIG = parentTIG, 
 							  focusTIG = focusTIG: 
 							  setAsParentSubname(parentTIG, focusTIG)
 					)
-	menu.add_command(label='Limpiar definición de Subnombre', 
+	menu.add_command(label= GL.names['submenu-cleanParentSubname'], 
 					 state= cleanCmdState, 
 					 command= lambda 
 							  focusTIG = focusTIG: 
