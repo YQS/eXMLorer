@@ -31,9 +31,10 @@ class FramePack(object):
 	def __init__(self, master):
 		self.menu = FrameExt(master)
 		self.center = FrameExt(master)
+		self.footer = FrameExt(master)
+		
 		self.treeview = FrameExt(self.center)
 		self.buttons = FrameExt(self.center)
-		self.footer = FrameExt(master)
 
 class MainApp(Tk):
 	def __init__(self, iconfile='test.gif', lExcludeMenu = []):
@@ -46,15 +47,15 @@ class MainApp(Tk):
 			print 'No se encontro el archivo de icono %s' % iconfile
 		
 		#elementos del main
+		fillMenu(self, lExcludeMenu)
+		
 		self.frames = FramePack(self)
 		
 		self.frames.menu.pack(side=TOP, fill=X)
-		fillMenuFrame(self.frames.menu, lExcludeMenu)
+		fillButtonBarFrame(self.frames.menu, lExcludeMenu)
 		
 		self.frames.center.pack(side=TOP, fill=BOTH, expand=1)
-		
 		self.frames.treeview.pack(side=LEFT, fill=BOTH)
-		
 		self.frames.buttons.pack(side=LEFT, fill=BOTH, ipadx=0, pady=20)
 		
 		self.frames.footer.pack(side=BOTTOM, fill=X)
@@ -64,8 +65,18 @@ class MainApp(Tk):
 
 		
 # METHODS
+
+def fillMenu(mainApp, lExcludeMenu):
+	menubar = Menu(mainApp)
+	
+	if not 'menu_config' in lExcludeMenu:
+		menu_config = Menu(menubar, tearoff=0)
+		menu_config.add_command(label= GL.names['menu_config_language'], command=None)
 		
-def fillMenuFrame(xFrame, lExcludeMenu):
+		menubar.add_cascade(label= GL.names['menu_config'], menu=menu_config)
+		mainApp.config(menu=menubar)
+		
+def fillButtonBarFrame(xFrame, lExcludeMenu):
 	mainApp = xFrame.master
 
 	if not 'label_filename' in lExcludeMenu:
@@ -73,48 +84,48 @@ def fillMenuFrame(xFrame, lExcludeMenu):
 		label_filename.configure(padding=(10,0,0,0))
 		label_filename.grid(column=3, row=0)
 	
-	getButton(xFrame, 'button_open', 'Abrir', lExcludeMenu, 0, 0, command = lambda: openXML(mainApp.frames.treeview, mainApp.frames.buttons, xFrame.dic['label_filename'] ))
-	getButton(xFrame, 'button_save', 'Guardar', lExcludeMenu, 0, 1, command = lambda: saveXML(mainApp, 'SAVE'))
-	getButton(xFrame, 'button_saveAs', 'Guardar como...', lExcludeMenu, 0, 2, command = lambda: saveXML(mainApp, 'SAVEAS'))
-	getButton(xFrame, 'button_copyTag', 'Copiar tag', lExcludeMenu, 1, 0, command = lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
-	getButton(xFrame, 'button_deleteTag', 'Borrar tag', lExcludeMenu, 1, 1, command = lambda: deleteTagInTree( GL.appTreeView.focus() ))		
-		
+	getButton(xFrame, 'button_open', lExcludeMenu, 0, 0, command = lambda: openXML(mainApp.frames.treeview, mainApp.frames.buttons, xFrame.dic['label_filename'] ))
+	getButton(xFrame, 'button_save', lExcludeMenu, 0, 1, command = lambda: saveXML(mainApp, 'SAVE'))
+	getButton(xFrame, 'button_saveAs', lExcludeMenu, 0, 2, command = lambda: saveXML(mainApp, 'SAVEAS'))
+	getButton(xFrame, 'button_copyTag', lExcludeMenu, 1, 0, command = lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
+	getButton(xFrame, 'button_deleteTag', lExcludeMenu, 1, 1, command = lambda: deleteTagInTree( GL.appTreeView.focus() ))		
+	
 	## debug buttons
-	getButton(xFrame, 'button_glTreeView', 'Check TreeView', lExcludeMenu, 1, 1, command = lambda: checkTreeView())
-	getButton(xFrame, 'button_analyze', 'Print band_buttons', lExcludeMenu, 0, 1, command = lambda: bCheckEntries(mainApp.frames.buttons))
-	getButton(xFrame, 'button_dicSubnames', 'Print dicSubnames', lExcludeMenu, 1, 3, command = lambda: bPrintDicSubnames())
-	getButton(xFrame, 'button_getDicSubnames', 'Consigue Subnames', lExcludeMenu, 1, 3, command = lambda: GL.getDicSubnames())
-	getButton(xFrame, 'button_printEncoding', 'Encoding', lExcludeMenu, 1, 2, command = lambda: xml_man.getEncoding(GL.filename))
+	getButton(xFrame, 'button_glTreeView', lExcludeMenu, 1, 1, command = lambda: checkTreeView())
+	getButton(xFrame, 'button_analyze', lExcludeMenu, 0, 1, command = lambda: bCheckEntries(mainApp.frames.buttons))
+	getButton(xFrame, 'button_dicSubnames', lExcludeMenu, 1, 3, command = lambda: bPrintDicSubnames())
+	getButton(xFrame, 'button_getDicSubnames', lExcludeMenu, 1, 3, command = lambda: GL.getDicSubnames())
+	getButton(xFrame, 'button_printEncoding', lExcludeMenu, 1, 2, command = lambda: xml_man.getEncoding(GL.filename))
 	
 def fillFooterFrame(xFrame, lExcludeMenu=[]):
-	getButton(xFrame, 'button_moveUp', 'Mover Tag Arriba', lExcludeMenu, 0, 1, command = lambda: tk_treeview.moveNode(
+	getButton(xFrame, 'button_moveUp', lExcludeMenu, 0, 1, command = lambda: tk_treeview.moveNode(
 																						 GL.appTreeView.focus(),
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getTreeViewIndex() - 1,
 																						 GL.dicTagsInTree))
 																						 
-	getButton(xFrame, 'button_moveDown', 'Mover Tag Abajo', lExcludeMenu, 0, 2, command = lambda: tk_treeview.moveNode(
+	getButton(xFrame, 'button_moveDown', lExcludeMenu, 0, 2, command = lambda: tk_treeview.moveNode(
 																						 GL.appTreeView.focus(),
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getTreeViewIndex() + 1,
 																						 GL.dicTagsInTree))
 																						 
-	getButton(xFrame, 'button_moveBeginnnig', 'Mover Tag Inicio', lExcludeMenu, 0, 3, command = lambda: tk_treeview.moveNode(
+	getButton(xFrame, 'button_moveBeginnnig', lExcludeMenu, 0, 3, command = lambda: tk_treeview.moveNode(
 																						 GL.appTreeView.focus(),
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
 																						 0,
 																						 GL.dicTagsInTree))
 																						 
-	getButton(xFrame, 'button_moveEnd', 'Mover Tag Final', lExcludeMenu, 0, 4, command = lambda: tk_treeview.moveNode(
+	getButton(xFrame, 'button_moveEnd', lExcludeMenu, 0, 4, command = lambda: tk_treeview.moveNode(
 																						 GL.appTreeView.focus(),
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
 																						 'end',
 																						 GL.dicTagsInTree))
-		
-def getButton(xMaster, name, caption, lExcludeMenu, xRow, xColumn, command=''):
+
+def getButton(xMaster, name, lExcludeMenu, xRow, xColumn, command=''):
 	if not name in lExcludeMenu:
 		xButton = xMaster.addWidget('Button', name)
-		xButton.configure(text= caption, width= GL.buttonWidth, command=command)
+		xButton.configure(text= GL.names[name], width= GL.buttonWidth, command=command)
 		xButton.grid(column=xColumn, row=xRow)
 
 def getFilename():
@@ -139,13 +150,14 @@ def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 # BUTTON METHODS
 
 def openXML(band_treeview, band_buttons, label_filename):
-	band_treeview.clean()
-	band_buttons.clean()
+	xFilename = getFilename()
 	
-	GL.filename = getFilename()
-	label_filename.config(text= GL.filename)
-	
-	if GL.filename <> '':
+	if xFilename <> '':
+		band_treeview.clean()
+		band_buttons.clean()
+		GL.filename = xFilename
+		label_filename.config(text= GL.filename)
+		
 		root = xml_man.getXML(GL.filename)
 		#root = xml_man.getXML('stylers.xml')
 		
@@ -170,8 +182,13 @@ def saveXML(mainApp, modo):
 	if save_filename:
 		#print 'saving in ' + save_filename
 		#GL.XMLTree.write(save_filename)
+		print save_filename[-4:]
+		if save_filename[-4:] <> '.xml':
+			save_filename += '.xml'
 		xml_man.saveXML(GL.XMLTree, save_filename)
 		GL.filename = save_filename
+		mainApp.frames.buttonbar.dic['label_filename'].config(text= GL.filename)
+		
 
 		
 def copyTagInTree(oldTagInTree, xLevel, newparent = None):
