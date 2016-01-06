@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 import dicext as DICEXT
+import app_language as LANG
 
 # GLOBAL VARIABLES
 
@@ -12,6 +13,8 @@ XMLParentMap = {}
 dicTagsInTree = {}
 appTreeView = None
 lastTreeViewFocus = None
+
+names = LANG.spanish
 
 buttonWidth = 15
 labelButtonWidth = 50
