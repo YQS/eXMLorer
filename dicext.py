@@ -28,6 +28,8 @@ class DictionaryFile(object):
 	
 	def updateDic(self, parentTag, childTag):
 		self.dic[parentTag] = childTag
+		self.save()
 	
 	def deleteFromDic(self, key):
 		del self.dic[key]
+		self.save()
