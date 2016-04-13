@@ -61,7 +61,7 @@ class MainApp(Tk):
 		self.frames.footer.pack(side=BOTTOM, fill=X)
 		fillFooterFrame(self.frames.footer)
 		
-		self.bind('<F5>', lambda event: refreshTreeView(event, self.frames.treeview, self.frames.buttons))
+		self.bind('<F5>', lambda event: refreshApp(event, self.frames, lExcludeMenu))
 
 		
 # METHODS
@@ -187,7 +187,7 @@ def saveXML(mainApp, modo):
 			save_filename += '.xml'
 		xml_man.saveXML(GL.XMLTree, save_filename)
 		GL.filename = save_filename
-		mainApp.frames.buttonbar.dic['label_filename'].config(text= GL.filename)
+		mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
 		
 
 		
@@ -238,13 +238,25 @@ def deleteTagInTree(xID):
 	del xTagInTree
 	print 'Deleted %s' % xID
 	
-def refreshTreeView(event, band_treeview, band_buttons):
+def refreshApp(event, framePack, lExcludeMenu):
 	mainApp = event.widget
-	band_treeview.clean()
-	band_buttons.clean()
+	
+	#reload buttons
+	framePack.menu.clean()
+	fillButtonBarFrame(framePack.menu, lExcludeMenu)
+	framePack.footer.clean()
+	fillFooterFrame(framePack.footer)
+	
+	framePack.menu.dic['label_filename'].config(text= GL.filename)
+	
+	#reload treeview
+	#band_treeview.clean()
+	#band_buttons.clean()
+	framePack.treeview.clean()
+	framePack.buttons.clean()
 	
 	GL.dicTagsInTree = {}
-	GL.appTreeView = tk_treeview.getTreeView(band_treeview, band_buttons, GL.dicTagsInTree)
+	GL.appTreeView = tk_treeview.getTreeView(framePack.treeview, framePack.buttons, GL.dicTagsInTree)
 	
 	root = GL.XMLTree.getroot()
 	
