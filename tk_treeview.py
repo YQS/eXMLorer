@@ -218,10 +218,8 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 def setAsParentSubname(parentTIG, childTIG):
 	GL.dicTagSubnames.updateDic( parentTIG.getTag().tag, childTIG.getTag().tag )
 	parentTIG.updateSubname( childTIG.getTag().text)
-	GL.dicTagSubnames.save()
 	
 def cleanSubname(oTIG):
 	GL.dicTagSubnames.updateDic( oTIG.getTag().tag, '')
 	oTIG.updateSubname('')
 	GL.dicTagSubnames.deleteFromDic(oTIG.getTag().tag)
-	GL.dicTagSubnames.save()
