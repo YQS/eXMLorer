@@ -103,7 +103,7 @@ def getEntry(value, band_buttons, xRow, oTagInTree):
 		else:
 			xEntry.insert(0,'<\>')
 			xEntry.config(width=xButtonWidth - xExtraButtonWidth)
-			xButton = Button(band_buttons, text='Abrir', width= xExtraButtonWidth)
+			xButton = Button(band_buttons, text=GL.names['button_open'], width= xExtraButtonWidth)
 			xButton.grid(column=1, row=xRow, sticky='e')
 			xButton.config(command= lambda xEntry=xEntry,
 										   xButton=xButton,
@@ -198,14 +198,14 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	
 	#menu
 	menu = Menu(GL.appTreeView, tearoff=0)
-	menu.add_command(label= GL.names['submenu-selectParentSubname'], 
+	menu.add_command(label= GL.names['submenu_selectParentSubname'], 
 					 state= subnameCmdState, 
 					 command= lambda
 							  parentTIG = parentTIG, 
 							  focusTIG = focusTIG: 
 							  setAsParentSubname(parentTIG, focusTIG)
 					)
-	menu.add_command(label= GL.names['submenu-cleanParentSubname'], 
+	menu.add_command(label= GL.names['submenu_cleanParentSubname'], 
 					 state= cleanCmdState, 
 					 command= lambda 
 							  focusTIG = focusTIG: 
