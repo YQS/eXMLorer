@@ -28,7 +28,7 @@ def getXML(filename):
 			showChilds(xChild, xLevel + 1)
 
 	print root.tag
-	showChilds(root, 1)
+	#showChilds(root, 1)
 	
 	return root
 
@@ -73,3 +73,11 @@ def newElement(xParent, xTag, xText, xAttrib, xOrder):
 def moveTag(xParent, xTag, xPosition):
 	xParent.remove(xTag)
 	xParent.insert(xPosition, xTag)
+	
+def fileHasChanged(rootTag, filename):
+	try:
+		root2 = ET.parse(filename)
+	except:
+		return None
+	
+	return ET.tostring(rootTag) <> ET.tostring(root2.getroot())
