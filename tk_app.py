@@ -5,6 +5,7 @@ from ttk import *
 import tkFileDialog
 import tkMessageBox
 import globals as GL
+import app_language as LANG
 import TagInTree as TIG
 import xml_man
 import tk_treeview
@@ -47,7 +48,10 @@ class MainApp(Tk):
 			print 'No se encontro el archivo de icono %s' % iconfile
 		
 		#elementos del main
-		fillMenu(self, lExcludeMenu)
+		self.excludeList = lExcludeMenu
+		
+		self.menubar = None
+		fillMenu(self)
 		
 		self.frames = FramePack(self)
 		
@@ -61,20 +65,41 @@ class MainApp(Tk):
 		self.frames.footer.pack(side=BOTTOM, fill=X)
 		fillFooterFrame(self.frames.footer)
 		
-		self.bind('<F5>', lambda event: refreshApp(event, self.frames, lExcludeMenu))
+		self.bind('<F5>', lambda event: refreshApp(self))
 
 		
 # METHODS
 
-def fillMenu(mainApp, lExcludeMenu):
+def fillMenu(mainApp):
 	menubar = Menu(mainApp)
+	mainApp.config(menu=menubar)
+	mainApp.menubar = menubar
 	
-	if not 'menu_config' in lExcludeMenu:
-		menu_config = Menu(menubar, tearoff=0)
-		menu_config.add_command(label= GL.names['menu_config_language'], command=None)
+	if not 'menu_file' in mainApp.excludeList:
+		menu_file = Menu(menubar, tearoff=0)
+		menubar.add_cascade(label=GL.names['menu_file'], menu=menu_file)
 		
+		menu_file.add_command(label= GL.names['menu_file_open'])
+		menu_file.add_command(label= GL.names['menu_file_save'])
+		menu_file.add_command(label= GL.names['menu_file_saveas'])
+		menu_file.add_command(label= GL.names['menu_file_exit'])
+	
+	if not 'menu_config' in mainApp.excludeList:
+		#seteo menu Configuración
+		menu_config = Menu(menubar, tearoff=0)
 		menubar.add_cascade(label= GL.names['menu_config'], menu=menu_config)
-		mainApp.config(menu=menubar)
+		
+		menu_config_language = Menu(menubar, tearoff=0)
+		menu_config.add_cascade(label=GL.names['menu_config_language']+ ' ', menu=menu_config_language)
+		#menu_config.add_command(label= GL.names['menu_config_language'], command=None)
+		
+		#seteo lenguajes
+		menu_config_language.add_command(label=GL.names['menu_config_language_spa'], command= lambda: mChangeLang(mainApp, 'SPA'))
+		menu_config_language.add_command(label=GL.names['menu_config_language_eng'], command= lambda: mChangeLang(mainApp, 'ENG'))
+		
+		
+		
+		
 		
 def fillButtonBarFrame(xFrame, lExcludeMenu):
 	mainApp = xFrame.master
@@ -238,25 +263,34 @@ def deleteTagInTree(xID):
 	del xTagInTree
 	print 'Deleted %s' % xID
 	
-def refreshApp(event, framePack, lExcludeMenu):
-	mainApp = event.widget
+
+def refreshApp(mainApp):
+	#mainApp = event.widget
 	
 	#reload buttons
-	framePack.menu.clean()
-	fillButtonBarFrame(framePack.menu, lExcludeMenu)
-	framePack.footer.clean()
-	fillFooterFrame(framePack.footer)
+	for i in range(0,50):	#habría que ver si se puede hacer esto más eficiente
+		try:
+			mainApp.menubar.delete(i)
+		except:
+			break
+	fillMenu(mainApp)
 	
-	framePack.menu.dic['label_filename'].config(text= GL.filename)
+	mainApp.frames.menu.clean()
+	fillButtonBarFrame(mainApp.frames.menu, mainApp.excludeList)
+	
+	mainApp.frames.footer.clean()
+	fillFooterFrame(mainApp.frames.footer)
+	
+	mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
 	
 	#reload treeview
 	#band_treeview.clean()
 	#band_buttons.clean()
-	framePack.treeview.clean()
-	framePack.buttons.clean()
+	mainApp.frames.treeview.clean()
+	mainApp.frames.buttons.clean()
 	
 	GL.dicTagsInTree = {}
-	GL.appTreeView = tk_treeview.getTreeView(framePack.treeview, framePack.buttons, GL.dicTagsInTree)
+	GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
 	
 	root = GL.XMLTree.getroot()
 	
@@ -286,6 +320,23 @@ def bPrintDicSubnames():
 	
 def bPrintEncoding():
 	print GL.XML_encoding
+	
+	
+# MENU METHODS
+
+def mChangeLang(mainApp, newLang):
+	print 'changing language'
+	if newLang == 'ENG':
+		dicLang = LANG.english
+	elif newLang == 'SPA':
+		dicLang = LANG.spanish
+	else:
+		return
+	
+	if dicLang['lang'] <> GL.names['lang']:
+		GL.names = dicLang
+		refreshApp(mainApp)
+		
 			
 #####################
 
