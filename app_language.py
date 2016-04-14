@@ -28,8 +28,9 @@ spanish = {
 'menu_file_save': 'Guardar',
 'menu_file_saveas': 'Guardar como...',
 'menu_file_exit': 'Salir',
-'submenu-selectParentSubname': 'Seleccionar como Subnombre del Parent',
-'submenu-cleanParentSubname': 'Limpiar definición de Subnombre',
+'message_exitsave': 'El archivo %s se ha modificado. Desea guardar los cambios?',
+'submenu_selectParentSubname': 'Seleccionar como Subnombre del Parent',
+'submenu_cleanParentSubname': 'Limpiar definición de Subnombre',
 }
 
 english = {
@@ -60,6 +61,7 @@ english = {
 'menu_file_save': 'Save',
 'menu_file_saveas': 'Save as...',
 'menu_file_exit': 'Exit',
-'submenu-selectParentSubname': 'Select as parent subname',
-'submenu-cleanParentSubname': 'Clean subname definition',
+'message_exitsave': 'The file %s has changed. Do you want to save?',
+'submenu_selectParentSubname': 'Select as parent subname',
+'submenu_cleanParentSubname': 'Clean subname definition',
 }
