@@ -41,18 +41,26 @@ class MainApp(Tk):
 	def __init__(self, iconfile='test.gif', lExcludeMenu = []):
 		Tk.__init__(self)
 		self.title('eXMLorer')
+		
+		#elementos del main
+		self.excludeList = lExcludeMenu
+		self.rootTIG = None
+		
+		#icono
 		try:
 			self.iconImage = PhotoImage(file= iconfile)
 			self.tk.call('wm', 'iconphoto', self._w, self.iconImage)
 		except TclError:
 			print 'No se encontro el archivo de icono %s' % iconfile
+			
+		#captura de cierre del programa
+		self.protocol('WM_DELETE_WINDOW', lambda:quitApp(self))
 		
-		#elementos del main
-		self.excludeList = lExcludeMenu
-		
+		#menubar
 		self.menubar = None
 		fillMenu(self)
 		
+		#frames
 		self.frames = FramePack(self)
 		
 		self.frames.menu.pack(side=TOP, fill=X)
@@ -79,10 +87,10 @@ def fillMenu(mainApp):
 		menu_file = Menu(menubar, tearoff=0)
 		menubar.add_cascade(label=GL.names['menu_file'], menu=menu_file)
 		
-		menu_file.add_command(label= GL.names['menu_file_open'])
-		menu_file.add_command(label= GL.names['menu_file_save'])
-		menu_file.add_command(label= GL.names['menu_file_saveas'])
-		menu_file.add_command(label= GL.names['menu_file_exit'])
+		menu_file.add_command(label= GL.names['menu_file_open'],   command= lambda: openXML(mainApp))
+		menu_file.add_command(label= GL.names['menu_file_save'],   command= lambda: saveXML(mainApp, 'SAVE'))
+		menu_file.add_command(label= GL.names['menu_file_saveas'], command= lambda: saveXML(mainApp, 'SAVEAS'))
+		menu_file.add_command(label= GL.names['menu_file_exit'],   command= lambda: quitApp(mainApp))
 	
 	if not 'menu_config' in mainApp.excludeList:
 		#seteo menu Configuración
@@ -98,9 +106,6 @@ def fillMenu(mainApp):
 		menu_config_language.add_command(label=GL.names['menu_config_language_eng'], command= lambda: mChangeLang(mainApp, 'ENG'))
 		
 		
-		
-		
-		
 def fillButtonBarFrame(xFrame, lExcludeMenu):
 	mainApp = xFrame.master
 
@@ -109,7 +114,7 @@ def fillButtonBarFrame(xFrame, lExcludeMenu):
 		label_filename.configure(padding=(10,0,0,0))
 		label_filename.grid(column=3, row=0)
 	
-	getButton(xFrame, 'button_open', lExcludeMenu, 0, 0, command = lambda: openXML(mainApp.frames.treeview, mainApp.frames.buttons, xFrame.dic['label_filename'] ))
+	getButton(xFrame, 'button_open', lExcludeMenu, 0, 0, command = lambda: openXML(mainApp))
 	getButton(xFrame, 'button_save', lExcludeMenu, 0, 1, command = lambda: saveXML(mainApp, 'SAVE'))
 	getButton(xFrame, 'button_saveAs', lExcludeMenu, 0, 2, command = lambda: saveXML(mainApp, 'SAVEAS'))
 	getButton(xFrame, 'button_copyTag', lExcludeMenu, 1, 0, command = lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
@@ -171,15 +176,29 @@ def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 		dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, xBase, appTreeView)
 		addXMLToTree(xChild, xID, dicTagsInTree, appTreeView)
 		
+def quitApp(mainApp):
+	#print xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename)
+	#tkMessageBox.showerror('eXMLorer', 'Está saliendo del eXMLorer. Que tenga un buen día :)')
+	#if xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename):
+	response = tkMessageBox.showwarning("eXMLorer", GL.names['message_exitsave'] % GL.filename, type=tkMessageBox.YESNOCANCEL)
+	
+	if response == 'cancel':
+		return
+	else:
+		if response == 'yes':
+			saveXML(mainApp, 'SAVE')
+		mainApp.destroy()
+		
 		
 # BUTTON METHODS
 
-def openXML(band_treeview, band_buttons, label_filename):
+def openXML(mainApp):
+	label_filename = mainApp.frames.menu.dic['label_filename']
 	xFilename = getFilename()
 	
 	if xFilename <> '':
-		band_treeview.clean()
-		band_buttons.clean()
+		mainApp.frames.treeview.clean()
+		mainApp.frames.buttons.clean()
 		GL.filename = xFilename
 		label_filename.config(text= GL.filename)
 		
@@ -191,9 +210,10 @@ def openXML(band_treeview, band_buttons, label_filename):
 			label_filename.config(text= '')
 		else:	
 			GL.dicTagsInTree = {}
-			GL.appTreeView = tk_treeview.getTreeView(band_treeview, band_buttons, GL.dicTagsInTree)
+			GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
 			
 			GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
+			mainApp.rootTIG = GL.dicTagsInTree[root.tag]
 			addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
 
 def saveXML(mainApp, modo):
