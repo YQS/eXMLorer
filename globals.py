@@ -8,7 +8,7 @@ import app_language as LANG
 filename = ''
 lastFolderVisited = ''
 XMLTree = None
-XML_encoding = ''
+XMLEncoding = ''
 XMLParentMap = {}
 dicTagsInTree = {}
 appTreeView = None
