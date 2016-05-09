@@ -176,45 +176,55 @@ def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 		dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, xBase, appTreeView)
 		addXMLToTree(xChild, xID, dicTagsInTree, appTreeView)
 		
-def quitApp(mainApp):
+def askSaveChanges(mainApp):
 	#print xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename)
 	#tkMessageBox.showerror('eXMLorer', 'Está saliendo del eXMLorer. Que tenga un buen día :)')
-	#if xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename):
-	response = tkMessageBox.showwarning("eXMLorer", GL.names['message_exitsave'] % GL.filename, type=tkMessageBox.YESNOCANCEL)
-	
-	if response == 'cancel':
-		return
+	if xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename):
+		response = tkMessageBox.showwarning("eXMLorer", GL.names['message_exitsave'] % GL.filename, type=tkMessageBox.YESNOCANCEL)
 	else:
-		if response == 'yes':
-			saveXML(mainApp, 'SAVE')
+		response = 'no'
+		
+	####################
+	if response == 'yes':
+		saveXML(mainApp, 'SAVE')
+		return True
+	elif response == 'cancel':
+		return False
+	elif response == 'no':
+		return True
+	
+		
+def quitApp(mainApp):
+	if askSaveChanges(mainApp):
 		mainApp.destroy()
 		
 		
 # BUTTON METHODS
 
 def openXML(mainApp):
-	label_filename = mainApp.frames.menu.dic['label_filename']
-	xFilename = getFilename()
-	
-	if xFilename <> '':
-		mainApp.frames.treeview.clean()
-		mainApp.frames.buttons.clean()
-		GL.filename = xFilename
-		label_filename.config(text= GL.filename)
+	if askSaveChanges(mainApp):
+		label_filename = mainApp.frames.menu.dic['label_filename']
+		filename = getFilename()
 		
-		root = xml_man.getXML(GL.filename)
-		#root = xml_man.getXML('stylers.xml')
-		
-		if root == None:
-			tkMessageBox.showerror('eXMLorer', 'El archivo %s no es un archivo XML valido' % GL.filename)
-			label_filename.config(text= '')
-		else:	
-			GL.dicTagsInTree = {}
-			GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
+		if filename <> '':
+			mainApp.frames.treeview.clean()
+			mainApp.frames.buttons.clean()
+			GL.filename = filename
+			label_filename.config(text= GL.filename)
 			
-			GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
-			mainApp.rootTIG = GL.dicTagsInTree[root.tag]
-			addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
+			root = xml_man.getXML(GL.filename)
+			#root = xml_man.getXML('stylers.xml')
+			
+			if root == None:
+				tkMessageBox.showerror('eXMLorer', 'El archivo %s no es un archivo XML valido' % GL.filename)
+				label_filename.config(text= '')
+			else:	
+				GL.dicTagsInTree = {}
+				GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
+				
+				GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
+				mainApp.rootTIG = GL.dicTagsInTree[root.tag]
+				addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
 
 def saveXML(mainApp, modo):
 	if modo == 'SAVEAS':
