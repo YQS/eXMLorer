@@ -2,9 +2,12 @@
 
 spanish = {
 'lang': 'Español',
+'button_ok': 'Aceptar',
+'button_cancel': 'Cancelar',
 'button_open': 'Abrir',
 'button_save': 'Guardar',
 'button_saveAs': 'Guardar como...',
+'button_newTag': 'Nuevo Tag',
 'button_copyTag': 'Copiar Tag',
 'button_deleteTag': 'Borrar Tag',
 'button_glTreeView': 'Chequea árbol',
@@ -35,9 +38,12 @@ spanish = {
 
 english = {
 'lang': 'English',
+'button_ok': 'Ok',
+'button_cancel': 'Cancel',
 'button_open': 'Open',
 'button_save': 'Save',
 'button_saveAs': 'Save as...',
+'button_newTag': 'New Tag',
 'button_copyTag': 'Copy Tag',
 'button_deleteTag': 'Delete Tag',
 'button_glTreeView': 'Check Treeview',
@@ -47,8 +53,8 @@ english = {
 'button_printEncoding': 'Print encoding',
 'button_moveUp': 'Move Tag up',
 'button_moveDown': 'Move Tag down',
-'button_moveBeginnnig': 'Move Tag beginning',
-'button_moveEnd': 'Move Tag end',
+'button_moveBeginnnig': 'Move Tag first',
+'button_moveEnd': 'Move Tag last',
 'column-data': 'Data',
 'column-name': 'Name',
 'column-size': 'Size',
