@@ -27,6 +27,58 @@ class FrameExt(Frame):
 	def clean(self):
 		for widget in self.winfo_children():
 			widget.destroy()
+			
+class ToplevelFromMain(Toplevel):
+	def __init__(self, master, title, container):
+		Toplevel.__init__(self)
+		#self.overrideredirect(1)
+		self.transient(master)
+		self.title(title)
+		
+		self.parent = master
+		self.result  = container
+		self.entries = {}
+		self.body    = Frame(self)
+		self.buttons = Frame(self)
+		
+		self.body.pack()
+		self.buttons.pack()
+		self.createButtons()
+		
+		self.geometry('+%d+%d' % (master.winfo_rootx()+50, master.winfo_rooty()+50))
+		self.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
+		
+	def createButtons(self):
+		Button(self.buttons, text=GL.names['button_ok'], width=GL.buttonWidth, command=lambda: self.apply()).grid(row=0, column=0)
+		Button(self.buttons, text=GL.names['button_cancel'], width=GL.buttonWidth, command=lambda: self.cancel()).grid(row=0, column=1)
+		
+	def formConstructor(self, labelText, xRow):
+		Label(self.body, text=labelText).grid(row=xRow, column=0, sticky='e')
+		xEntry = Entry(self.body, width=30)
+		xEntry.grid(row=xRow, column=1, sticky='w')
+		self.entries[labelText] = xEntry
+		
+	def show(self):
+		self.wait_visibility()
+		self.grab_set()
+		self.focus_set()
+		self.wait_window()
+		#self.grab_release()
+		
+	def apply(self):
+		for key in self.entries:
+			self.result[key] = self.entries[key].get()
+		print self.result
+		self.close()
+		
+	def cancel(self):
+		self.entries.clear()
+		self.close()
+		
+	def close(self):
+		self.grab_release()
+		self.parent.focus_set()
+		self.destroy()
 
 class FramePack(object):
 	def __init__(self, master):
@@ -45,6 +97,7 @@ class MainApp(Tk):
 		#elementos del main
 		self.excludeList = lExcludeMenu
 		self.rootTIG = None
+		self.menubar = None
 		
 		#icono
 		try:
@@ -56,27 +109,76 @@ class MainApp(Tk):
 		#captura de cierre del programa
 		self.protocol('WM_DELETE_WINDOW', lambda:quitApp(self))
 		
-		#menubar
-		self.menubar = None
-		fillMenu(self)
-		
 		#frames
 		self.frames = FramePack(self)
-		
 		self.frames.menu.pack(side=TOP, fill=X)
-		fillButtonBarFrame(self.frames.menu, lExcludeMenu)
 		
 		self.frames.center.pack(side=TOP, fill=BOTH, expand=1)
 		self.frames.treeview.pack(side=LEFT, fill=BOTH)
 		self.frames.buttons.pack(side=LEFT, fill=BOTH, ipadx=0, pady=20)
-		
+		#setScrollbar(self, self.frames.buttons)
 		self.frames.footer.pack(side=BOTTOM, fill=X)
-		fillFooterFrame(self.frames.footer)
 		
+		fillMenu(self)
+		fillButtonBarFrame(self)
+		fillFooterFrame(self)
+		
+		#refreshApp(self)
+		
+		#binds1
 		self.bind('<F5>', lambda event: refreshApp(self))
+		
+	#metodos del MainApp
+	def getToplevel2(self, title, container):
+		return ToplevelFromMain(self, title, container)
+		
 
+##################
+def setScrollbar(parent, widget):
+	xScroll = Scrollbar(parent, command= widget.yview)
+	widget.configure(yscrollcommand= xScroll.set)
+	xScroll.pack(side='right',fill='y')		
+##################
 		
 # METHODS
+def refreshApp(mainApp):
+	#mainApp = event.widget
+	
+	#clean bars
+	for i in range(0,50):	#habría que ver si se puede hacer esto más eficiente
+		try:
+			mainApp.menubar.delete(i)
+		except:
+			break
+	mainApp.frames.menu.clean()
+	mainApp.frames.footer.clean()
+	mainApp.frames.treeview.clean()
+	mainApp.frames.buttons.clean()	
+			
+	#fill bars		
+	fillMenu(mainApp)
+	fillButtonBarFrame(mainApp)
+	fillFooterFrame(mainApp)
+	
+	mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
+	
+	#set globals
+	GL.dicTagsInTree = {}
+	GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
+	
+	#load xml dic and TIGs
+	root = GL.XMLTree.getroot()
+	
+	GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
+	addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
+	mainApp.update()
+	
+	selectAndFocus(GL.lastTreeViewFocus)
+	
+def selectAndFocus(xIDFocus):
+	GL.appTreeView.see(xIDFocus)
+	GL.appTreeView.focus(xIDFocus)
+	GL.appTreeView.selection_set(xIDFocus)
 
 def fillMenu(mainApp):
 	menubar = Menu(mainApp)
@@ -106,8 +208,10 @@ def fillMenu(mainApp):
 		menu_config_language.add_command(label=GL.names['menu_config_language_eng'], command= lambda: mChangeLang(mainApp, 'ENG'))
 		
 		
-def fillButtonBarFrame(xFrame, lExcludeMenu):
-	mainApp = xFrame.master
+def fillButtonBarFrame(mainApp):
+	#mainApp = xFrame.master
+	xFrame = mainApp.frames.menu
+	lExcludeMenu = mainApp.excludeList
 
 	if not 'label_filename' in lExcludeMenu:
 		label_filename = xFrame.addWidget('Label', 'label_filename')
@@ -117,8 +221,9 @@ def fillButtonBarFrame(xFrame, lExcludeMenu):
 	getButton(xFrame, 'button_open', lExcludeMenu, 0, 0, command = lambda: openXML(mainApp))
 	getButton(xFrame, 'button_save', lExcludeMenu, 0, 1, command = lambda: saveXML(mainApp, 'SAVE'))
 	getButton(xFrame, 'button_saveAs', lExcludeMenu, 0, 2, command = lambda: saveXML(mainApp, 'SAVEAS'))
-	getButton(xFrame, 'button_copyTag', lExcludeMenu, 1, 0, command = lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
-	getButton(xFrame, 'button_deleteTag', lExcludeMenu, 1, 1, command = lambda: deleteTagInTree( GL.appTreeView.focus() ))		
+	getButton(xFrame, 'button_newTag', lExcludeMenu, 1, 0, command= lambda: createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None)))
+	getButton(xFrame, 'button_copyTag', lExcludeMenu, 1, 1, command = lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
+	getButton(xFrame, 'button_deleteTag', lExcludeMenu, 1, 2, command = lambda: deleteTagInTree( GL.appTreeView.focus() ))		
 	
 	## debug buttons
 	getButton(xFrame, 'button_glTreeView', lExcludeMenu, 1, 1, command = lambda: checkTreeView())
@@ -127,7 +232,10 @@ def fillButtonBarFrame(xFrame, lExcludeMenu):
 	getButton(xFrame, 'button_getDicSubnames', lExcludeMenu, 1, 3, command = lambda: GL.getDicSubnames())
 	getButton(xFrame, 'button_printEncoding', lExcludeMenu, 1, 2, command = lambda: xml_man.getEncoding(GL.filename))
 	
-def fillFooterFrame(xFrame, lExcludeMenu=[]):
+def fillFooterFrame(mainApp):
+	xFrame = mainApp.frames.footer
+	lExcludeMenu = mainApp.excludeList
+	
 	getButton(xFrame, 'button_moveUp', lExcludeMenu, 0, 1, command = lambda: tk_treeview.moveNode(
 																						 GL.appTreeView.focus(),
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
@@ -179,10 +287,13 @@ def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 def askSaveChanges(mainApp):
 	#print xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename)
 	#tkMessageBox.showerror('eXMLorer', 'Está saliendo del eXMLorer. Que tenga un buen día :)')
-	if xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename):
-		response = tkMessageBox.showwarning("eXMLorer", GL.names['message_exitsave'] % GL.filename, type=tkMessageBox.YESNOCANCEL)
-	else:
+	if mainApp.rootTIG == None:
 		response = 'no'
+	else:
+		if xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename):
+			response = tkMessageBox.showwarning("eXMLorer", GL.names['message_exitsave'] % GL.filename, type=tkMessageBox.YESNOCANCEL)
+		else:
+			response = 'no'
 		
 	####################
 	if response == 'yes':
@@ -245,6 +356,36 @@ def saveXML(mainApp, modo):
 		mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
 		
 
+def createNewTagInTree(mainApp, siblingTIG):
+	if siblingTIG <> None:
+		if siblingTIG.parent_id <> '':
+			xTag, xText = getTagFromUser(mainApp)
+			if xTag <> '':
+				xAttrib = {}
+				xBaseID = siblingTIG.parent_id
+				xParentTag = siblingTIG.parent_tag
+				xOrder = siblingTIG.getTreeViewIndex() + 1
+				
+				xNewTag = xml_man.newElement(xParentTag, xTag, xText, xAttrib, xOrder)
+				
+				xID = getIDForTreeView( xNewTag.tag, GL.dicTagsInTree)
+				
+				newTagInTree = TIG.TagInTree(xBaseID, xID, xNewTag, xParentTag, GL.appTreeView, order = xOrder)
+				GL.dicTagsInTree[xID] = newTagInTree
+				selectAndFocus(xID)
+	
+def getTagFromUser(mainApp):
+	container = {}
+	xWindow = mainApp.getToplevel2("Ingrese los datos del nuevo tag", container)
+	xWindow.formConstructor('Tag', 0)
+	xWindow.formConstructor('Value', 1)
+	xWindow.show()
+	
+	if len(container) > 0:
+		return container['Tag'], container['Value']
+	else:
+		return '', ''
+		
 		
 def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 	if oldTagInTree <> None:
@@ -281,6 +422,8 @@ def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 			xChildTagInTree = getTagInTreeFromTag(xChildTag, GL.dicTagsInTree)
 			copyTagInTree( xChildTagInTree, xLevel + 1, newparent = newTagInTree)
 			
+		selectAndFocus(xID)
+			
 	else:
 		print 'oldTagInTree is None'
 		
@@ -292,45 +435,6 @@ def deleteTagInTree(xID):
 	del GL.dicTagsInTree[xID]
 	del xTagInTree
 	print 'Deleted %s' % xID
-	
-
-def refreshApp(mainApp):
-	#mainApp = event.widget
-	
-	#reload buttons
-	for i in range(0,50):	#habría que ver si se puede hacer esto más eficiente
-		try:
-			mainApp.menubar.delete(i)
-		except:
-			break
-	fillMenu(mainApp)
-	
-	mainApp.frames.menu.clean()
-	fillButtonBarFrame(mainApp.frames.menu, mainApp.excludeList)
-	
-	mainApp.frames.footer.clean()
-	fillFooterFrame(mainApp.frames.footer)
-	
-	mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
-	
-	#reload treeview
-	#band_treeview.clean()
-	#band_buttons.clean()
-	mainApp.frames.treeview.clean()
-	mainApp.frames.buttons.clean()
-	
-	GL.dicTagsInTree = {}
-	GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
-	
-	root = GL.XMLTree.getroot()
-	
-	GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
-	addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
-	mainApp.update()
-	
-	GL.appTreeView.see(GL.lastTreeViewFocus)
-	GL.appTreeView.focus(GL.lastTreeViewFocus)
-	GL.appTreeView.selection_set(GL.lastTreeViewFocus)
 	
 		
 def checkTreeView():
