@@ -26,9 +26,12 @@ class TagInTree(object):
 	# SETS
 	def setTag(self, xmltag):
 		self.xmltag = xmltag
-		self.tagname = '<' + self.xmltag.tag + '>'
+		self.tagname = self.getTagName()
 		self.subname = getSubnameOfTag(self.xmltag)
 		#self.haschild = self.hasChild()
+		
+	def getTagName(self):
+		return '<' + self.xmltag.tag + '>'
 		
 	def setNode(self, parent_id, id, treeview, order):
 		#Asume que self.xmltag ya está asignado (por ahí conviene hacer una verificación)
@@ -50,6 +53,12 @@ class TagInTree(object):
 			break
 			
 		return xHasChild
+		
+	def updateTag(self, newTag, newValue):
+		self.xmltag.tag = newTag
+		self.xmltag.text = newValue
+		self.tagname = self.getTagName()
+		self.subname = getSubnameOfTag(self.xmltag)
 		
 	def updateSubname(self, newSubname):
 		self.subname = newSubname
