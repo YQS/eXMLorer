@@ -35,12 +35,23 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	
 	
 def setScrollbar(parent, widget):
-	xScroll = Scrollbar(parent, command= widget.yview)
+	xScroll = Scrollbar(parent, orient=VERTICAL, command= widget.yview)
 	widget.configure(yscrollcommand= xScroll.set)
 	xScroll.pack(side='right',fill='y')
 	
+	
+	
 def fillBandButtons(event, band_buttons, dicTagsInTree):
 	band_buttons.clean()
+	
+	#canvas para manejar una scrollbar
+	#NO FUNCIONA
+	canvas = Canvas(band_buttons, borderwidth=0, highlightthickness=0)
+	canvas.pack(side=RIGHT, fill=BOTH, expand=True)
+	#subframe = Frame(canvas)
+	#subframe.pack(side=RIGHT, fill=BOTH, expand=True)
+	#setScrollbar(band_buttons, canvas)
+	
 	print 'EventType %s' % event.type
 	#appTreeView = GL.appTreeView
 	appTreeView = event.widget
@@ -56,11 +67,13 @@ def fillBandButtons(event, band_buttons, dicTagsInTree):
 	
 	for xIDChild in appTreeView.get_children(xIDFocus):
 		xGotItems = True
-		getButtonRow(dicTagsInTree[xIDChild], band_buttons, xRow)
+		#getButtonRow(dicTagsInTree[xIDChild], band_buttons, xRow)
+		getButtonRow(dicTagsInTree[xIDChild], canvas, xRow)
 		xRow += 1
 	
 	if not xGotItems:
-		getButtonRow(dicTagsInTree[xIDFocus], band_buttons, xRow)
+		#getButtonRow(dicTagsInTree[xIDFocus], band_buttons, xRow)
+		getButtonRow(dicTagsInTree[xIDFocus], canvas, xRow)
 
 		
 def getButtonRow(oTagInTree, band_buttons, xRow):
@@ -90,7 +103,7 @@ def getEntry(value, band_buttons, xRow, oTagInTree):
 		print 'Combobox'
 		xCombobox = Combobox(band_buttons, values=xBoolOptions, width=(xButtonWidth - 3), validate='focus')
 		xCombobox.configure(validatecommand = lambda xCombobox=xCombobox, oTagInTree=oTagInTree: updateTreeNode(xCombobox.get(), oTagInTree) )
-		xCombobox.grid(column=1, row=xRow)
+		xCombobox.grid(column=1, row=xRow, sticky='wn')
 		xCombobox.set(value)
 	elif value == '':
 		print 'disEntry'
@@ -118,7 +131,7 @@ def getEntry(value, band_buttons, xRow, oTagInTree):
 		else:
 			print 'Textbox'
 			xHeight = 10 #len(value) % xButtonWidth
-			xTextbox = Text(band_buttons, width=xButtonWidth-7, height=xHeight)
+			xTextbox = Text(band_buttons, width=xButtonWidth-10, height=xHeight)
 			xTextbox.bind('<KeyRelease>', lambda event: updateTreeNode(event.widget.get('1.0', 'end'), oTagInTree ))
 			xTextbox.bind('<Control-Key-a>', lambda event: selectAllText(event) )
 			xTextbox.bind('<Control-Key-A>', lambda event: selectAllText(event) )
@@ -130,7 +143,7 @@ def getTextEntry(band_buttons, xButtonWidth, xColumn, xRow, oTagInTree, value):
 	xEntry = Entry(band_buttons, width=xButtonWidth, validate='focus')
 	xEntry.configure(validatecommand = lambda xEntry=xEntry, oTagInTree=oTagInTree: updateTreeNode(xEntry.get(), oTagInTree))
 	xEntry.bind('<Return>', lambda event, xEntry=xEntry, oTagInTree=oTagInTree:updateTreeNode(xEntry.get(), oTagInTree))
-	xEntry.grid(column=1, row=xRow)
+	xEntry.grid(column=1, row=xRow, sticky='wn')
 	xEntry.insert(0, value)
 	
 def activateTextEntry(xEntry, xButton, band_buttons, xButtonWidth, xColumn, xRow, oTagInTree, value):
@@ -180,6 +193,10 @@ def moveNode(xIDFocus, xIDParent, xPosition, dicTagsInTree):
 
 def contextMenu(event, band_buttons, dicTagsInTree):
 	print 'context menu'
+	
+	#la ruta es evento.TreeView.BandaTreeView.BandaCenter.mainApp
+	mainApp = event.widget.master.master.master
+	
 	xFocusIDContextMenu = GL.appTreeView.identify_row(event.y)
 	print 'identify row shows %s' % xFocusIDContextMenu
 	GL.appTreeView.focus(xFocusIDContextMenu)
@@ -198,6 +215,10 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	
 	#menu
 	menu = Menu(GL.appTreeView, tearoff=0)
+	
+	menu.add_command(label=GL.names['submenu_edittag'], state=ACTIVE, command= lambda:editTag(mainApp, focusTIG))
+	menu.add_separator()
+	
 	menu.add_command(label= GL.names['submenu_selectParentSubname'], 
 					 state= subnameCmdState, 
 					 command= lambda
@@ -211,6 +232,7 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 							  focusTIG = focusTIG: 
 							  cleanSubname(focusTIG) 
 					)
+	
 					
 	print 'identify row shows %s' % GL.appTreeView.identify_row(event.y)
 	menu.post(event.x_root, event.y_root)
@@ -223,3 +245,15 @@ def cleanSubname(oTIG):
 	GL.dicTagSubnames.updateDic( oTIG.getTag().tag, '')
 	oTIG.updateSubname('')
 	GL.dicTagSubnames.deleteFromDic(oTIG.getTag().tag)
+
+def editTag(mainApp, oTIG):
+	container = {'Tag': oTIG.getTag().tag, 'Value':oTIG.getTag().text}
+	xWindow = mainApp.getToplevel2(GL.names['message_edittag'], container)
+	xWindow.formConstructor('Tag', 0)
+	xWindow.formConstructor('Value', 1)
+	xWindow.show()
+	
+	if len(container) > 0:
+		oTIG.updateTag(container['Tag'], container['Value'])
+		updateTreeNode(container['Value'], oTIG)
+		oTIG.parent_treeview.item(oTIG.id, text=container['Tag'])
