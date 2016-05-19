@@ -8,6 +8,7 @@ spanish = {
 'button_save': 'Guardar',
 'button_saveAs': 'Guardar como...',
 'button_newTag': 'Nuevo Tag',
+'button_newChildTag': 'Nuevo Child',
 'button_copyTag': 'Copiar Tag',
 'button_deleteTag': 'Borrar Tag',
 'button_glTreeView': 'Chequea árbol',
@@ -32,8 +33,11 @@ spanish = {
 'menu_file_saveas': 'Guardar como...',
 'menu_file_exit': 'Salir',
 'message_exitsave': 'El archivo %s se ha modificado. Desea guardar los cambios?',
+'message_newtag': 'Nuevo Tag',
+'message_edittag': 'Editar Tag',
 'submenu_selectParentSubname': 'Seleccionar como Subnombre del Parent',
 'submenu_cleanParentSubname': 'Limpiar definición de Subnombre',
+'submenu_edittag': 'Editar Tag',
 }
 
 english = {
@@ -44,6 +48,7 @@ english = {
 'button_save': 'Save',
 'button_saveAs': 'Save as...',
 'button_newTag': 'New Tag',
+'button_newChildTag': 'New Child',
 'button_copyTag': 'Copy Tag',
 'button_deleteTag': 'Delete Tag',
 'button_glTreeView': 'Check Treeview',
@@ -68,6 +73,9 @@ english = {
 'menu_file_saveas': 'Save as...',
 'menu_file_exit': 'Exit',
 'message_exitsave': 'The file %s has changed. Do you want to save?',
+'message_newtag': 'New Tag',
+'message_edittag': 'Edit Tag',
 'submenu_selectParentSubname': 'Select as parent subname',
 'submenu_cleanParentSubname': 'Clean subname definition',
+'submenu_edittag': 'Edit Tag',
 }
