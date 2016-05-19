@@ -56,6 +56,7 @@ class ToplevelFromMain(Toplevel):
 		Label(self.body, text=labelText).grid(row=xRow, column=0, sticky='e')
 		xEntry = Entry(self.body, width=30)
 		xEntry.grid(row=xRow, column=1, sticky='w')
+		xEntry.insert(0, self.result.setdefault(labelText, ''))
 		self.entries[labelText] = xEntry
 		
 	def show(self):
@@ -130,6 +131,7 @@ class MainApp(Tk):
 		
 	#metodos del MainApp
 	def getToplevel2(self, title, container):
+		##TODO: aca debería generarse el dic y devolverse, sin necesidad de cargarlo desde fuera
 		return ToplevelFromMain(self, title, container)
 		
 
@@ -221,9 +223,10 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_open', lExcludeMenu, 0, 0, command = lambda: openXML(mainApp))
 	getButton(xFrame, 'button_save', lExcludeMenu, 0, 1, command = lambda: saveXML(mainApp, 'SAVE'))
 	getButton(xFrame, 'button_saveAs', lExcludeMenu, 0, 2, command = lambda: saveXML(mainApp, 'SAVEAS'))
-	getButton(xFrame, 'button_newTag', lExcludeMenu, 1, 0, command= lambda: createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None)))
-	getButton(xFrame, 'button_copyTag', lExcludeMenu, 1, 1, command = lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
-	getButton(xFrame, 'button_deleteTag', lExcludeMenu, 1, 2, command = lambda: deleteTagInTree( GL.appTreeView.focus() ))		
+	getButton(xFrame, 'button_newTag', lExcludeMenu, 1, 0, command= lambda: createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'SIBLING'))
+	getButton(xFrame, 'button_newChildTag', lExcludeMenu, 1, 1, command= lambda: createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'CHILD'))
+	getButton(xFrame, 'button_copyTag', lExcludeMenu, 1, 2, command = lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
+	getButton(xFrame, 'button_deleteTag', lExcludeMenu, 1, 3, command = lambda: deleteTagInTree( GL.appTreeView.focus() ))		
 	
 	## debug buttons
 	getButton(xFrame, 'button_glTreeView', lExcludeMenu, 1, 1, command = lambda: checkTreeView())
@@ -356,15 +359,20 @@ def saveXML(mainApp, modo):
 		mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
 		
 
-def createNewTagInTree(mainApp, siblingTIG):
-	if siblingTIG <> None:
-		if siblingTIG.parent_id <> '':
+def createNewTagInTree(mainApp, baseTIG, mode):
+	if baseTIG <> None:
+		if baseTIG.parent_id <> '':
 			xTag, xText = getTagFromUser(mainApp)
 			if xTag <> '':
 				xAttrib = {}
-				xBaseID = siblingTIG.parent_id
-				xParentTag = siblingTIG.parent_tag
-				xOrder = siblingTIG.getTreeViewIndex() + 1
+				if mode == 'SIBLING':
+					xBaseID = baseTIG.parent_id
+					xParentTag = baseTIG.parent_tag
+					xOrder = baseTIG.getTreeViewIndex() + 1
+				elif mode == 'CHILD':
+					xBaseID = baseTIG.id
+					xParentTag = baseTIG.getTag()
+					xOrder = baseTIG.getNumberOfSiblings() + 1
 				
 				xNewTag = xml_man.newElement(xParentTag, xTag, xText, xAttrib, xOrder)
 				
@@ -376,7 +384,7 @@ def createNewTagInTree(mainApp, siblingTIG):
 	
 def getTagFromUser(mainApp):
 	container = {}
-	xWindow = mainApp.getToplevel2("Ingrese los datos del nuevo tag", container)
+	xWindow = mainApp.getToplevel2(GL.names['message_newtag'], container)
 	xWindow.formConstructor('Tag', 0)
 	xWindow.formConstructor('Value', 1)
 	xWindow.show()
