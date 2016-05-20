@@ -126,12 +126,11 @@ class MainApp(Tk):
 		
 		#refreshApp(self)
 		
-		#binds1
+		#binds
 		self.bind('<F5>', lambda event: refreshApp(self))
 		
 	#metodos del MainApp
 	def getToplevel2(self, title, container):
-		##TODO: aca debería generarse el dic y devolverse, sin necesidad de cargarlo desde fuera
 		return ToplevelFromMain(self, title, container)
 		
 
@@ -218,7 +217,7 @@ def fillButtonBarFrame(mainApp):
 	if not 'label_filename' in lExcludeMenu:
 		label_filename = xFrame.addWidget('Label', 'label_filename')
 		label_filename.configure(padding=(10,0,0,0))
-		label_filename.grid(column=3, row=0)
+		label_filename.grid(column=4, row=0)
 	
 	getButton(xFrame, 'button_open', lExcludeMenu, 0, 0, command = lambda: openXML(mainApp))
 	getButton(xFrame, 'button_save', lExcludeMenu, 0, 1, command = lambda: saveXML(mainApp, 'SAVE'))
