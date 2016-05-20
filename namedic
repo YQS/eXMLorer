@@ -1,41 +1,21 @@
-{'ColumnDef': 'Name',
-
- 'ActionDef': 'Name',
-
- 'EnumFieldDef': 'FieldName',
-
- 'Entity': 'Description',
-
- 'FlagAttributeDef': 'Caption',
-
- 'country': 'year',
-
- 'DataViewDef': 'Caption',
-
- 'SchemaInfo': 'Name',
-
- 'SimpleAttributeDef': 'Caption',
-
- 'DataViewActionDef': 'Caption',
-
- 'ReferenceParam': 'TextQueryFieldName',
-
- 'QueryDef': 'ConnectionName',
-
- 'SimpleParam': 'QueryFieldName',
-
- 'ReferenceAttributeDef': 'Caption',
-
- 'CandidatesDef': 'Caption',
-
- 'DependsOn': 'ColumnName',
-
- 'QueryFieldDef': 'FieldAlias',
-
- 'main': 'value',
-
- 'CategoryOrder': 'Section',
-
- 'EnumDataSourceDef': 'Name',
-
- 'OwnershipListAttributeDef': 'Caption'}
+{'ColumnDef': 'QueryFieldName',
+ 'asdf': 'sdfasdf',
+ 'VariableDef': 'AttributeName',
+ 'FlagAttributeDef': 'TransactionTypeFieldName',
+ 'EnumDataSourceDef': 'Name',
+ 'DataViewDef': 'DescriptionColumnName',
+ 'SimpleAttributeDef': 'Name',
+ 'Entity': 'SchemaName',
+ 'ReferenceParam': 'TextQueryFieldName',
+ 'QueryDef': 'ConnectionName',
+ 'ActionDef': 'Name',
+ 'DataViewAttributeDef': 'QueryFieldName',
+ 'ReferenceAttributeDef': 'Name',
+ 'EnumFieldDef': 'FieldName',
+ 'DependsOn': 'ColumnName',
+ 'QueryFieldDef': 'FieldName',
+ 'FilterField': 'QueryFieldName',
+ 'DataViewActionDef': 'Name',
+ 'CategoryOrder': 'Section',
+ 'SimpleParam': 'Name',
+ 'OwnershipListAttributeDef': 'Name'}
