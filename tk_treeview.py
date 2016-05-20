@@ -26,7 +26,7 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	appTreeView.configure(displaycolumns=('data'))
 			
 	#events
-	appTreeView.bind('<<TreeviewSelect>>', lambda event: fillBandButtons(event, band_buttons, dicTagsInTree))	
+	appTreeView.bind('<<TreeviewSelect>>', lambda event: fillBandButtons(event.widget, band_buttons, dicTagsInTree))	
 	appTreeView.bind('<Button-3>', lambda event: contextMenu(event, band_buttons, dicTagsInTree))	
 	appTreeView.bind('<Shift-Up>', lambda event: moveNodeBind(event, dicTagsInTree))
 	appTreeView.bind('<Shift-Down>', lambda event: moveNodeBind(event, dicTagsInTree))
@@ -41,7 +41,7 @@ def setScrollbar(parent, widget):
 	
 	
 	
-def fillBandButtons(event, band_buttons, dicTagsInTree):
+def fillBandButtons(appTreeView, band_buttons, dicTagsInTree):
 	band_buttons.clean()
 	
 	#canvas para manejar una scrollbar
@@ -52,9 +52,9 @@ def fillBandButtons(event, band_buttons, dicTagsInTree):
 	#subframe.pack(side=RIGHT, fill=BOTH, expand=True)
 	#setScrollbar(band_buttons, canvas)
 	
-	print 'EventType %s' % event.type
+	#print 'EventType %s' % event.type
 	#appTreeView = GL.appTreeView
-	appTreeView = event.widget
+	#appTreeView = event.widget
 	
 	xIDFocus = appTreeView.focus()
 	GL.lastTreeViewFocus = xIDFocus
@@ -256,4 +256,6 @@ def editTag(mainApp, oTIG):
 	if len(container) > 0:
 		oTIG.updateTag(container['Tag'], container['Value'])
 		updateTreeNode(container['Value'], oTIG)
-		oTIG.parent_treeview.item(oTIG.id, text=container['Tag'])
+		oTIG.parent_treeview.item(oTIG.id, text=oTIG.getTagName())
+		
+		fillBandButtons(GL.appTreeView, mainApp.frames.buttons, GL.dicTagsInTree)
