@@ -8,7 +8,8 @@ def main(mode = 'main'):
 					'button_glTreeView',
 					'button_dicSubnames',
 					'button_getDicSubnames',
-					'button_printEncoding'
+					'button_printEncoding',
+					'button_printPrettyPrint', 
 					]
 
 	mainApp = tk_app.MainApp(lExcludeMenu=lExcludeMenu)
