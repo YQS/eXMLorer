@@ -3,7 +3,7 @@ import globals as GL
 
 class TagInTree(object):
 	def __init__(self, parent_id, id, xmltag, parent_tag, treeview, order='end'):
-		print 'new TagInTree'
+		#print 'new TagInTree'
 		#inicializo las variables del objeto
 		self.id = id
 		self.parent_tag = parent_tag
@@ -39,7 +39,7 @@ class TagInTree(object):
 		self.parent_treeview = treeview
 		
 	def setColumn(self, column, value):
-		print value
+		#print value
 		if value <> None:
 			value = value.encode(encoding='UTF-8')
 			self.parent_treeview.set( self.id, column, value[:GL.dataColumnTextLimit] )
@@ -100,16 +100,19 @@ class TagInTree(object):
 def getSubnameOfTag(xTag):
 	xName = ''
 	xPossibleChildForName = None
+	print xTag, xTag.tag, xTag.text
 	xStringToFind = GL.dicTagSubnames.dic.get(xTag.tag, '*******')	#I hope that I don't find a tag like this!
 	for xChild in xTag:
-		if (xChild.tag.find(xStringToFind, 0) >= 0):
-			try:
-				xName = str(xChild.text)
-			except UnicodeEncodeError:
-				xName = xChild.text.encode('utf-8')
-			break
-		elif (xChild.tag.find('Name', 0) >= 0):
-			xPossibleChildForName = xChild
+		if type(xChild.tag).__name__ == 'str':
+			#if xChild.tag is a XML tag and not a Comment
+			if (xChild.tag.find(xStringToFind, 0) >= 0):
+				try:
+					xName = str(xChild.text)
+				except UnicodeEncodeError:
+					xName = xChild.text.encode('utf-8')
+				break
+			elif (xChild.tag.find('Name', 0) >= 0):
+				xPossibleChildForName = xChild
 
 	if xName == '':
 		if xPossibleChildForName <> None:
