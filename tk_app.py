@@ -89,6 +89,7 @@ class FramePack(object):
 		
 		self.treeview = FrameExt(self.center)
 		self.buttons = FrameExt(self.center)
+		
 
 class MainApp(Tk):
 	def __init__(self, iconfile='test.gif', lExcludeMenu = []):
@@ -99,6 +100,23 @@ class MainApp(Tk):
 		self.excludeList = lExcludeMenu
 		self.rootTIG = None
 		self.menubar = None
+		#BooleanVars para los menues
+		self.bool_menu_config_lang_eng = BooleanVar()
+		self.bool_menu_config_lang_spa = BooleanVar()
+		self.bool_menu_config_prettyprint = BooleanVar()
+		self.bool_menu_config_noSpaceInSelfClosingTag = BooleanVar()
+		
+		#chequeo estado de BooleanVars de menues
+		if GL.names['lang'] == 'Español':
+			self.bool_menu_config_lang_spa.set(True)
+		else:
+			self.bool_menu_config_lang_eng.set(True)
+			
+		if GL.defaultPrettyPrint:
+			self.bool_menu_config_prettyprint.set(True)
+			
+		if GL.eliminateSpaceInSelfClosingTag:
+			self.bool_menu_config_noSpaceInSelfClosingTag.set(True)
 		
 		#icono
 		try:
@@ -205,8 +223,26 @@ def fillMenu(mainApp):
 		#menu_config.add_command(label= GL.names['menu_config_language'], command=None)
 		
 		#seteo lenguajes
-		menu_config_language.add_command(label=GL.names['menu_config_language_spa'], command= lambda: mChangeLang(mainApp, 'SPA'))
-		menu_config_language.add_command(label=GL.names['menu_config_language_eng'], command= lambda: mChangeLang(mainApp, 'ENG'))
+		#menu_config_language.add_command(label=GL.names['menu_config_language_spa'], command= lambda: mChangeLang(mainApp, 'SPA'))
+		#menu_config_language.add_command(label=GL.names['menu_config_language_eng'], command= lambda: mChangeLang(mainApp, 'ENG'))
+		menu_config_language.add_checkbutton(label=GL.names['menu_config_language_spa'],
+											 variable=mainApp.bool_menu_config_lang_spa,
+											 command= lambda: mChangeLang(mainApp, 'SPA'))
+		menu_config_language.add_checkbutton(label=GL.names['menu_config_language_eng'],
+											 variable= mainApp.bool_menu_config_lang_eng,
+											 command= lambda: mChangeLang(mainApp, 'ENG'))
+		
+		#menu_config.add_separator()
+		
+		#seteo config de print modes
+		menu_config_printmode = Menu(menubar, tearoff=0)
+		menu_config.add_cascade(label=GL.names['menu_config_printmode'], menu=menu_config_printmode)
+		menu_config_printmode.add_checkbutton(label=GL.names['menu_config_printmode_prettyprint'],
+											  variable= mainApp.bool_menu_config_prettyprint, 
+											  command= lambda: mChangeDefaultPrettyPrint())
+		menu_config_printmode.add_checkbutton(label=GL.names['menu_config_printmode_nospaceclosedtag'],
+											  variable= mainApp.bool_menu_config_noSpaceInSelfClosingTag, 
+											  command= lambda: mChangeSpaceInSelfClosingTag())
 		
 		
 def fillButtonBarFrame(mainApp):
@@ -232,7 +268,9 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_analyze', lExcludeMenu, 0, 1, command = lambda: bCheckEntries(mainApp.frames.buttons))
 	getButton(xFrame, 'button_dicSubnames', lExcludeMenu, 1, 3, command = lambda: bPrintDicSubnames())
 	getButton(xFrame, 'button_getDicSubnames', lExcludeMenu, 1, 3, command = lambda: GL.getDicSubnames())
-	getButton(xFrame, 'button_printEncoding', lExcludeMenu, 1, 2, command = lambda: xml_man.getEncoding(GL.filename))
+	#getButton(xFrame, 'button_printEncoding', lExcludeMenu, 1, 2, command = lambda: xml_man.getEncoding(GL.filename))
+	getButton(xFrame, 'button_printEncoding', lExcludeMenu, 1, 2, command = lambda: bPrintEncoding())
+	getButton(xFrame, 'button_printPrettyPrint', lExcludeMenu, 2, 1, command = lambda: bPrintDefaultPrettyPrint())
 	
 def fillFooterFrame(mainApp):
 	xFrame = mainApp.frames.footer
@@ -282,9 +320,10 @@ def getIDForTreeView(xTag, dicTagsInTree):
 	
 def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 	for xChild in xBase:
-		xID = getIDForTreeView(xChild.tag, dicTagsInTree)
-		dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, xBase, appTreeView)
-		addXMLToTree(xChild, xID, dicTagsInTree, appTreeView)
+		if type(xChild.tag).__name__ == 'str':
+			xID = getIDForTreeView(xChild.tag, dicTagsInTree)
+			dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, xBase, appTreeView)
+			addXMLToTree(xChild, xID, dicTagsInTree, appTreeView)
 		
 def askSaveChanges(mainApp):
 	#print xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename)
@@ -460,7 +499,10 @@ def bPrintDicSubnames():
 	print GL.dicTagSubnames
 	
 def bPrintEncoding():
-	print GL.XML_encoding
+	print GL.XMLEncoding
+	
+def bPrintDefaultPrettyPrint():
+	print GL.defaultPrettyPrint
 	
 	
 # MENU METHODS
@@ -469,8 +511,14 @@ def mChangeLang(mainApp, newLang):
 	print 'changing language'
 	if newLang == 'ENG':
 		dicLang = LANG.english
+		mainApp.bool_menu_config_lang_eng.set(True)
+		mainApp.bool_menu_config_lang_spa.set(False)
+		
 	elif newLang == 'SPA':
 		dicLang = LANG.spanish
+		mainApp.bool_menu_config_lang_eng.set(False)
+		mainApp.bool_menu_config_lang_spa.set(True)
+		
 	else:
 		return
 	
@@ -478,6 +526,17 @@ def mChangeLang(mainApp, newLang):
 		GL.names = dicLang
 		refreshApp(mainApp)
 		
+def mChangeDefaultPrettyPrint():
+	if GL.defaultPrettyPrint:
+		GL.defaultPrettyPrint = False
+	else:
+		GL.defaultPrettyPrint = True
+		
+def mChangeSpaceInSelfClosingTag():
+	if GL.eliminateSpaceInSelfClosingTag:
+		GL.eliminateSpaceInSelfClosingTag = False
+	else:
+		GL.eliminateSpaceInSelfClosingTag = True
 			
 #####################
 
