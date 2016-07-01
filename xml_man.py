@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 import xml.etree.ElementTree as ET
+from xml.dom.minidom import parseString
 import globals as GL
 import re
 
@@ -27,7 +28,7 @@ def getXML(filename):
 		
 	root = GL.XMLTree.getroot()
 	GL.XMLEncoding = getEncoding(filename)
-	GL.XMLParentMap = {c:p for p in GL.XMLTree.iter() for c in p}
+	#GL.XMLParentMap = {c:p for p in GL.XMLTree.iter() for c in p}
 
 	print root.tag
 	print root.attrib
@@ -73,9 +74,46 @@ def getEncoding(filename):
 	return xEncoding			
 
 		
-def saveXML(XMLTree, filename):
+def saveXML(XMLTree, filename):#, prettyPrint, eliminateSpaceInSelfClosingTag=True):
 	print 'saving in %s' % filename
-	XMLTree.write(filename, encoding=GL.XMLEncoding, xml_declaration=True)
+	#XMLTree.write(filename, encoding=GL.XMLEncoding, xml_declaration=True)
+	
+	encoding = GL.XMLEncoding
+
+	if GL.defaultPrettyPrint:
+		prettify(XMLTree.getroot())
+	
+	#agrego el encoding en cabecera
+	#(solo reemplazo porque el toprettyxml de minidom ya le agrega la declaracion de xml)
+	if encoding <> '':
+		prettyXML = ET.tostring(XMLTree.getroot(), encoding).replace('<?xml version="1.0" ?>', '<?xml version="1.0" encoding="%s" ?>' % encoding)
+	
+	#reemplazo los <tag /> por <tag/>
+	if GL.eliminateSpaceInSelfClosingTag:
+		xmltext = prettyXML.replace(' />', '/>')
+	else:
+		xmltext = prettyXML
+	
+	with open(filename, 'w') as xmlfile:
+		xmlfile.write(xmltext)
+		
+		
+def prettify(elem, level=0, defaultIndentation='	'):
+	"""default indentation is Tab"""
+	i = "\n" + level*defaultIndentation
+	if len(elem):
+		if not elem.text or not elem.text.strip():
+			elem.text = i + defaultIndentation
+		if not elem.tail or not elem.tail.strip():
+			elem.tail = i
+		for elem in elem:
+			prettify(elem, level+1)
+		if not elem.tail or not elem.tail.strip():
+			elem.tail = i
+	else:
+		if level and (not elem.tail or not elem.tail.strip()):
+			elem.tail = i
+
 	
 def newElement(xParent, xTag, xText, xAttrib, xOrder):
 	#xNewElement = ET.SubElement(xParent, xTag, xAttrib)
