@@ -9,10 +9,12 @@ filename = ''
 lastFolderVisited = ''
 XMLTree = None
 XMLEncoding = ''
-XMLParentMap = {}
+#XMLParentMap = {}
 dicTagsInTree = {}
 appTreeView = None
 lastTreeViewFocus = None
+defaultPrettyPrint = True
+eliminateSpaceInSelfClosingTag = True
 
 names = LANG.spanish
 
