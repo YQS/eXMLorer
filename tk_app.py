@@ -40,6 +40,7 @@ class ToplevelFromMain(Toplevel):
 		self.entries = {}
 		self.body    = Frame(self)
 		self.buttons = Frame(self)
+		self.firstField = None
 		
 		self.body.pack()
 		self.buttons.pack()
@@ -58,17 +59,36 @@ class ToplevelFromMain(Toplevel):
 		xEntry.grid(row=xRow, column=1, sticky='w')
 		xEntry.insert(0, self.result.setdefault(labelText, ''))
 		self.entries[labelText] = xEntry
+		if self.firstField == None:
+			self.firstField = xEntry
+		
+	def textFieldConstructor(self, labelText, value):
+		Label(self.body, text=labelText).grid(row=0, column=0, sticky='nw')
+		xTextbox = Text(self.body) ## ver que width y height poner
+		#xTextbox.bind('<KeyRelease>', lambda event: apply())
+		xTextbox.bind('<Control-Key-a>', lambda event: selectAllText(event) )
+		xTextbox.bind('<Control-Key-A>', lambda event: selectAllText(event) )
+		xTextbox.grid(row=1, column=0, sticky='nw')
+		xTextbox.insert('1.0', value)
+		self.entries[labelText] = xTextbox
+		if self.firstField == None:
+			self.firstField = xTextbox
 		
 	def show(self):
 		self.wait_visibility()
 		self.grab_set()
 		self.focus_set()
+		if self.firstField <> None:
+			self.firstField.focus_set()
 		self.wait_window()
 		#self.grab_release()
 		
 	def apply(self):
 		for key in self.entries:
-			self.result[key] = self.entries[key].get()
+			if isinstance(self.entries[key], Text):
+				self.result[key] = self.entries[key].get('1.0', 'end')
+			else:
+				self.result[key] = self.entries[key].get()
 		print self.result
 		self.close()
 		
