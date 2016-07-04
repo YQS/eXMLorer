@@ -26,6 +26,7 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	appTreeView.configure(displaycolumns=('data'))
 			
 	#events
+	#appTreeView.bind('<Double-Button-2>', lambda event: editTag(event.widget.master.master.master, dicTagsInTree[GL.appTreeView.identify_row(event.y)])) #la ruta larga es para llegar bien al mainApp
 	appTreeView.bind('<<TreeviewSelect>>', lambda event: fillBandButtons(event.widget, band_buttons, dicTagsInTree))	
 	appTreeView.bind('<Button-3>', lambda event: contextMenu(event, band_buttons, dicTagsInTree))	
 	appTreeView.bind('<Shift-Up>', lambda event: moveNodeBind(event, dicTagsInTree))
@@ -47,10 +48,14 @@ def fillBandButtons(appTreeView, band_buttons, dicTagsInTree):
 	#canvas para manejar una scrollbar
 	#NO FUNCIONA
 	canvas = Canvas(band_buttons, borderwidth=0, highlightthickness=0)
-	canvas.pack(side=RIGHT, fill=BOTH, expand=True)
-	#subframe = Frame(canvas)
-	#subframe.pack(side=RIGHT, fill=BOTH, expand=True)
+	canvas.pack(side=LEFT, fill=BOTH, expand=True)
+	
+	#subframe=Frame(canvas)
 	#setScrollbar(band_buttons, canvas)
+	
+	#canvas.create_window((0,0),window=subframe,anchor='nw')
+	#subframe.bind("<Configure>",lambda : canvas.configure(scrollregion=canvas.bbox("all")))
+	
 	
 	#print 'EventType %s' % event.type
 	#appTreeView = GL.appTreeView
@@ -129,20 +134,19 @@ def getEntry(value, band_buttons, xRow, oTagInTree):
 			print 'Entry'
 			getTextEntry(band_buttons, xButtonWidth, 1, xRow, oTagInTree, value)
 		else:
-			print 'Textbox'
-			xHeight = 10 #len(value) % xButtonWidth
-			xTextbox = Text(band_buttons, width=xButtonWidth-10, height=xHeight)
-			xTextbox.bind('<KeyRelease>', lambda event: updateTreeNode(event.widget.get('1.0', 'end'), oTagInTree ))
-			xTextbox.bind('<Control-Key-a>', lambda event: selectAllText(event) )
-			xTextbox.bind('<Control-Key-A>', lambda event: selectAllText(event) )
-			xTextbox.grid(column=1, row=xRow)
-			xTextbox.insert('1.0', value)
+			print 'Entry to Text'
+			getTextEntry(band_buttons, xButtonWidth-xExtraButtonWidth, 1, xRow, oTagInTree, value)
+			xButton = Button(band_buttons, text='...', width= xExtraButtonWidth)
+			xButton.grid(column=1, row=xRow, sticky='e')
+			xButton.config(command= lambda: openTextWindow(band_buttons.master.master.master, oTagInTree, value))
 
 			
 def getTextEntry(band_buttons, xButtonWidth, xColumn, xRow, oTagInTree, value):
 	xEntry = Entry(band_buttons, width=xButtonWidth, validate='focus')
 	xEntry.configure(validatecommand = lambda xEntry=xEntry, oTagInTree=oTagInTree: updateTreeNode(xEntry.get(), oTagInTree))
 	xEntry.bind('<Return>', lambda event, xEntry=xEntry, oTagInTree=oTagInTree:updateTreeNode(xEntry.get(), oTagInTree))
+	xEntry.bind('<Control-Key-a>', lambda event: selectAllText(event) )
+	xEntry.bind('<Control-Key-A>', lambda event: selectAllText(event) )
 	xEntry.grid(column=1, row=xRow, sticky='wn')
 	xEntry.insert(0, value)
 	
@@ -159,13 +163,24 @@ def selectAllText(event):
 	xTextbox.see(INSERT)
 	return 'break'		#porque si no, el tkinter lee el siguiente evento
 	
-
+def openTextWindow(mainApp, oTagInTree, value):
+	container = {}
+	label = GL.names['message_value']
+	title = GL.names['message_editing'] + ' ' + oTagInTree.tagname
+	xWindow = mainApp.getToplevel2(title, container)
+	xWindow.textFieldConstructor(label, value)
+	xWindow.show()
+	
+	if len(container) > 0:
+		updateTreeNode(container[label], oTagInTree)
+	
 def updateTreeNode(value, oTagInTree):
 		#print entry.get()
 		print value
 		oTagInTree.getTag().text = value
 		oTagInTree.setColumn( 'data', value)
 		return True
+		
 
 def moveNodeBind(event, dicTagsInTree):
 		if event.keycode == 38:		#Up
