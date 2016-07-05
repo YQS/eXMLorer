@@ -135,10 +135,10 @@ def getEntry(value, band_buttons, xRow, oTagInTree):
 			getTextEntry(band_buttons, xButtonWidth, 1, xRow, oTagInTree, value)
 		else:
 			print 'Entry to Text'
-			getTextEntry(band_buttons, xButtonWidth-xExtraButtonWidth, 1, xRow, oTagInTree, value)
+			xEntry = getTextEntry(band_buttons, xButtonWidth-xExtraButtonWidth, 1, xRow, oTagInTree, value)
 			xButton = Button(band_buttons, text='...', width= xExtraButtonWidth)
 			xButton.grid(column=1, row=xRow, sticky='e')
-			xButton.config(command= lambda: openTextWindow(band_buttons.master.master.master, oTagInTree, value))
+			xButton.config(command= lambda: openTextWindow(band_buttons.master.master.master, oTagInTree, xEntry))
 
 			
 def getTextEntry(band_buttons, xButtonWidth, xColumn, xRow, oTagInTree, value):
@@ -149,6 +149,7 @@ def getTextEntry(band_buttons, xButtonWidth, xColumn, xRow, oTagInTree, value):
 	xEntry.bind('<Control-Key-A>', lambda event: selectAllText(event) )
 	xEntry.grid(column=1, row=xRow, sticky='wn')
 	xEntry.insert(0, value)
+	return xEntry
 	
 def activateTextEntry(xEntry, xButton, band_buttons, xButtonWidth, xColumn, xRow, oTagInTree, value):
 	xEntry.destroy()
@@ -163,16 +164,21 @@ def selectAllText(event):
 	xTextbox.see(INSERT)
 	return 'break'		#porque si no, el tkinter lee el siguiente evento
 	
-def openTextWindow(mainApp, oTagInTree, value):
+def openTextWindow(mainApp, oTagInTree, entry):
 	container = {}
 	label = GL.names['message_value']
 	title = GL.names['message_editing'] + ' ' + oTagInTree.tagname
 	xWindow = mainApp.getToplevel2(title, container)
-	xWindow.textFieldConstructor(label, value)
+	xWindow.textFieldConstructor(label, entry.get())
 	xWindow.show()
 	
 	if len(container) > 0:
+		print 'updating ' + oTagInTree.tagname
 		updateTreeNode(container[label], oTagInTree)
+		#actualizo tambien el entry asociado
+		entry.delete(0, END)
+		entry.insert(0, container[label])
+		
 	
 def updateTreeNode(value, oTagInTree):
 		#print entry.get()
