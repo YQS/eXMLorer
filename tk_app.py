@@ -42,8 +42,8 @@ class ToplevelFromMain(Toplevel):
 		self.buttons = Frame(self)
 		self.firstField = None
 		
-		self.body.pack()
-		self.buttons.pack()
+		self.body.pack(side=TOP, fill=BOTH)
+		self.buttons.pack(side=BOTTOM)
 		self.createButtons()
 		
 		self.geometry('+%d+%d' % (master.winfo_rootx()+50, master.winfo_rooty()+50))
@@ -64,11 +64,13 @@ class ToplevelFromMain(Toplevel):
 		
 	def textFieldConstructor(self, labelText, value):
 		Label(self.body, text=labelText).grid(row=0, column=0, sticky='nw')
+		#Label(self.body, text=labelText).pack()
 		xTextbox = Text(self.body) ## ver que width y height poner
 		#xTextbox.bind('<KeyRelease>', lambda event: apply())
 		xTextbox.bind('<Control-Key-a>', lambda event: selectAllText(event) )
 		xTextbox.bind('<Control-Key-A>', lambda event: selectAllText(event) )
 		xTextbox.grid(row=1, column=0, sticky='nw')
+		#xTextbox.pack(fill=BOTH)
 		xTextbox.insert('1.0', value)
 		self.entries[labelText] = xTextbox
 		if self.firstField == None:
