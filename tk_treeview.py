@@ -125,7 +125,7 @@ def getEntry(value, band_buttons, xRow, oTagInTree):
 			xEntry = getTextEntry(band_buttons, xButtonWidth-xExtraButtonWidth, 1, xRow, oTagInTree, value)
 			xButton = Button(band_buttons, text='...', width= xExtraButtonWidth)
 			xButton.grid(column=1, row=xRow, sticky='e')
-			xButton.config(command= lambda: openTextWindow(band_buttons.master.master.master, oTagInTree, xEntry))
+			xButton.config(command= lambda: openTextWindow(band_buttons.master.master.master.master.master, oTagInTree, xEntry))
 
 			
 def getTextEntry(band_buttons, xButtonWidth, xColumn, xRow, oTagInTree, value):
