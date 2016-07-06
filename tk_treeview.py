@@ -5,6 +5,7 @@ from ttk import *
 import tkMessageBox
 import globals as GL
 import xml_man
+import SSF
 
 def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	appTreeView = Treeview(mainApp, columns=('data','name', 'size'))
@@ -38,28 +39,16 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 def setScrollbar(parent, widget):
 	xScroll = Scrollbar(parent, orient=VERTICAL, command= widget.yview)
 	widget.configure(yscrollcommand= xScroll.set)
-	xScroll.pack(side='right',fill='y')
+	xScroll.pack(side=RIGHT,fill=Y)
 	
 	
 	
 def fillBandButtons(appTreeView, band_buttons, dicTagsInTree):
 	band_buttons.clean()
 	
-	#canvas para manejar una scrollbar
-	#NO FUNCIONA
-	canvas = Canvas(band_buttons, borderwidth=0, highlightthickness=0)
-	canvas.pack(side=LEFT, fill=BOTH, expand=True)
-	
-	#subframe=Frame(canvas)
-	#setScrollbar(band_buttons, canvas)
-	
-	#canvas.create_window((0,0),window=subframe,anchor='nw')
-	#subframe.bind("<Configure>",lambda : canvas.configure(scrollregion=canvas.bbox("all")))
-	
-	
-	#print 'EventType %s' % event.type
-	#appTreeView = GL.appTreeView
-	#appTreeView = event.widget
+	#scrollingFrame es un frame con un canvas dentro con un frame dentro, con scrollbars configuradas
+	scrollFrame = SSF.scrollingFrame(band_buttons)
+	scrollFrame.pack(side=RIGHT, fill=BOTH, expand=True)
 	
 	xIDFocus = appTreeView.focus()
 	GL.lastTreeViewFocus = xIDFocus
@@ -67,18 +56,16 @@ def fillBandButtons(appTreeView, band_buttons, dicTagsInTree):
 	print 'is in dicTagsInTree? ' + str(xIDFocus in dicTagsInTree)
 	
 	xRow = 0
-	xStringVar = StringVar()
-	xGotItems = False
+	
+	getButtonRow(dicTagsInTree[xIDFocus], scrollFrame.frame, xRow)
+	xRow += 1
+	Separator(scrollFrame.frame, orient=HORIZONTAL).grid(row=xRow, column=0, pady=4, columnspan=2, sticky='we')
+	xRow += 1
 	
 	for xIDChild in appTreeView.get_children(xIDFocus):
 		xGotItems = True
-		#getButtonRow(dicTagsInTree[xIDChild], band_buttons, xRow)
-		getButtonRow(dicTagsInTree[xIDChild], canvas, xRow)
+		getButtonRow(dicTagsInTree[xIDChild], scrollFrame.frame, xRow)
 		xRow += 1
-	
-	if not xGotItems:
-		#getButtonRow(dicTagsInTree[xIDFocus], band_buttons, xRow)
-		getButtonRow(dicTagsInTree[xIDFocus], canvas, xRow)
 
 		
 def getButtonRow(oTagInTree, band_buttons, xRow):
