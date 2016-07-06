@@ -100,7 +100,7 @@ class TagInTree(object):
 def getSubnameOfTag(xTag):
 	xName = ''
 	xPossibleChildForName = None
-	print xTag, xTag.tag, xTag.text
+	#print xTag, xTag.tag, xTag.text
 	xStringToFind = GL.dicTagSubnames.dic.get(xTag.tag, '*******')	#I hope that I don't find a tag like this!
 	for xChild in xTag:
 		if type(xChild.tag).__name__ == 'str':
