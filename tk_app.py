@@ -4,6 +4,7 @@ from Tkinter import *
 from ttk import *
 import tkFileDialog
 import tkMessageBox
+from ScrolledText import ScrolledText as ScrollText
 import globals as GL
 import app_language as LANG
 import TagInTree as TIG
@@ -42,8 +43,8 @@ class ToplevelFromMain(Toplevel):
 		self.buttons = Frame(self)
 		self.firstField = None
 		
-		self.body.pack(side=TOP, fill=BOTH)
-		self.buttons.pack(side=BOTTOM)
+		self.body.pack(side=TOP, fill=BOTH, expand=True)
+		self.buttons.pack(side=BOTTOM, fill=X)
 		self.createButtons()
 		
 		self.geometry('+%d+%d' % (master.winfo_rootx()+50, master.winfo_rooty()+50))
@@ -63,14 +64,15 @@ class ToplevelFromMain(Toplevel):
 			self.firstField = xEntry
 		
 	def textFieldConstructor(self, labelText, value):
-		Label(self.body, text=labelText).grid(row=0, column=0, sticky='nw')
-		#Label(self.body, text=labelText).pack()
-		xTextbox = Text(self.body) ## ver que width y height poner
+		#Label(self.body, text=labelText).grid(row=0, column=0, sticky='nw')
+		Label(self.body, text=labelText).pack()
+		#xTextbox = Text(self.body) ## ver que width y height poner
+		xTextbox = ScrollText(self.body)
 		#xTextbox.bind('<KeyRelease>', lambda event: apply())
 		xTextbox.bind('<Control-Key-a>', lambda event: selectAllText(event) )
 		xTextbox.bind('<Control-Key-A>', lambda event: selectAllText(event) )
-		xTextbox.grid(row=1, column=0, sticky='nw')
-		#xTextbox.pack(fill=BOTH)
+		#xTextbox.grid(row=1, column=0, sticky='nw')
+		xTextbox.pack(fill=BOTH, expand=True)
 		xTextbox.insert('1.0', value)
 		self.entries[labelText] = xTextbox
 		if self.firstField == None:
@@ -154,9 +156,9 @@ class MainApp(Tk):
 		self.frames = FramePack(self)
 		self.frames.menu.pack(side=TOP, fill=X)
 		
-		self.frames.center.pack(side=TOP, fill=BOTH, expand=1)
+		self.frames.center.pack(side=TOP, fill=BOTH, expand=True)
 		self.frames.treeview.pack(side=LEFT, fill=BOTH)
-		self.frames.buttons.pack(side=LEFT, fill=BOTH, ipadx=0, pady=20)
+		self.frames.buttons.pack(side=LEFT, fill=BOTH, expand=True, ipadx=0, pady=20)
 		#setScrollbar(self, self.frames.buttons)
 		self.frames.footer.pack(side=BOTTOM, fill=X)
 		
