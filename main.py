@@ -15,7 +15,7 @@ def main(mode = 'main'):
 	mainApp = tk_app.MainApp(lExcludeMenu=lExcludeMenu)
 	tk_app.openXML(mainApp)
 		
-	#mainApp.focus_set()
+	mainApp.focus_set()
 	mainApp.mainloop()
 	
 	try:
