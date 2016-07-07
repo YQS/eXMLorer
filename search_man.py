@@ -10,7 +10,7 @@ class BasicSearch(object):
 		
 		if mode == 'Tags':
 			self.attrName = 'tag'
-		else:	#mode == 'Values'
+		else:	#mode == 'Values' or 'Valores'
 			self.attrName = 'text'
 			
 		if '*' in self.searchString:

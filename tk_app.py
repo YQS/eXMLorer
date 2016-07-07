@@ -310,23 +310,27 @@ def fillButtonBarFrame(mainApp):
 	
 	
 	#campos para busqueda
-	searchOptions = ('Tags', 'Valores')
-	optionmenu_search = OptionMenu(xFrame, mainApp.string_optionmenu_search, searchOptions[0], *searchOptions)
-	xFrame.addWidget('OptionMenu', 'optionmenu_search', sObject= optionmenu_search)
-	optionmenu_search.configure(width= GL.buttonWidth)
-	optionmenu_search.grid(row=1, column=4, sticky='wn')
+	frame_search = xFrame.addWidget('LabelFrame', 'frame_search')
+	frame_search.configure(text=GL.names['frame_search'])
+	frame_search.grid(row=1, column=4, sticky='wn')
 	
-	entry_search = xFrame.addWidget('Entry', 'entry_search')
+	searchOptions = (GL.names['option_tags'], GL.names['option_values'])
+	optionmenu_search = OptionMenu(frame_search, mainApp.string_optionmenu_search, searchOptions[0], *searchOptions)
+	optionmenu_search.configure(width= GL.buttonWidth)
+	optionmenu_search.grid(row=0, column=0, sticky='wn')
+	
+	entry_search = Entry(frame_search)
 	entry_search.configure(width= GL.labelButtonWidth) #, validate='focus', validatecommand= lambda: printEntrySearch(entry_search))
-	entry_search.grid(row=1, column=5, sticky='wn')
+	entry_search.grid(row=0, column=1, sticky='wn')
 	entry_search.bind('<Return>', lambda event: basicSearch(mainApp, entry_search.get()))
 	
 	
 def basicSearch(mainApp, searchString):
-	if (mainApp.currentSearch == None) or (mainApp.currentSearch.searchString <> searchString):
-		mainApp.currentSearch = BasicSearch(searchString, GL.dicTagsInTree, mainApp.string_optionmenu_search.get())
-	
-	selectAndFocus(mainApp.currentSearch.output.next())
+	if searchString <> '':
+		if (mainApp.currentSearch == None) or (mainApp.currentSearch.searchString <> searchString):
+			mainApp.currentSearch = BasicSearch(searchString, GL.dicTagsInTree, mainApp.string_optionmenu_search.get())
+		
+		selectAndFocus(mainApp.currentSearch.output.next())
 	
 	
 def fillFooterFrame(mainApp):

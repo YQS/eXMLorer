@@ -10,6 +10,7 @@ def main(mode = 'main'):
 					'button_getDicSubnames',
 					'button_printEncoding',
 					'button_printPrettyPrint', 
+					'button_showCurrentSearch',
 					]
 
 	mainApp = tk_app.MainApp(lExcludeMenu=lExcludeMenu)
