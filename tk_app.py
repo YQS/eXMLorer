@@ -229,9 +229,10 @@ def refreshApp(mainApp):
 	selectAndFocus(GL.lastTreeViewFocus)
 	
 def selectAndFocus(xIDFocus):
-	GL.appTreeView.see(xIDFocus)
-	GL.appTreeView.focus(xIDFocus)
-	GL.appTreeView.selection_set(xIDFocus)
+	if xIDFocus <> '':
+		GL.appTreeView.see(xIDFocus)
+		GL.appTreeView.focus(xIDFocus)
+		GL.appTreeView.selection_set(xIDFocus)
 
 def fillMenu(mainApp):
 	menubar = Menu(mainApp)
@@ -300,11 +301,12 @@ def fillButtonBarFrame(mainApp):
 	## debug buttons
 	getButton(xFrame, 'button_glTreeView', lExcludeMenu, 1, 1, command = lambda: checkTreeView())
 	getButton(xFrame, 'button_analyze', lExcludeMenu, 0, 1, command = lambda: bCheckEntries(mainApp.frames.buttons))
-	getButton(xFrame, 'button_dicSubnames', lExcludeMenu, 1, 3, command = lambda: bPrintDicSubnames())
+	getButton(xFrame, 'button_dicSubnames', lExcludeMenu, 1, 3, command = lambda: bShowGuts(GL.dicTagSubnames))
 	getButton(xFrame, 'button_getDicSubnames', lExcludeMenu, 1, 3, command = lambda: GL.getDicSubnames())
 	#getButton(xFrame, 'button_printEncoding', lExcludeMenu, 1, 2, command = lambda: xml_man.getEncoding(GL.filename))
-	getButton(xFrame, 'button_printEncoding', lExcludeMenu, 1, 2, command = lambda: bPrintEncoding())
-	getButton(xFrame, 'button_printPrettyPrint', lExcludeMenu, 2, 1, command = lambda: bPrintDefaultPrettyPrint())
+	getButton(xFrame, 'button_printEncoding', lExcludeMenu, 1, 2, command = lambda: bShowGuts(GL.XMLEncoding))
+	getButton(xFrame, 'button_printPrettyPrint', lExcludeMenu, 2, 1, command = lambda: bShowGuts(GL.defaultPrettyPrint))
+	getButton(xFrame, 'button_showCurrentSearch', lExcludeMenu, 2, 2, command = lambda: bShowGuts(mainApp.currentSearch))
 	
 	
 	#campos para busqueda
@@ -549,15 +551,9 @@ def bCheckEntries(band_buttons):
 	for widget in band_buttons.winfo_children():
 		if isinstance(widget, Entry):
 			print widget.get()
-
-def bPrintDicSubnames():
-	print GL.dicTagSubnames
 	
-def bPrintEncoding():
-	print GL.XMLEncoding
-	
-def bPrintDefaultPrettyPrint():
-	print GL.defaultPrettyPrint
+def bShowGuts(thing):
+	print thing
 	
 	
 # MENU METHODS
