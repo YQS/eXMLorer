@@ -22,6 +22,9 @@ class TagInTree(object):
 		
 	def __del__(self):
 		print 'TagInTree %s destroyed' % self.id
+		
+	def __repr__(self):
+		return self.id
 
 	# SETS
 	def setTag(self, xmltag):

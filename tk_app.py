@@ -5,11 +5,13 @@ from ttk import *
 import tkFileDialog
 import tkMessageBox
 from ScrolledText import ScrolledText as ScrollText
+
 import globals as GL
 import app_language as LANG
 import TagInTree as TIG
 import xml_man
 import tk_treeview
+from search_man import BasicSearch
 
 
 # CLASSES
@@ -19,10 +21,16 @@ class FrameExt(Frame):
 		Frame.__init__(self, master)
 		self.dic = {}
 		
-	def addWidget(self, sWidget, sKey):
-		sCodeLine = '%s(self)' % sWidget
-		print sCodeLine
-		self.dic[sKey] = eval(sCodeLine)
+	def addWidget(self, sWidget, sKey, sParameters='', sObject=None):
+		if sObject == None:
+			sCodeLine = '%s(self)' % sWidget
+			if sParameters <> '':
+				sCodeLine = sCodeLine.replace(')', ', %s)' % sParameters)
+			print sCodeLine
+			self.dic[sKey] = eval(sCodeLine)
+		else:
+			self.dic[sKey] = sObject
+			
 		return self.dic[sKey]
 		
 	def clean(self):
@@ -124,11 +132,13 @@ class MainApp(Tk):
 		self.excludeList = lExcludeMenu
 		self.rootTIG = None
 		self.menubar = None
+		self.currentSearch = None
 		#BooleanVars para los menues
 		self.bool_menu_config_lang_eng = BooleanVar()
 		self.bool_menu_config_lang_spa = BooleanVar()
 		self.bool_menu_config_prettyprint = BooleanVar()
 		self.bool_menu_config_noSpaceInSelfClosingTag = BooleanVar()
+		self.string_optionmenu_search = StringVar()
 		
 		#chequeo estado de BooleanVars de menues
 		if GL.names['lang'] == 'Español':
@@ -162,8 +172,8 @@ class MainApp(Tk):
 		#setScrollbar(self, self.frames.buttons)
 		self.frames.footer.pack(side=BOTTOM, fill=X)
 		
-		fillMenu(self)
-		fillButtonBarFrame(self)
+		fillMenu(self)				#menu real
+		fillButtonBarFrame(self)	#botones debajo del menu
 		fillFooterFrame(self)
 		
 		#refreshApp(self)
@@ -277,7 +287,7 @@ def fillButtonBarFrame(mainApp):
 	if not 'label_filename' in lExcludeMenu:
 		label_filename = xFrame.addWidget('Label', 'label_filename')
 		label_filename.configure(padding=(10,0,0,0))
-		label_filename.grid(column=4, row=0)
+		label_filename.grid(row=0, column=4, columnspan=2)
 	
 	getButton(xFrame, 'button_open', lExcludeMenu, 0, 0, command = lambda: openXML(mainApp))
 	getButton(xFrame, 'button_save', lExcludeMenu, 0, 1, command = lambda: saveXML(mainApp, 'SAVE'))
@@ -295,6 +305,27 @@ def fillButtonBarFrame(mainApp):
 	#getButton(xFrame, 'button_printEncoding', lExcludeMenu, 1, 2, command = lambda: xml_man.getEncoding(GL.filename))
 	getButton(xFrame, 'button_printEncoding', lExcludeMenu, 1, 2, command = lambda: bPrintEncoding())
 	getButton(xFrame, 'button_printPrettyPrint', lExcludeMenu, 2, 1, command = lambda: bPrintDefaultPrettyPrint())
+	
+	
+	#campos para busqueda
+	searchOptions = ('Tags', 'Valores')
+	optionmenu_search = OptionMenu(xFrame, mainApp.string_optionmenu_search, searchOptions[0], *searchOptions)
+	xFrame.addWidget('OptionMenu', 'optionmenu_search', sObject= optionmenu_search)
+	optionmenu_search.configure(width= GL.buttonWidth)
+	optionmenu_search.grid(row=1, column=4, sticky='wn')
+	
+	entry_search = xFrame.addWidget('Entry', 'entry_search')
+	entry_search.configure(width= GL.labelButtonWidth) #, validate='focus', validatecommand= lambda: printEntrySearch(entry_search))
+	entry_search.grid(row=1, column=5, sticky='wn')
+	entry_search.bind('<Return>', lambda event: basicSearch(mainApp, entry_search.get()))
+	
+	
+def basicSearch(mainApp, searchString):
+	if (mainApp.currentSearch == None) or (mainApp.currentSearch.searchString <> searchString):
+		mainApp.currentSearch = BasicSearch(searchString, GL.dicTagsInTree, mainApp.string_optionmenu_search.get())
+	
+	selectAndFocus(mainApp.currentSearch.output.next())
+	
 	
 def fillFooterFrame(mainApp):
 	xFrame = mainApp.frames.footer
