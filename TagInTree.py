@@ -1,5 +1,7 @@
 # encoding: UTF-8
 import globals as GL
+from operator import methodcaller
+
 
 class TagInTree(object):
 	def __init__(self, parent_id, id, xmltag, parent_tag, treeview, order='end'):
@@ -25,6 +27,19 @@ class TagInTree(object):
 		
 	def __repr__(self):
 		return self.id
+	
+	def __iter__(self):
+		childList = []
+		for xTIG in GL.dicTagsInTree.values():
+			if xTIG.parent_id == self.id:
+				childList.append(xTIG)
+		childList = sorted(childList, key=methodcaller('getXMLPosition'))
+
+		for childTIG in childList:
+			#print childTIG
+			yield childTIG
+					
+	
 
 	# SETS
 	def setTag(self, xmltag):
