@@ -11,6 +11,8 @@ def main(mode = 'main'):
 					'button_printEncoding',
 					'button_printPrettyPrint', 
 					'button_showCurrentSearch',
+					'button_showDicTagsInTree',
+					'button_showXMLParentMap',
 					]
 
 	mainApp = tk_app.MainApp(lExcludeMenu=lExcludeMenu)

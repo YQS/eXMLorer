@@ -52,7 +52,7 @@ def fillBandButtons(appTreeView, band_buttons, dicTagsInTree):
 	
 	xIDFocus = appTreeView.focus()
 	GL.lastTreeViewFocus = xIDFocus
-	print 'focus in ' + xIDFocus 
+	print 'focus in ' + xIDFocus + ' - order ' + str(GL.dicTagsInTree[xIDFocus].tag_order)
 	print 'is in dicTagsInTree? ' + str(xIDFocus in dicTagsInTree)
 	
 	xRow = 0

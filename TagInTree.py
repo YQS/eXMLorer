@@ -15,6 +15,7 @@ class TagInTree(object):
 		self.treenode = None
 		self.parent_treeview = None
 		self.parent_id = parent_id
+		self.tag_order = 0
 		##########
 		self.setTag(xmltag)
 		self.setNode(parent_id, id, treeview, order)
@@ -38,7 +39,6 @@ class TagInTree(object):
 		for childTIG in childList:
 			#print childTIG
 			yield childTIG
-					
 	
 
 	# SETS

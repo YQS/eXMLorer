@@ -307,6 +307,8 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_printEncoding', lExcludeMenu, 1, 2, command = lambda: bShowGuts(GL.XMLEncoding))
 	getButton(xFrame, 'button_printPrettyPrint', lExcludeMenu, 2, 1, command = lambda: bShowGuts(GL.defaultPrettyPrint))
 	getButton(xFrame, 'button_showCurrentSearch', lExcludeMenu, 2, 2, command = lambda: bShowGuts(mainApp.currentSearch))
+	getButton(xFrame, 'button_showDicTagsInTree', lExcludeMenu, 2, 1, command = lambda: bShowGuts(GL.dicTagsInTree))
+	getButton(xFrame, 'button_showXMLParentMap', lExcludeMenu, 2, 2, command = lambda: bShowGuts(GL.XMLParentMap))
 	
 	
 	#campos para busqueda
@@ -322,13 +324,17 @@ def fillButtonBarFrame(mainApp):
 	entry_search = Entry(frame_search)
 	entry_search.configure(width= GL.labelButtonWidth) #, validate='focus', validatecommand= lambda: printEntrySearch(entry_search))
 	entry_search.grid(row=0, column=1, sticky='wn')
-	entry_search.bind('<Return>', lambda event: basicSearch(mainApp, entry_search.get()))
+	entry_search.bind('<Return>', lambda event: basicSearch(mainApp, entry_search.get(), GL.appTreeView.focus() ))
 	
 	
-def basicSearch(mainApp, searchString):
+def basicSearch(mainApp, searchString, xIDFocus):
 	if searchString <> '':
 		if (mainApp.currentSearch == None) or (mainApp.currentSearch.searchString <> searchString):
-			mainApp.currentSearch = BasicSearch(searchString, GL.dicTagsInTree, mainApp.string_optionmenu_search.get())
+			try:
+				xStartingPoint = GL.dicTagsInTree[xIDFocus].tag_order
+			except:
+				xStartingPoint = 0
+			mainApp.currentSearch = BasicSearch(searchString, GL.dicTagsInTree, mainApp.string_optionmenu_search.get(), xStartingPoint)
 		
 		selectAndFocus(mainApp.currentSearch.output.next())
 	
