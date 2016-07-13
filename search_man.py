@@ -49,17 +49,6 @@ class BasicSearch(object):
 		self.result = sorted(self.result)
 		self.output = self.outputGenerator()
 		
-		
-		'''
-		searchLen = len(searchString)
-		
-		for xTIG in self.dicUsed.values():
-			if searchString == getattr(xTIG.getTag(), self.attrName)[:searchLen]:
-				self.result.append(xTIG)
-					
-		self.result = sorted(self.result)
-		self.output = self.outputGenerator()
-		'''
 	
 	def reSearch(self, searchString):
 		pattern = searchString.replace('*', '(.)*').replace('?', '(.)')
