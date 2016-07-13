@@ -138,6 +138,7 @@ class MainApp(Tk):
 		self.bool_menu_config_lang_spa = BooleanVar()
 		self.bool_menu_config_prettyprint = BooleanVar()
 		self.bool_menu_config_noSpaceInSelfClosingTag = BooleanVar()
+		self.bool_menu_config_caseSensitive = BooleanVar()
 		self.string_optionmenu_search = StringVar()
 		
 		#chequeo estado de BooleanVars de menues
@@ -148,9 +149,10 @@ class MainApp(Tk):
 			
 		if GL.defaultPrettyPrint:
 			self.bool_menu_config_prettyprint.set(True)
-			
 		if GL.eliminateSpaceInSelfClosingTag:
 			self.bool_menu_config_noSpaceInSelfClosingTag.set(True)
+		if GL.caseSensitiveSearch:
+			self.bool_menu_config_caseSensitive.set(True)
 		
 		#icono
 		try:
@@ -274,10 +276,17 @@ def fillMenu(mainApp):
 		menu_config.add_cascade(label=GL.names['menu_config_printmode'], menu=menu_config_printmode)
 		menu_config_printmode.add_checkbutton(label=GL.names['menu_config_printmode_prettyprint'],
 											  variable= mainApp.bool_menu_config_prettyprint, 
-											  command= lambda: mChangeDefaultPrettyPrint())
+											  command= lambda: mSwitchGlobal('GL.defaultPrettyPrint'))
 		menu_config_printmode.add_checkbutton(label=GL.names['menu_config_printmode_nospaceclosedtag'],
 											  variable= mainApp.bool_menu_config_noSpaceInSelfClosingTag, 
-											  command= lambda: mChangeSpaceInSelfClosingTag())
+											  command= lambda: mSwitchGlobal('GL.eliminateSpaceInSelfClosingTag'))
+											  
+		#menu de búsqueda
+		menu_config_search = Menu(menubar, tearoff=0)
+		menu_config.add_cascade(label=GL.names['menu_config_search'], menu=menu_config_search)
+		menu_config_search.add_checkbutton(label=GL.names['menu_config_search_caseSensitive'],
+										   variable=mainApp.bool_menu_config_caseSensitive,
+										   command= lambda: mSwitchGlobal('GL.caseSensitiveSearch'))
 		
 		
 def fillButtonBarFrame(mainApp):
@@ -309,6 +318,7 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_showCurrentSearch', lExcludeMenu, 2, 2, command = lambda: bShowGuts(mainApp.currentSearch))
 	getButton(xFrame, 'button_showDicTagsInTree', lExcludeMenu, 2, 1, command = lambda: bShowGuts(GL.dicTagsInTree))
 	getButton(xFrame, 'button_showXMLParentMap', lExcludeMenu, 2, 2, command = lambda: bShowGuts(GL.XMLParentMap))
+	getButton(xFrame, 'button_showCaseSensitive', lExcludeMenu, 2, 2, command = lambda: bShowGuts(GL.caseSensitiveSearch))
 	
 	
 	#campos para busqueda
@@ -587,17 +597,11 @@ def mChangeLang(mainApp, newLang):
 		GL.names = dicLang
 		refreshApp(mainApp)
 		
-def mChangeDefaultPrettyPrint():
-	if GL.defaultPrettyPrint:
-		GL.defaultPrettyPrint = False
+def mSwitchGlobal(varName):
+	if eval(varName) == True:
+		exec('%s = False' % varName)
 	else:
-		GL.defaultPrettyPrint = True
-		
-def mChangeSpaceInSelfClosingTag():
-	if GL.eliminateSpaceInSelfClosingTag:
-		GL.eliminateSpaceInSelfClosingTag = False
-	else:
-		GL.eliminateSpaceInSelfClosingTag = True
+		exec('%s = True' % varName)
 			
 #####################
 

@@ -9,18 +9,26 @@ class BasicSearch(object):
 		self.startingPoint = startingPoint
 		self.result = []
 		self.output = None
+		self.flags = 0
 		
 		self.numberTags()
 		
+		#defino campo de busqueda
 		if mode == 'Tags':
 			self.attrName = 'tag'
 		else:	#mode == 'Values' or 'Valores'
 			self.attrName = 'text'
 			
+		#defino si es case sensitive (y para otros flags del regex, si se llegan a usar)
+		if not GL.caseSensitiveSearch:
+			self.flags = re.IGNORECASE
+			
+		#defino modo de busqueda
 		if '*' in self.searchString:
 			self.reSearch(self.searchString)
 		else:
 			self.simpleSearch(self.searchString)		
+		
 		
 	def outputGenerator(self):
 		fromStart = False
@@ -43,7 +51,7 @@ class BasicSearch(object):
 		searchString += '(.)*'
 		
 		for xTIG in self.dicUsed.values():
-			if re.search(searchString, getattr(xTIG.getTag(), self.attrName)):
+			if re.search(searchString, getattr(xTIG.getTag(), self.attrName), self.flags):
 				self.result.append(xTIG)
 		
 		self.result = sorted(self.result)
@@ -54,7 +62,7 @@ class BasicSearch(object):
 		pattern = searchString.replace('*', '(.)*').replace('?', '(.)')
 		
 		for xTIG in self.dicUsed.values():
-			if re.search(pattern, getattr(xTIG.getTag(), self.attrName)):
+			if re.search(pattern, getattr(xTIG.getTag(), self.attrName), self.flags):
 				self.result.append(xTIG)
 				
 		self.result = sorted(self.result)

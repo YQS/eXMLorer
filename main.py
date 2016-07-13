@@ -13,6 +13,7 @@ def main(mode = 'main'):
 					'button_showCurrentSearch',
 					'button_showDicTagsInTree',
 					'button_showXMLParentMap',
+					'button_showCaseSensitive',
 					]
 
 	mainApp = tk_app.MainApp(lExcludeMenu=lExcludeMenu)

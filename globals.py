@@ -15,6 +15,7 @@ appTreeView = None
 lastTreeViewFocus = None
 defaultPrettyPrint = True
 eliminateSpaceInSelfClosingTag = True
+caseSensitiveSearch = False
 
 names = LANG.spanish
 
