@@ -87,16 +87,30 @@ def saveXML(XMLTree, filename):#, prettyPrint, eliminateSpaceInSelfClosingTag=Tr
 	#(solo reemplazo porque el toprettyxml de minidom ya le agrega la declaracion de xml)
 	if encoding <> '':
 		prettyXML = ET.tostring(XMLTree.getroot(), encoding).replace('<?xml version="1.0" ?>', '<?xml version="1.0" encoding="%s" ?>' % encoding)
+	else:
+		prettyXML = ET.tostring(XMLTree.getroot())
 	
 	#reemplazo los <tag /> por <tag/>
 	if GL.eliminateSpaceInSelfClosingTag:
-		xmltext = prettyXML.replace(' />', '/>')
-	else:
-		xmltext = prettyXML
+		prettyXML = prettyXML.replace(' />', '/>')
 	
 	with open(filename, 'w') as xmlfile:
-		xmlfile.write(xmltext)
+		xmlfile.write(prettyXML)
 		
+def getStringXML(elem):
+	if GL.defaultPrettyPrint:
+		prettify(elem)
+		
+	if GL.XMLEncoding <> '':
+		stringXML = ET.tostring(elem, GL.XMLEncoding)
+	else:
+		stringXML = ET.tostring(elem)
+	
+	if GL.eliminateSpaceInSelfClosingTag:
+		stringXML = stringXML.replace(' />', '/>')
+		
+	return stringXML
+
 		
 def prettify(elem, level=0, defaultIndentation='	'):
 	"""default indentation is Tab"""
