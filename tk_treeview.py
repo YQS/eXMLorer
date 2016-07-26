@@ -231,6 +231,7 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	
 	menu.add_command(label=GL.names['submenu_edittag'], state=ACTIVE, command= lambda:editTag(mainApp, focusTIG))
 	menu.add_command(label=GL.names['submenu_copytag'], state=ACTIVE, command= lambda:copyToClipboard(mainApp, focusTIG))
+	menu.add_command(label=GL.names['submenu_cuttag'], state=ACTIVE, command= lambda:copyToClipboard(mainApp, focusTIG, mode='CUT'))
 	menu.add_command(label=GL.names['submenu_pastetag'], state=ACTIVE, command= lambda:pasteFromClipboard(mainApp, focusTIG))
 	menu.add_separator()
 	
@@ -280,19 +281,21 @@ def copyToClipboard(mainApp, oTIG, mode='COPY'):
 		stringXML = xml_man.getStringXML(oTIG.getTag())
 		mainApp.clipboard_clear()
 		mainApp.clipboard_append(stringXML[ stringXML.find('\n')+1:])
-		#if mode == 'CUT':
+		if mode == 'CUT':
+			tk_app.deleteTagInTree(oTIG.id)
 		
 def pasteFromClipboard(mainApp, baseTIG):
 	if baseTIG <> None:
 		stringXML = mainApp.selection_get(selection='CLIPBOARD')
 		print stringXML
 		root = xml_man.parseStringXML(stringXML)
+		print 'root', root
 		
-		def createChildTIGs(mainApp, parentTIG):
+		def createChildTIGs(mainApp, parentTIG, level):
 			for xChild in parentTIG.getTag():
-				print 'paste has child'
+				print 'paste has child level', level
 				xChildTIG = tk_app.createNewTagInTree(mainApp, parentTIG, 'CHILD', oTag=xChild)
-				createChildTIGs(mainApp, xChildTIG)
+				createChildTIGs(mainApp, xChildTIG, level=level+1)
 		
 		rootTIG = tk_app.createNewTagInTree(mainApp, baseTIG, 'SIBLING', oTag=root)
-		createChildTIGs(mainApp, rootTIG)
+		createChildTIGs(mainApp, rootTIG, level=0)

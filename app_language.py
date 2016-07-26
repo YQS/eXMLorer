@@ -9,7 +9,7 @@ spanish = {
 'button_saveAs': 'Guardar como...',
 'button_newTag': 'Nuevo Tag',
 'button_newChildTag': 'Nuevo Child',
-'button_copyTag': 'Copiar Tag',
+'button_copyTag': 'Clonar Tag',
 'button_deleteTag': 'Borrar Tag',
 'button_glTreeView': 'Chequea árbol',
 'button_analyze': 'Imprime band_buttons',
@@ -56,6 +56,7 @@ spanish = {
 'submenu_cleanParentSubname': 'Limpiar definición de Subnombre',
 'submenu_edittag': 'Editar Tag',
 'submenu_copytag': 'Copiar Tag a Portapapeles',
+'submenu_cuttag': 'Cortar Tag a Portapapeles',
 'submenu_pastetag': 'Pegar Tag de Portapapeles',
 }
 
@@ -68,7 +69,7 @@ english = {
 'button_saveAs': 'Save as...',
 'button_newTag': 'New Tag',
 'button_newChildTag': 'New Child',
-'button_copyTag': 'Copy Tag',
+'button_copyTag': 'Clone Tag',
 'button_deleteTag': 'Delete Tag',
 'button_glTreeView': 'Check Treeview',
 'button_analyze': 'Print band_buttons',
@@ -115,5 +116,6 @@ english = {
 'submenu_cleanParentSubname': 'Clean subname definition',
 'submenu_edittag': 'Edit Tag',
 'submenu_copytag': 'Copy Tag to Clipboard',
+'submenu_cuttag': 'Cut Tag to Clipboard',
 'submenu_pastetag': 'Paste Tag from Clipboard',
 }

@@ -496,6 +496,8 @@ def createNewTagInTree(mainApp, baseTIG, mode, oTag=None):
 				if oTag == None:
 					xNewTag = xml_man.newElement(xParentTag, xTag, xText, xAttrib, xOrder)
 				else:
+					if mode == 'SIBLING':
+						xml_man.insertElement(xParentTag, oTag, xOrder)
 					xNewTag = oTag
 				
 				xID = getIDForTreeView( xNewTag.tag, GL.dicTagsInTree)
