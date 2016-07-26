@@ -32,6 +32,8 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	appTreeView.bind('<Button-3>', lambda event: contextMenu(event, band_buttons, dicTagsInTree))	
 	appTreeView.bind('<Shift-Up>', lambda event: moveNodeBind(event, dicTagsInTree))
 	appTreeView.bind('<Shift-Down>', lambda event: moveNodeBind(event, dicTagsInTree))
+	appTreeView.bind('<Control-Key-c>', lambda event: copyToClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None)))
+	appTreeView.bind('<Control-Key-C>', lambda event: copyToClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None)))
 	
 	return appTreeView
 	
@@ -225,6 +227,7 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	menu = Menu(GL.appTreeView, tearoff=0)
 	
 	menu.add_command(label=GL.names['submenu_edittag'], state=ACTIVE, command= lambda:editTag(mainApp, focusTIG))
+	menu.add_command(label=GL.names['submenu_copytag'], state=ACTIVE, command= lambda:copyToClipboard(mainApp, focusTIG))
 	menu.add_separator()
 	
 	menu.add_command(label= GL.names['submenu_selectParentSubname'], 
@@ -267,3 +270,9 @@ def editTag(mainApp, oTIG):
 		oTIG.parent_treeview.item(oTIG.id, text=oTIG.getTagName())
 		
 		fillBandButtons(GL.appTreeView, mainApp.frames.buttons, GL.dicTagsInTree)
+		
+def copyToClipboard(mainApp, oTIG):
+	if oTIG <> None:
+		stringXML = xml_man.getStringXML(oTIG.getTag())
+		mainApp.clipboard_clear()
+		mainApp.clipboard_append(stringXML[ stringXML.find('\n')+1:])

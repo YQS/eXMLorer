@@ -77,35 +77,23 @@ def getEncoding(filename):
 def saveXML(XMLTree, filename):#, prettyPrint, eliminateSpaceInSelfClosingTag=True):
 	print 'saving in %s' % filename
 	#XMLTree.write(filename, encoding=GL.XMLEncoding, xml_declaration=True)
-	
-	encoding = GL.XMLEncoding
 
-	if GL.defaultPrettyPrint:
-		prettify(XMLTree.getroot())
-	
-	#agrego el encoding en cabecera
-	#(solo reemplazo porque el toprettyxml de minidom ya le agrega la declaracion de xml)
-	if encoding <> '':
-		prettyXML = ET.tostring(XMLTree.getroot(), encoding).replace('<?xml version="1.0" ?>', '<?xml version="1.0" encoding="%s" ?>' % encoding)
-	else:
-		prettyXML = ET.tostring(XMLTree.getroot())
-	
-	#reemplazo los <tag /> por <tag/>
-	if GL.eliminateSpaceInSelfClosingTag:
-		prettyXML = prettyXML.replace(' />', '/>')
+	stringXML = getStringXML(XMLTree.getroot())
 	
 	with open(filename, 'w') as xmlfile:
-		xmlfile.write(prettyXML)
+		xmlfile.write(stringXML)
 		
 def getStringXML(elem):
 	if GL.defaultPrettyPrint:
 		prettify(elem)
 		
+	#se agrega el encoding, si existe
 	if GL.XMLEncoding <> '':
 		stringXML = ET.tostring(elem, GL.XMLEncoding)
 	else:
 		stringXML = ET.tostring(elem)
 	
+	#reemplazo los <tag /> por <tag/>
 	if GL.eliminateSpaceInSelfClosingTag:
 		stringXML = stringXML.replace(' />', '/>')
 		
