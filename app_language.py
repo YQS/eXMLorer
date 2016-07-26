@@ -56,6 +56,7 @@ spanish = {
 'submenu_cleanParentSubname': 'Limpiar definición de Subnombre',
 'submenu_edittag': 'Editar Tag',
 'submenu_copytag': 'Copiar Tag a Portapapeles',
+'submenu_pastetag': 'Pegar Tag de Portapapeles',
 }
 
 english = {
@@ -114,4 +115,5 @@ english = {
 'submenu_cleanParentSubname': 'Clean subname definition',
 'submenu_edittag': 'Edit Tag',
 'submenu_copytag': 'Copy Tag to Clipboard',
+'submenu_pastetag': 'Paste Tag from Clipboard',
 }

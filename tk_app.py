@@ -475,11 +475,14 @@ def saveXML(mainApp, modo):
 		mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
 		
 
-def createNewTagInTree(mainApp, baseTIG, mode):
+def createNewTagInTree(mainApp, baseTIG, mode, oTag=None):
 	if baseTIG <> None:
 		if baseTIG.parent_id <> '':
-			xTag, xText = getTagFromUser(mainApp)
-			if xTag <> '':
+			xTag = ''
+			if oTag == None:
+				xTag, xText = getTagFromUser(mainApp)
+				
+			if (xTag <> '') or (oTag <> None):
 				xAttrib = {}
 				if mode == 'SIBLING':
 					xBaseID = baseTIG.parent_id
@@ -490,13 +493,17 @@ def createNewTagInTree(mainApp, baseTIG, mode):
 					xParentTag = baseTIG.getTag()
 					xOrder = baseTIG.getNumberOfSiblings() + 1
 				
-				xNewTag = xml_man.newElement(xParentTag, xTag, xText, xAttrib, xOrder)
+				if oTag == None:
+					xNewTag = xml_man.newElement(xParentTag, xTag, xText, xAttrib, xOrder)
+				else:
+					xNewTag = oTag
 				
 				xID = getIDForTreeView( xNewTag.tag, GL.dicTagsInTree)
 				
 				newTagInTree = TIG.TagInTree(xBaseID, xID, xNewTag, xParentTag, GL.appTreeView, order = xOrder)
 				GL.dicTagsInTree[xID] = newTagInTree
 				selectAndFocus(xID)
+				return newTagInTree
 	
 def getTagFromUser(mainApp):
 	container = {}

@@ -5,6 +5,7 @@ from ttk import *
 import tkMessageBox
 import globals as GL
 import xml_man
+import tk_app
 import SSF
 
 def getTreeView(mainApp, band_buttons, dicTagsInTree):
@@ -34,6 +35,8 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	appTreeView.bind('<Shift-Down>', lambda event: moveNodeBind(event, dicTagsInTree))
 	appTreeView.bind('<Control-Key-c>', lambda event: copyToClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None)))
 	appTreeView.bind('<Control-Key-C>', lambda event: copyToClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None)))
+	appTreeView.bind('<Control-Key-v>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None)))
+	appTreeView.bind('<Control-Key-V>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None)))
 	
 	return appTreeView
 	
@@ -228,6 +231,7 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	
 	menu.add_command(label=GL.names['submenu_edittag'], state=ACTIVE, command= lambda:editTag(mainApp, focusTIG))
 	menu.add_command(label=GL.names['submenu_copytag'], state=ACTIVE, command= lambda:copyToClipboard(mainApp, focusTIG))
+	menu.add_command(label=GL.names['submenu_pastetag'], state=ACTIVE, command= lambda:pasteFromClipboard(mainApp, focusTIG))
 	menu.add_separator()
 	
 	menu.add_command(label= GL.names['submenu_selectParentSubname'], 
@@ -271,8 +275,24 @@ def editTag(mainApp, oTIG):
 		
 		fillBandButtons(GL.appTreeView, mainApp.frames.buttons, GL.dicTagsInTree)
 		
-def copyToClipboard(mainApp, oTIG):
+def copyToClipboard(mainApp, oTIG, mode='COPY'):
 	if oTIG <> None:
 		stringXML = xml_man.getStringXML(oTIG.getTag())
 		mainApp.clipboard_clear()
 		mainApp.clipboard_append(stringXML[ stringXML.find('\n')+1:])
+		#if mode == 'CUT':
+		
+def pasteFromClipboard(mainApp, baseTIG):
+	if baseTIG <> None:
+		stringXML = mainApp.selection_get(selection='CLIPBOARD')
+		print stringXML
+		root = xml_man.parseStringXML(stringXML)
+		
+		def createChildTIGs(mainApp, parentTIG):
+			for xChild in parentTIG.getTag():
+				print 'paste has child'
+				xChildTIG = tk_app.createNewTagInTree(mainApp, parentTIG, 'CHILD', oTag=xChild)
+				createChildTIGs(mainApp, xChildTIG)
+		
+		rootTIG = tk_app.createNewTagInTree(mainApp, baseTIG, 'SIBLING', oTag=root)
+		createChildTIGs(mainApp, rootTIG)

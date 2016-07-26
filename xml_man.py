@@ -46,6 +46,9 @@ def getXML(filename):
 	#showChilds(root, 1)
 	
 	return root
+	
+def parseStringXML(stringXML):
+	return ET.fromstring(stringXML)
 
 def getEncoding(filename):
 	def regex_search(xPattern, xString):
