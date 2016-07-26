@@ -319,6 +319,7 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_showDicTagsInTree', lExcludeMenu, 2, 1, command = lambda: bShowGuts(GL.dicTagsInTree))
 	getButton(xFrame, 'button_showXMLParentMap', lExcludeMenu, 2, 2, command = lambda: bShowGuts(GL.XMLParentMap))
 	getButton(xFrame, 'button_showCaseSensitive', lExcludeMenu, 2, 2, command = lambda: bShowGuts(GL.caseSensitiveSearch))
+	getButton(xFrame, 'button_captureStringXML', lExcludeMenu, 2, 2, command = lambda: printStringXML(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None)))
 	
 	
 	#campos para busqueda
@@ -571,6 +572,13 @@ def bCheckEntries(band_buttons):
 	for widget in band_buttons.winfo_children():
 		if isinstance(widget, Entry):
 			print widget.get()
+			
+def printStringXML(oTIG):
+	if oTIG <> None:
+		stringXML = xml_man.getStringXML(oTIG.getTag())
+		print stringXML[ stringXML.find('\n')+1:]
+	else:
+		print 'None selected'
 	
 def bShowGuts(thing):
 	print thing

@@ -14,6 +14,7 @@ def main(mode = 'main'):
 					'button_showDicTagsInTree',
 					'button_showXMLParentMap',
 					'button_showCaseSensitive',
+					#'button_captureStringXML',
 					]
 
 	mainApp = tk_app.MainApp(lExcludeMenu=lExcludeMenu)
