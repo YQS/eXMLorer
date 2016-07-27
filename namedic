@@ -1,21 +1,22 @@
-{'ColumnDef': 'QueryFieldName',
+{'CategoryOrder': 'Section',
+ 'ReferenceParam': 'TextQueryFieldName',
+ 'DataViewAttributeDef': 'QueryFieldName',
+ 'DependsOn': 'ColumnName',
  'asdf': 'sdfasdf',
+ 'OwnershipListAttributeDef': 'Name',
+ 'SimpleAttributeDef': 'Name',
+ 'DataViewActionDef': 'Name',
+ 'SimpleParam': 'Name',
+ 'EnumFieldDef': 'FieldName',
+ 'QueryFieldDef': 'FieldName',
+ 'food': 'name',
+ 'DataViewDef': 'DescriptionColumnName',
+ 'ActionDef': 'Name',
+ 'ColumnDef': 'QueryFieldName',
  'VariableDef': 'AttributeName',
  'FlagAttributeDef': 'TransactionTypeFieldName',
- 'EnumDataSourceDef': 'Name',
- 'DataViewDef': 'DescriptionColumnName',
- 'SimpleAttributeDef': 'Name',
  'Entity': 'SchemaName',
- 'ReferenceParam': 'TextQueryFieldName',
  'QueryDef': 'ConnectionName',
- 'ActionDef': 'Name',
- 'DataViewAttributeDef': 'QueryFieldName',
  'ReferenceAttributeDef': 'Name',
- 'EnumFieldDef': 'FieldName',
- 'DependsOn': 'ColumnName',
- 'QueryFieldDef': 'FieldName',
  'FilterField': 'QueryFieldName',
- 'DataViewActionDef': 'Name',
- 'CategoryOrder': 'Section',
- 'SimpleParam': 'Name',
- 'OwnershipListAttributeDef': 'Name'}
+ 'EnumDataSourceDef': 'Name'}

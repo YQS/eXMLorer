@@ -20,7 +20,7 @@ class TagInTree(object):
 		self.setTag(xmltag)
 		self.setNode(parent_id, id, treeview, order)
 		self.setColumn('data', self.getTag().text)
-		#self.setColumn('name', self.id)
+		self.setColumn('subname', self.subname)
 		#self.setColumn('size', self.subname)
 		
 	def __del__(self):
@@ -53,7 +53,8 @@ class TagInTree(object):
 		
 	def setNode(self, parent_id, id, treeview, order):
 		#Asume que self.xmltag ya está asignado (por ahí conviene hacer una verificación)
-		self.treenode = treeview.insert(parent_id, order, id, text= self.tagname + ' ' + getSubnameOfTag(self.xmltag) )
+		#self.treenode = treeview.insert(parent_id, order, id, text= self.tagname + ' ' + getSubnameOfTag(self.xmltag) )
+		self.treenode = treeview.insert(parent_id, order, id, text= self.tagname)
 		self.parent_treeview = treeview
 		
 	def setColumn(self, column, value):

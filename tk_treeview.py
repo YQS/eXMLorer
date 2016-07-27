@@ -9,23 +9,18 @@ import tk_app
 import SSF
 
 def getTreeView(mainApp, band_buttons, dicTagsInTree):
-	appTreeView = Treeview(mainApp, columns=('data','name', 'size'))
+	appTreeView = Treeview(mainApp, columns=('data','subname',))
 	appTreeView.pack(side="left",fill=BOTH)
 	
 	setScrollbar(mainApp, appTreeView)
-	#scroll_treeview = Scrollbar(mainApp,command=appTreeView.yview)
-	#appTreeView.configure(yscrollcommand=scroll_treeview.set)
-	#scroll_treeview.pack(side="right",fill="y")
 	
+	appTreeView.column('subname', width=150, anchor='w')
 	appTreeView.column('data', width=500, anchor='w')
-	appTreeView.column('name', width=200, anchor='e')
-	appTreeView.column('size', width=200, anchor='e')
+	appTreeView.heading('subname', text= GL.names['column-subname'])
 	appTreeView.heading('data', text= GL.names['column-data'])
-	appTreeView.heading('name', text= GL.names['column-name'])
-	appTreeView.heading('size', text= GL.names['column-size'])
 	
-	#indico que solo muestre la columna 'data'
-	appTreeView.configure(displaycolumns=('data'))
+	#indico las columnas a mostrar
+	appTreeView.configure(displaycolumns=('subname', 'data'))
 			
 	#events
 	#appTreeView.bind('<Double-Button-2>', lambda event: editTag(event.widget.master.master.master, dicTagsInTree[GL.appTreeView.identify_row(event.y)])) #la ruta larga es para llegar bien al mainApp
@@ -176,7 +171,7 @@ def updateTreeNode(value, oTagInTree):
 		#print entry.get()
 		print value
 		oTagInTree.getTag().text = value
-		oTagInTree.setColumn( 'data', value)
+		oTagInTree.setColumn('data', value)
 		return True
 		
 
