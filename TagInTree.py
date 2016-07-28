@@ -81,7 +81,7 @@ class TagInTree(object):
 		
 	def updateSubname(self, newSubname):
 		self.subname = newSubname
-		self.parent_treeview.item(self.id, text= self.tagname + ' ' + self.subname)
+		#self.parent_treeview.item(self.id, text= self.tagname + ' ' + self.subname)
 
 		
 	# GETS
