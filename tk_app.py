@@ -276,17 +276,17 @@ def fillMenu(mainApp):
 		menu_config.add_cascade(label=GL.names['menu_config_printmode'], menu=menu_config_printmode)
 		menu_config_printmode.add_checkbutton(label=GL.names['menu_config_printmode_prettyprint'],
 											  variable= mainApp.bool_menu_config_prettyprint, 
-											  command= lambda: mSwitchGlobal('GL.defaultPrettyPrint'))
+											  command= lambda: mSwitchGlobal('GL.defaultPrettyPrint', 'pretty_print'))
 		menu_config_printmode.add_checkbutton(label=GL.names['menu_config_printmode_nospaceclosedtag'],
 											  variable= mainApp.bool_menu_config_noSpaceInSelfClosingTag, 
-											  command= lambda: mSwitchGlobal('GL.eliminateSpaceInSelfClosingTag'))
+											  command= lambda: mSwitchGlobal('GL.eliminateSpaceInSelfClosingTag', 'no_spaces_in_closed_tag'))
 											  
 		#menu de búsqueda
 		menu_config_search = Menu(menubar, tearoff=0)
 		menu_config.add_cascade(label=GL.names['menu_config_search'], menu=menu_config_search)
 		menu_config_search.add_checkbutton(label=GL.names['menu_config_search_caseSensitive'],
 										   variable=mainApp.bool_menu_config_caseSensitive,
-										   command= lambda: mSwitchGlobal('GL.caseSensitiveSearch'))
+										   command= lambda: mSwitchGlobal('GL.caseSensitiveSearch', 'case_sensitive'))
 		
 		
 def fillButtonBarFrame(mainApp):
@@ -612,13 +612,16 @@ def mChangeLang(mainApp, newLang):
 	
 	if dicLang['lang'] <> GL.names['lang']:
 		GL.names = dicLang
+		GL.updateConfigFile('Configuration', 'language', dicLang['lang'])
 		refreshApp(mainApp)
 		
-def mSwitchGlobal(varName):
+def mSwitchGlobal(varName, varConfigName):
 	if eval(varName) == True:
 		exec('%s = False' % varName)
+		GL.updateConfigFile('Configuration', varConfigName, 'False')
 	else:
 		exec('%s = True' % varName)
+		GL.updateConfigFile('Configuration', varConfigName, 'True')
 			
 #####################
 

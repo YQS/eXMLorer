@@ -1,6 +1,6 @@
 {'CategoryOrder': 'Section',
  'ReferenceParam': 'TextQueryFieldName',
- 'DataViewAttributeDef': 'QueryFieldName',
+ 'DataViewAttributeDef': 'Name',
  'DependsOn': 'ColumnName',
  'asdf': 'sdfasdf',
  'OwnershipListAttributeDef': 'Name',

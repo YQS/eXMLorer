@@ -4,12 +4,12 @@ import globals as GL
 import tk_app
 
 def main(mode = 'main'):
-	lExcludeMenu = ['button_analyze', 
+	lExcludeMenu = ['button_analyze',
 					'button_glTreeView',
 					'button_dicSubnames',
 					'button_getDicSubnames',
 					'button_printEncoding',
-					'button_printPrettyPrint', 
+					'button_printPrettyPrint',
 					'button_showCurrentSearch',
 					'button_showDicTagsInTree',
 					'button_showXMLParentMap',
@@ -17,9 +17,11 @@ def main(mode = 'main'):
 					'button_captureStringXML',
 					]
 
+	GL.globalVarsStart()
+	
 	mainApp = tk_app.MainApp(lExcludeMenu=lExcludeMenu)
 	tk_app.openXML(mainApp)
-		
+	
 	mainApp.focus_set()
 	mainApp.mainloop()
 	
