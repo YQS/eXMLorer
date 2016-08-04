@@ -11,6 +11,7 @@
  'QueryFieldDef': 'FieldName',
  'food': 'name',
  'DataViewDef': 'DescriptionColumnName',
+ 'ReferenceListAttributeDef': 'QueryName',
  'ActionDef': 'Name',
  'ColumnDef': 'QueryFieldName',
  'VariableDef': 'AttributeName',
