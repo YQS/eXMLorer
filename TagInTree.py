@@ -60,8 +60,10 @@ class TagInTree(object):
 	def setColumn(self, column, value):
 		#print value
 		if value <> None:
-			value = value.encode(encoding='UTF-8')
-			self.parent_treeview.set( self.id, column, value[:GL.dataColumnTextLimit] )
+			uvalue = value
+			#uvalue = value.encode(encoding='UTF-8')
+			#uvalue = value.decode(encoding=GL.XMLEncoding)
+			self.parent_treeview.set( self.id, column, uvalue[:GL.dataColumnTextLimit] )
 			#self.parent_treeview.set( self.id, column, value )
 	
 	
@@ -78,6 +80,10 @@ class TagInTree(object):
 		self.xmltag.text = newValue
 		self.tagname = self.getTagName()
 		self.subname = getSubnameOfTag(self.xmltag)
+		
+		self.parent_treeview.item(self.id, text=self.tagname)
+		self.setColumn('data', self.getTag().text)
+		self.setColumn('subname', self.subname)
 		
 	def updateSubname(self, newSubname):
 		self.subname = newSubname

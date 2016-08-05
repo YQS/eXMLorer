@@ -58,6 +58,9 @@ class ToplevelFromMain(Toplevel):
 		self.geometry('+%d+%d' % (master.winfo_rootx()+50, master.winfo_rooty()+50))
 		self.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
 		
+		self.bind('<Alt-a>', lambda event: self.apply())
+		self.bind('<Alt-A>', lambda event: self.apply())
+		
 	def createButtons(self):
 		Button(self.buttons, text=GL.names['button_ok'], width=GL.buttonWidth, command=lambda: self.apply()).grid(row=0, column=0)
 		Button(self.buttons, text=GL.names['button_cancel'], width=GL.buttonWidth, command=lambda: self.cancel()).grid(row=0, column=1)
@@ -66,7 +69,11 @@ class ToplevelFromMain(Toplevel):
 		Label(self.body, text=labelText).grid(row=xRow, column=0, sticky='e')
 		xEntry = Entry(self.body, width=30)
 		xEntry.grid(row=xRow, column=1, sticky='w')
-		xEntry.insert(0, self.result.setdefault(labelText, ''))
+		stringToInsert = self.result.setdefault(labelText, '')
+		if stringToInsert == None:
+			stringToInsert = ''
+		#xEntry.insert(0, self.result.setdefault(labelText, u''))
+		xEntry.insert(0, stringToInsert)
 		self.entries[labelText] = xEntry
 		if self.firstField == None:
 			self.firstField = xEntry
@@ -113,6 +120,7 @@ class ToplevelFromMain(Toplevel):
 		self.parent.focus_set()
 		self.destroy()
 
+		
 class FramePack(object):
 	def __init__(self, master):
 		self.menu = FrameExt(master)
