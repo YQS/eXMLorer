@@ -12,6 +12,7 @@ import TagInTree as TIG
 import xml_man
 import tk_treeview
 from search_man import BasicSearch
+import sql_formatter as SQLFORMAT
 
 
 # CLASSES
@@ -47,10 +48,12 @@ class ToplevelFromMain(Toplevel):
 		self.parent = master
 		self.result  = container
 		self.entries = {}
+		self.upper = Frame(self)
 		self.body    = Frame(self)
 		self.buttons = Frame(self)
 		self.firstField = None
 		
+		self.upper.pack(side=TOP, fill=X)
 		self.body.pack(side=TOP, fill=BOTH, expand=True)
 		self.buttons.pack(side=BOTTOM, fill=X)
 		self.createButtons()
@@ -80,18 +83,31 @@ class ToplevelFromMain(Toplevel):
 		
 	def textFieldConstructor(self, labelText, value):
 		#Label(self.body, text=labelText).grid(row=0, column=0, sticky='nw')
-		Label(self.body, text=labelText).pack()
+		Label(self.body, text=labelText).pack(side=TOP)
+		
 		#xTextbox = Text(self.body) ## ver que width y height poner
 		xTextbox = ScrollText(self.body)
 		#xTextbox.bind('<KeyRelease>', lambda event: apply())
 		xTextbox.bind('<Control-Key-a>', lambda event: selectAllText(event) )
 		xTextbox.bind('<Control-Key-A>', lambda event: selectAllText(event) )
 		#xTextbox.grid(row=1, column=0, sticky='nw')
-		xTextbox.pack(fill=BOTH, expand=True)
+		xTextbox.pack(side=BOTTOM, fill=BOTH, expand=True)
 		xTextbox.insert('1.0', value)
 		self.entries[labelText] = xTextbox
 		if self.firstField == None:
 			self.firstField = xTextbox
+			
+		#SQL buttons
+		if GL.useSQLButtons:
+			Button(self.upper, text=GL.names['toplevel_sql_linefy'], width=GL.buttonWidth, command= lambda: self.bSQLButtons(SQLFORMAT.simpleLinefy)).grid(row=0, column=0)
+			Button(self.upper, text=GL.names['toplevel_sql_prettyprint'], width=GL.buttonWidth, command= lambda: self.bSQLButtons(SQLFORMAT.simplePrettify)).grid(row=0, column=1)
+			
+	def bSQLButtons(self, SQLfunction):
+		#asumo que si uso estas funciones, el firstField es el campo que me interesa
+		text = self.firstField.get('1.0', 'end')
+		text = SQLfunction(text)
+		self.firstField.delete('1.0', 'end')
+		self.firstField.insert('1.0', text)
 		
 	def show(self):
 		self.wait_visibility()
@@ -147,9 +163,10 @@ class MainApp(Tk):
 		self.bool_menu_config_prettyprint = BooleanVar()
 		self.bool_menu_config_noSpaceInSelfClosingTag = BooleanVar()
 		self.bool_menu_config_caseSensitive = BooleanVar()
+		self.bool_menu_config_others_SQLButtons = BooleanVar()
 		self.string_optionmenu_search = StringVar()
 		
-		#chequeo estado de BooleanVars de menues
+		#chequeo estado inicial de BooleanVars de menues
 		if GL.names['lang'] == 'Español':
 			self.bool_menu_config_lang_spa.set(True)
 		else:
@@ -161,6 +178,8 @@ class MainApp(Tk):
 			self.bool_menu_config_noSpaceInSelfClosingTag.set(True)
 		if GL.caseSensitiveSearch:
 			self.bool_menu_config_caseSensitive.set(True)
+		if GL.useSQLButtons:
+			self.bool_menu_config_others_SQLButtons.set(True)
 		
 		#icono
 		try:
@@ -295,6 +314,13 @@ def fillMenu(mainApp):
 		menu_config_search.add_checkbutton(label=GL.names['menu_config_search_caseSensitive'],
 										   variable=mainApp.bool_menu_config_caseSensitive,
 										   command= lambda: mSwitchGlobal('GL.caseSensitiveSearch', 'case_sensitive'))
+										   
+		#menu otros
+		menu_config_others = Menu(menubar, tearoff=0)
+		menu_config.add_cascade(label=GL.names['menu_config_others'], menu=menu_config_others)
+		menu_config_others.add_checkbutton(label=GL.names['menu_config_others_SQLButtons'],
+										   variable=mainApp.bool_menu_config_others_SQLButtons,
+										   command= lambda: mSwitchGlobal('GL.useSQLButtons', 'use_SQL_buttons'))
 		
 		
 def fillButtonBarFrame(mainApp):

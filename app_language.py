@@ -41,6 +41,8 @@ spanish = {
 'menu_config_printmode_nospaceclosedtag': 'Sin espacios en Tag cerrado',  
 'menu_config_search': 'Búsquedas',
 'menu_config_search_caseSensitive': 'Distingue mayúsculas',
+'menu_config_others': 'Otros',
+'menu_config_others_SQLButtons': 'Usar Botones SQL',
 'menu_file': 'Archivo',
 'menu_file_open': 'Abrir',
 'menu_file_save': 'Guardar',
@@ -59,6 +61,8 @@ spanish = {
 'submenu_copytag': 'Copiar Tag a Portapapeles',
 'submenu_cuttag': 'Cortar Tag a Portapapeles',
 'submenu_pastetag': 'Pegar Tag de Portapapeles',
+'toplevel_sql_linefy': 'Linificar',
+'toplevel_sql_prettyprint': 'Formatear',
 }
 
 english = {
@@ -102,6 +106,8 @@ english = {
 'menu_config_printmode_nospaceclosedtag': 'No spaces in closed Tag', 
 'menu_config_search': 'Search',
 'menu_config_search_caseSensitive': 'Case Sensitive',
+'menu_config_others': 'Others',
+'menu_config_others_SQLButtons': 'Use SQL Buttons',
 'menu_file': 'File',
 'menu_file_open': 'Open',
 'menu_file_save': 'Save',
@@ -120,4 +126,6 @@ english = {
 'submenu_copytag': 'Copy Tag to Clipboard',
 'submenu_cuttag': 'Cut Tag to Clipboard',
 'submenu_pastetag': 'Paste Tag from Clipboard',
+'toplevel_sql_linefy': 'Linefy',
+'toplevel_sql_prettyprint': 'Pretty Print',
 }
