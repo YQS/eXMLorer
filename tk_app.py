@@ -419,8 +419,10 @@ def getButton(xMaster, name, lExcludeMenu, xRow, xColumn, command=''):
 		xButton.grid(column=xColumn, row=xRow)
 
 def getFilename():
-	filename = tkFileDialog.askopenfilename(defaultextension='.xml', filetypes = [('XML files', '.xml'), ('all files', '.*')])
+	filename = tkFileDialog.askopenfilename(defaultextension='.xml', filetypes = [('XML files', '.xml'), ('all files', '.*')], initialdir=GL.lastFolderVisited)
 	print filename
+	GL.lastFolderVisited = filename[:filename.rfind('\\')]
+	
 	return filename
 
 def getIDForTreeView(xTag, dicTagsInTree):
