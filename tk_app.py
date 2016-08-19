@@ -381,7 +381,11 @@ def basicSearch(mainApp, searchString, xIDFocus):
 				xStartingPoint = 0
 			mainApp.currentSearch = BasicSearch(searchString, GL.dicTagsInTree, mainApp.string_optionmenu_search.get(), xStartingPoint)
 		
-		selectAndFocus(mainApp.currentSearch.output.next())
+		nextFocus = mainApp.currentSearch.output.next()
+		if nextFocus == '':
+			tkMessageBox.showinfo("eXMLorer", GL.names['message_nofinds'])
+		else:
+			selectAndFocus(mainApp.currentSearch.output.next())
 	
 	
 def fillFooterFrame(mainApp):

@@ -51,7 +51,10 @@ class BasicSearch(object):
 		searchString += '(.)*'
 		
 		for xTIG in self.dicUsed.values():
-			if re.search(searchString, getattr(xTIG.getTag(), self.attrName), self.flags):
+			rawText = getattr(xTIG.getTag(), self.attrName)
+			if rawText == None:
+				rawText = ''
+			if re.search(searchString, rawText, self.flags):
 				self.result.append(xTIG)
 		
 		self.result = sorted(self.result)
