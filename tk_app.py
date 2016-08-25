@@ -13,6 +13,7 @@ import xml_man
 import tk_treeview
 from search_man import BasicSearch
 import sql_formatter as SQLFORMAT
+import module_interface as MOD
 
 
 # CLASSES
@@ -97,10 +98,9 @@ class ToplevelFromMain(Toplevel):
 		if self.firstField == None:
 			self.firstField = xTextbox
 			
-		#SQL buttons
-		if GL.useSQLButtons:
-			Button(self.upper, text=GL.names['toplevel_sql_linefy'], width=GL.buttonWidth, command= lambda: self.bSQLButtons(SQLFORMAT.simpleLinefy)).grid(row=0, column=0)
-			Button(self.upper, text=GL.names['toplevel_sql_prettyprint'], width=GL.buttonWidth, command= lambda: self.bSQLButtons(SQLFORMAT.simplePrettify)).grid(row=0, column=1)
+		#SQL buttons from module
+		params = {'parent':self.upper, 'field':self.firstField}
+		MOD.runModules('TOPLEVEL', params)
 			
 	def bSQLButtons(self, SQLfunction):
 		#asumo que si uso estas funciones, el firstField es el campo que me interesa
