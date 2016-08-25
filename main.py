@@ -2,6 +2,7 @@
 
 import globals as GL
 import tk_app
+import module_interface as MOD
 
 def main(mode = 'main'):
 	lExcludeMenu = ['button_analyze',
@@ -18,6 +19,7 @@ def main(mode = 'main'):
 					]
 
 	GL.globalVarsStart()
+	MOD.startModules()
 	
 	mainApp = tk_app.MainApp(lExcludeMenu=lExcludeMenu)
 	tk_app.openXML(mainApp)

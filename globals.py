@@ -17,6 +17,10 @@ dicTagsInTree = {}
 appTreeView = None
 lastTreeViewFocus = None
 
+#MODULES GLOBALS
+moduleDirectory = 'modules'
+moduleDic = {}
+
 #CONFIGURABLES FROM CFG
 configFileName = 'config.cfg'
 defaultPrettyPrint = True
