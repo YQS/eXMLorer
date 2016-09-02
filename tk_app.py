@@ -361,7 +361,7 @@ def fillButtonBarFrame(mainApp):
 	frame_search.configure(text=GL.names['frame_search'])
 	frame_search.grid(row=1, column=4, sticky='wn')
 	
-	searchOptions = (GL.names['option_tags'], GL.names['option_values'])
+	searchOptions = (GL.names['option_tags'], GL.names['option_values'], GL.names['option_xpath'])
 	optionmenu_search = OptionMenu(frame_search, mainApp.string_optionmenu_search, searchOptions[0], *searchOptions)
 	optionmenu_search.configure(width= GL.buttonWidth)
 	optionmenu_search.grid(row=0, column=0, sticky='wn')

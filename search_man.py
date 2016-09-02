@@ -1,6 +1,8 @@
 #encoding: UTF-8
 import re
+from operator import attrgetter
 import globals as GL
+
 
 class BasicSearch(object):
 	def __init__(self, searchString, dicUsed, mode, startingPoint):
@@ -13,24 +15,28 @@ class BasicSearch(object):
 		
 		self.numberTags()
 		
-		#defino campo de busqueda
-		if mode == 'Tags':
-			self.attrName = 'tag'
-		else:	#mode == 'Values' or 'Valores'
-			self.attrName = 'text'
-			
 		#defino si es case sensitive (y para otros flags del regex, si se llegan a usar)
 		if not GL.caseSensitiveSearch:
 			self.flags = re.IGNORECASE
-			
-		#defino modo de busqueda
-		if '*' in self.searchString:
-			self.reSearch(self.searchString)
+		
+		if mode == "XPath":
+			self.xPathSearch(self.searchString)
 		else:
-			self.simpleSearch(self.searchString)		
+			#defino campo de busqueda
+			if mode == 'Tags':
+				self.attrName = 'tag'
+			else:	#mode == 'Values' or 'Valores'
+				self.attrName = 'text'
+				
+			#defino modo de busqueda
+			if '*' in self.searchString:
+				self.reSearch(self.searchString)
+			else:
+				self.simpleSearch(self.searchString)		
 		
 		
 	def outputGenerator(self):
+		self.result = sorted(self.result, key=attrgetter('tag_order'))
 		fromStart = False
 	
 		while True:
@@ -56,8 +62,7 @@ class BasicSearch(object):
 				rawText = ''
 			if re.search(searchString, rawText, self.flags):
 				self.result.append(xTIG)
-		
-		self.result = sorted(self.result)
+
 		self.output = self.outputGenerator()
 		
 	
@@ -67,9 +72,20 @@ class BasicSearch(object):
 		for xTIG in self.dicUsed.values():
 			if re.search(pattern, getattr(xTIG.getTag(), self.attrName), self.flags):
 				self.result.append(xTIG)
-				
-		self.result = sorted(self.result)
+
 		self.output = self.outputGenerator()
+		
+		
+	def xPathSearch(self, searchString):
+		root = GL.XMLTree.getroot()
+		foundTags = root.findall(searchString)
+		
+		for xTIG in self.dicUsed.values():
+			if xTIG.getTag() in foundTags:
+				self.result.append(xTIG)
+
+		self.output = self.outputGenerator()
+		
 		
 	def numberTags(self):
 		def numberChilds(xTIG, n):
@@ -84,3 +100,14 @@ class BasicSearch(object):
 		rootTIG.tag_order = n
 		n+=1
 		numberChilds(rootTIG, n)
+		
+	
+def xPathSearch(path):
+	return GL.XMLTree.getroot().findall(path)
+'''
+class XPathSearch(object):
+	def __init__(self, root, path):
+		self.root = root
+		self.path = path
+		#self.returnList = returnList
+'''
