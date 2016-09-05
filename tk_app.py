@@ -354,6 +354,8 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_showXMLParentMap', lExcludeMenu, 2, 2, command = lambda: bShowGuts(GL.XMLParentMap))
 	getButton(xFrame, 'button_showCaseSensitive', lExcludeMenu, 2, 2, command = lambda: bShowGuts(GL.caseSensitiveSearch))
 	getButton(xFrame, 'button_captureStringXML', lExcludeMenu, 2, 2, command = lambda: printStringXML(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None)))
+	getButton(xFrame, 'button_showSearchResult', lExcludeMenu, 2, 2, command = lambda: bShowGuts(mainApp.currentSearch.result))
+	getButton(xFrame, 'button_showSearchStartingPoint', lExcludeMenu, 2, 3, command = lambda: bShowGuts(mainApp.currentSearch.startingPoint))
 	
 	
 	#campos para busqueda
@@ -385,7 +387,7 @@ def basicSearch(mainApp, searchString, xIDFocus):
 		if nextFocus == '':
 			tkMessageBox.showinfo("eXMLorer", GL.names['message_nofinds'])
 		else:
-			selectAndFocus(mainApp.currentSearch.output.next())
+			selectAndFocus(nextFocus)
 	
 	
 def fillFooterFrame(mainApp):

@@ -16,6 +16,8 @@ def main(mode = 'main'):
 					'button_showXMLParentMap',
 					'button_showCaseSensitive',
 					'button_captureStringXML',
+					'button_showSearchResult', 
+					'button_showSearchStartingPoint', 
 					]
 
 	GL.globalVarsStart()
