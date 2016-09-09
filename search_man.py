@@ -102,8 +102,11 @@ class BasicSearch(object):
 		numberChilds(rootTIG, n)
 		
 	
-def xPathSearch(path):
-	return GL.XMLTree.getroot().findall(path)
+def xPathSearch(path, tag=None):
+	if tag <> None:
+		return tag.findall(path)
+	else:
+		return GL.XMLTree.getroot().findall(path)
 '''
 class XPathSearch(object):
 	def __init__(self, root, path):
