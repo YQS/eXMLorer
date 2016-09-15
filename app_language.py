@@ -64,7 +64,8 @@ spanish = {
 'submenu_edittag': 'Editar Tag',
 'submenu_copytag': 'Copiar Tag a Portapapeles',
 'submenu_cuttag': 'Cortar Tag a Portapapeles',
-'submenu_pastetag': 'Pegar Tag de Portapapeles',
+'submenu_pastetag': 'Pegar Tag desde Portapapeles',
+'submenu_pastetagaschild': 'Pegar Tag desde Portapapeles (como Hijo)', 
 'toplevel_sql_linefy': 'Linificar',
 'toplevel_sql_prettyprint': 'Formatear',
 }
@@ -134,6 +135,7 @@ english = {
 'submenu_copytag': 'Copy Tag to Clipboard',
 'submenu_cuttag': 'Cut Tag to Clipboard',
 'submenu_pastetag': 'Paste Tag from Clipboard',
+'submenu_pastetagaschild':  'Paste Tag from Clipboard (as Child)', 
 'toplevel_sql_linefy': 'Linefy',
 'toplevel_sql_prettyprint': 'Pretty Print',
 }
