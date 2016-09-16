@@ -25,6 +25,7 @@ moduleDic = {}
 configFileName = 'config.cfg'
 defaultPrettyPrint = True
 eliminateSpaceInSelfClosingTag = True
+linefyAtSave = True
 caseSensitiveSearch = False
 useSQLButtons = False
 names = LANG.spanish
@@ -49,6 +50,7 @@ def globalVarsStart():
 	
 	defaultPrettyPrint = config.getboolean('Configuration', 'pretty_print')
 	eliminateSpaceInSelfClosingTag = config.getboolean('Configuration', 'no_spaces_in_closed_tag')
+	linefyAtSave = config.getboolean('Configuration', 'linefy_at_save')
 	caseSensitiveSearch = config.getboolean('Configuration', 'case_sensitive')
 	useSQLButtons = config.getboolean('Configuration', 'use_SQL_buttons')
 	
@@ -63,6 +65,7 @@ def createConfigFile(configFileName):
 	config.add_section('Configuration')
 	config.set('Configuration', 'pretty_print', 'True')
 	config.set('Configuration', 'no_spaces_in_closed_tag', 'True')
+	config.set('Configuration', 'linefy_at_save', 'True')
 	config.set('Configuration', 'case_sensitive', 'False')
 	config.set('Configuration', 'use_SQL_buttons', 'False')
 	config.set('Configuration', 'language', 'Español')

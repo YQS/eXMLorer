@@ -162,6 +162,7 @@ class MainApp(Tk):
 		self.bool_menu_config_lang_spa = BooleanVar()
 		self.bool_menu_config_prettyprint = BooleanVar()
 		self.bool_menu_config_noSpaceInSelfClosingTag = BooleanVar()
+		self.bool_menu_config_linefyAtSave = BooleanVar()
 		self.bool_menu_config_caseSensitive = BooleanVar()
 		self.bool_menu_config_others_SQLButtons = BooleanVar()
 		self.string_optionmenu_search = StringVar()
@@ -176,6 +177,8 @@ class MainApp(Tk):
 			self.bool_menu_config_prettyprint.set(True)
 		if GL.eliminateSpaceInSelfClosingTag:
 			self.bool_menu_config_noSpaceInSelfClosingTag.set(True)
+		if GL.linefyAtSave:
+			self.bool_menu_config_linefyAtSave.set(True)
 		if GL.caseSensitiveSearch:
 			self.bool_menu_config_caseSensitive.set(True)
 		if GL.useSQLButtons:
@@ -307,6 +310,9 @@ def fillMenu(mainApp):
 		menu_config_printmode.add_checkbutton(label=GL.names['menu_config_printmode_nospaceclosedtag'],
 											  variable= mainApp.bool_menu_config_noSpaceInSelfClosingTag, 
 											  command= lambda: mSwitchGlobal('GL.eliminateSpaceInSelfClosingTag', 'no_spaces_in_closed_tag'))
+		menu_config_printmode.add_checkbutton(label=GL.names['menu_config_printmode_linefyatsave'],
+											  variable= mainApp.bool_menu_config_linefyAtSave, 
+											  command= lambda: mSwitchGlobal('GL.linefyAtSave', 'no_spaces_in_closed_tag'))
 											  
 		#menu de búsqueda
 		menu_config_search = Menu(menubar, tearoff=0)

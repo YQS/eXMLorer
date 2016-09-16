@@ -88,7 +88,7 @@ def saveXML(XMLTree, filename):#, prettyPrint, eliminateSpaceInSelfClosingTag=Tr
 		
 def getStringXML(elem):
 	if GL.defaultPrettyPrint:
-		prettify(elem)
+		prettify(elem, linefy=GL.linefyAtSave)
 		
 	#se agrega el encoding, si existe
 	if GL.XMLEncoding <> '':
@@ -103,7 +103,7 @@ def getStringXML(elem):
 	return stringXML
 
 		
-def prettify(elem, level=0, defaultIndentation='	'):
+def prettify(elem, level=0, defaultIndentation='	', linefy=False):
 	"""default indentation is Tab"""
 	i = "\n" + level*defaultIndentation
 	if len(elem):
@@ -112,12 +112,18 @@ def prettify(elem, level=0, defaultIndentation='	'):
 		if not elem.tail or not elem.tail.strip():
 			elem.tail = i
 		for elem in elem:
-			prettify(elem, level+1)
+			prettify(elem, level+1, linefy=linefy)
 		if not elem.tail or not elem.tail.strip():
 			elem.tail = i
 	else:
 		if level and (not elem.tail or not elem.tail.strip()):
 			elem.tail = i
+			if elem.text:
+				if linefy:
+					#copiado de simpleLinefy del modulo sql_buttons.py
+					elem.text = re.sub('[\s]+', ' ', elem.text.strip())
+				else:
+					elem.text = elem.text.rstrip()
 
 	
 def newElement(xParent, xTag, xText, xAttrib, xOrder):
