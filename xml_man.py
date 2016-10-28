@@ -144,6 +144,7 @@ def fileHasChanged(rootTag, filename):
 	try:
 		root2 = ET.parse(filename)
 	except:
+		print "could't parse filename"
 		return None
 	
-	return ET.tostring(rootTag) <> ET.tostring(root2.getroot())
+	return ET.tostring(rootTag).strip() <> ET.tostring(root2.getroot()).strip()
