@@ -5,6 +5,8 @@ from ttk import *
 import tkFileDialog
 import tkMessageBox
 from ScrolledText import ScrolledText as ScrollText
+from xml.etree.ElementTree import Comment
+import os.path
 
 import globals as GL
 import app_language as LANG
@@ -446,6 +448,11 @@ def getIDForTreeView(xTag, dicTagsInTree):
 	
 def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 	for xChild in xBase:
+		if xChild.tag is Comment:
+			print "IS COMMENT"
+			print xChild.text
+			print xChild.tag
+			print xChild.tail
 		if type(xChild.tag).__name__ == 'str':
 			xID = getIDForTreeView(xChild.tag, dicTagsInTree)
 			dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, xBase, appTreeView)
@@ -456,11 +463,12 @@ def askSaveChanges(mainApp):
 	#tkMessageBox.showerror('eXMLorer', 'Está saliendo del eXMLorer. Que tenga un buen día :)')
 	if mainApp.rootTIG == None:
 		response = 'no'
+	elif not os.path.isfile(GL.filename):
+		response = tkMessageBox.showwarning("eXMLorer", GL.names['message_filenotfound'] % GL.filename, type=tkMessageBox.YESNOCANCEL)
+	elif xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename):
+		response = tkMessageBox.showwarning("eXMLorer", GL.names['message_exitsave'] % GL.filename, type=tkMessageBox.YESNOCANCEL)
 	else:
-		if xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename):
-			response = tkMessageBox.showwarning("eXMLorer", GL.names['message_exitsave'] % GL.filename, type=tkMessageBox.YESNOCANCEL)
-		else:
-			response = 'no'
+		response = 'no'
 		
 	####################
 	if response == 'yes':
