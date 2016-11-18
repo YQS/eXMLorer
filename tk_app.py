@@ -549,7 +549,7 @@ def saveXML(mainApp, modo):
 		mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
 		
 
-def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False):
+def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False, text=''):
 	if baseTIG <> None:
 		if baseTIG.parent_id <> '':
 			#consigo datos para nuevo tag
@@ -558,8 +558,11 @@ def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False):
 				xTag = 'comment'
 				stringXML = xml_man.getStringXML(baseTIG.getTag())
 				xText = stringXML[ stringXML.find('\n')+1:]
+			elif text <> '':
+				xTag = getTagFromUser(mainApp)
+				xText = text
 			elif oTag == None:
-				xTag, xText = getTagFromUser(mainApp)
+				xTag, xText = getTagFromUser(mainApp, getValue=True)
 				
 			if (xTag <> '') or (oTag <> None):
 				xAttrib = {}
@@ -579,8 +582,8 @@ def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False):
 				elif oTag == None:
 					xNewTag = xml_man.newElement(xParentTag, xTag, xText, xAttrib, xOrder)
 				else:
-					if mode == 'SIBLING':
-						xml_man.insertElement(xParentTag, oTag, xOrder)
+					#if mode == 'SIBLING':
+					xml_man.insertElement(xParentTag, oTag, xOrder)
 					xNewTag = oTag
 				
 				#creo el newTagInTree
@@ -593,28 +596,36 @@ def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False):
 					
 				GL.dicTagsInTree[xID] = newTagInTree
 				selectAndFocus(xID)
+				print 'newTagInTree'
 				return newTagInTree
 	
-def getTagFromUser(mainApp):
+def getTagFromUser(mainApp, getValue=False):
 	container = {}
 	xWindow = mainApp.getToplevel2(GL.names['message_newtag'], container)
 	xWindow.formConstructor('Tag', 0)
-	xWindow.formConstructor('Value', 1)
+	if getValue:
+		xWindow.formConstructor('Value', 1)
 	xWindow.show()
 	
 	if len(container) > 0:
-		return container['Tag'], container['Value']
+		if getValue:
+			return container['Tag'], container['Value']
+		else:
+			return container['Tag']
 	else:
-		return '', ''
+		if getValue:
+			return '', ''
+		else:
+			return ''
 		
 		
 def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 	if oldTagInTree <> None:
 		if newparent == None:
-			xBaseID = oldTagInTree.parent_id
+			xParentID = oldTagInTree.parent_id
 			xParentTag = oldTagInTree.parent_tag
 		else:
-			xBaseID = newparent.id
+			xParentID = newparent.id
 			xParentTag = newparent.getTag()
 		
 		xOrder = oldTagInTree.getTreeViewIndex() + 1
@@ -627,7 +638,7 @@ def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 		
 		xID = getIDForTreeView( xNewTag.tag, GL.dicTagsInTree)
 		
-		newTagInTree = TIG.TagInTree(xBaseID, xID, xNewTag, xParentTag, GL.appTreeView, order = xOrder)
+		newTagInTree = TIG.TagInTree(xParentID, xID, xNewTag, xParentTag, GL.appTreeView, order = xOrder)
 		GL.dicTagsInTree[xID] = newTagInTree
 		
 		def getTagInTreeFromTag(xTag, dicTagsInTree):

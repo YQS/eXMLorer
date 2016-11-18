@@ -234,7 +234,7 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	menu.add_separator()
 	#comment commands
 	if focusTIG.is_comment:
-		#menu.add_command(label=GL.names[], state=ACTIVE, command= lambda: )
+		menu.add_command(label=GL.names['submenu_uncomment'], state=ACTIVE, command= lambda: unCommentTag(mainApp, focusTIG))
 		pass
 	else:
 		menu.add_command(label=GL.names['submenu_comment'], state=ACTIVE, command= lambda: commentTag(mainApp, focusTIG))
@@ -304,9 +304,37 @@ def pasteFromClipboard(mainApp, baseTIG, mode='SIBLING'):
 		
 		rootTIG = tk_app.createNewTagInTree(mainApp, baseTIG, mode, oTag=root)
 		createChildTIGs(mainApp, rootTIG, level=0)
+
+'''		
+def createChildTIGs(mainApp, parentTIG, level):
+	#c=0
+	for xChild in parentTIG.getTag():
+		#if c==10: break
+		print 'paste has child level', level
+		xChildTIG = tk_app.createNewTagInTree(mainApp, parentTIG, 'CHILD', oTag=xChild)
+		createChildTIGs(mainApp, xChildTIG, level=level+1)
+		#c+=1
+'''
 		
 def commentTag(mainApp, oTIG):
 	if oTIG <> None:
 		#stringXML = xml_man.getStringXML(oTIG.getTag())
 		newComment = tk_app.createNewTagInTree(mainApp, oTIG, 'SIBLING', is_comment=True)
 		tk_app.deleteTagInTree(oTIG.id)
+		
+def unCommentTag(mainApp, commentTIG):
+	stringXML = commentTIG.getTag().text
+	newTIG = None
+	response = 'no'
+	try:
+		newTag = xml_man.parseStringXML(stringXML)
+		newTIG = tk_app.createNewTagInTree(mainApp, commentTIG, 'SIBLING', oTag = newTag)
+	except:
+		response = tkMessageBox.showwarning("eXMLorer", GL.names['message_uncomment_newtag'], type=tkMessageBox.YESNO)
+		if response == 'yes':
+			newTIG = tk_app.createNewTagInTree(mainApp, commentTIG, 'SIBLING', text=commentTIG.getTag().text)
+	
+	if newTIG <> None:
+		createChildTIGs(mainApp, newTIG, level=0)
+		tk_app.deleteTagInTree(commentTIG.id)
+		

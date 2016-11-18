@@ -86,15 +86,18 @@ def saveXML(XMLTree, filename):#, prettyPrint, eliminateSpaceInSelfClosingTag=Tr
 	with open(filename, 'w') as xmlfile:
 		xmlfile.write(stringXML)
 		
-def getStringXML(elem):
+def getStringXML(elem, method=''):
 	if GL.defaultPrettyPrint:
 		prettify(elem, linefy=GL.linefyAtSave)
 		
+	if method == '':
+		method = 'xml'
+		
 	#se agrega el encoding, si existe
 	if GL.XMLEncoding <> '':
-		stringXML = ET.tostring(elem, GL.XMLEncoding)
+		stringXML = ET.tostring(elem, GL.XMLEncoding, method=method)
 	else:
-		stringXML = ET.tostring(elem)
+		stringXML = ET.tostring(elem, method=method)
 	
 	#reemplazo los <tag /> por <tag/>
 	if GL.eliminateSpaceInSelfClosingTag:
