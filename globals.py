@@ -28,8 +28,10 @@ eliminateSpaceInSelfClosingTag = True
 linefyAtSave = True
 caseSensitiveSearch = False
 useSQLButtons = False
+showComments = True
 names = LANG.spanish
 
+#SIZES
 buttonWidth = 15
 labelButtonWidth = 50
 labelExtraButtonWidth = 8
@@ -41,7 +43,7 @@ dicTagSubnames = DICEXT.DictionaryFile('namedic')
 
 def globalVarsStart():
 	global configFileName
-	global defaultPrettyPrint, eliminateSpaceInSelfClosingTag, caseSensitiveSearch, useSQLButtons, names
+	global defaultPrettyPrint, eliminateSpaceInSelfClosingTag, caseSensitiveSearch, useSQLButtons, showComments, names
 	if not isfile(configFileName):
 		createConfigFile(configFileName)
 		
@@ -53,6 +55,7 @@ def globalVarsStart():
 	linefyAtSave = config.getboolean('Configuration', 'linefy_at_save')
 	caseSensitiveSearch = config.getboolean('Configuration', 'case_sensitive')
 	useSQLButtons = config.getboolean('Configuration', 'use_SQL_buttons')
+	showComments = config.getboolean('Configuration', 'show_comments')
 	
 	if config.get('Configuration', 'language') <> 'English':
 		names = LANG.spanish
@@ -68,6 +71,7 @@ def createConfigFile(configFileName):
 	config.set('Configuration', 'linefy_at_save', 'True')
 	config.set('Configuration', 'case_sensitive', 'False')
 	config.set('Configuration', 'use_SQL_buttons', 'False')
+	config.set('Configuration', 'show_comments', 'True')
 	config.set('Configuration', 'language', 'Español')
 	with open(configFileName, 'wb') as configfile:
 		config.write(configfile)

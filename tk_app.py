@@ -48,10 +48,10 @@ class ToplevelFromMain(Toplevel):
 		self.transient(master)
 		self.title(title)
 		
-		self.parent = master
+		self.parent  = master
 		self.result  = container
 		self.entries = {}
-		self.upper = Frame(self)
+		self.upper   = Frame(self)
 		self.body    = Frame(self)
 		self.buttons = Frame(self)
 		self.firstField = None
@@ -167,6 +167,7 @@ class MainApp(Tk):
 		self.bool_menu_config_linefyAtSave = BooleanVar()
 		self.bool_menu_config_caseSensitive = BooleanVar()
 		self.bool_menu_config_others_SQLButtons = BooleanVar()
+		self.bool_menu_config_showComments = BooleanVar()
 		self.string_optionmenu_search = StringVar()
 		
 		#chequeo estado inicial de BooleanVars de menues
@@ -185,6 +186,8 @@ class MainApp(Tk):
 			self.bool_menu_config_caseSensitive.set(True)
 		if GL.useSQLButtons:
 			self.bool_menu_config_others_SQLButtons.set(True)
+		if GL.showComments:
+			self.bool_menu_config_showComments.set(True)
 		
 		#icono
 		try:
@@ -213,7 +216,7 @@ class MainApp(Tk):
 		#refreshApp(self)
 		
 		#binds
-		self.bind('<F5>', lambda event: refreshApp(self))
+		self.bind('<F5>', lambda event: refreshTreeview(self))
 		
 	#metodos del MainApp
 	def getToplevel2(self, title, container):
@@ -249,6 +252,12 @@ def refreshApp(mainApp):
 	
 	mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
 	
+	refreshTreeview(mainApp)
+
+def refreshTreeview(mainApp):
+	#clean treeview frame
+	mainApp.frames.treeview.clean()
+	
 	#set globals
 	GL.dicTagsInTree = {}
 	GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
@@ -261,13 +270,14 @@ def refreshApp(mainApp):
 	mainApp.update()
 	
 	selectAndFocus(GL.lastTreeViewFocus)
-	
+
 def selectAndFocus(xIDFocus):
 	if xIDFocus <> '':
 		GL.appTreeView.see(xIDFocus)
 		GL.appTreeView.focus(xIDFocus)
 		GL.appTreeView.selection_set(xIDFocus)
 
+		
 def fillMenu(mainApp):
 	menubar = Menu(mainApp)
 	mainApp.config(menu=menubar)
@@ -302,6 +312,13 @@ def fillMenu(mainApp):
 											 command= lambda: mChangeLang(mainApp, 'ENG'))
 		
 		#menu_config.add_separator()
+		
+		#menu de visualizacion
+		menu_config_visualization = Menu(menubar, tearoff=0)
+		menu_config.add_cascade(label=GL.names['menu_config_visualization'], menu=menu_config_visualization)
+		menu_config_visualization.add_checkbutton(label=GL.names['menu_config_visualization_showcomments'],
+												  variable= mainApp.bool_menu_config_showComments,
+												  command= lambda: mSwitchGlobal('GL.showComments', 'show_comments', refreshTree=True))
 		
 		#seteo config de print modes
 		menu_config_printmode = Menu(menubar, tearoff=0)
@@ -450,12 +467,9 @@ def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 	for xChild in xBase:
 		if xChild.tag is ET.Comment:
 			print "IS COMMENT"
-			print xChild.text
-			print xChild.tag
-			print xChild.tail
-			
-			xID = getIDForTreeView('comment', dicTagsInTree)
-			dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, xBase, appTreeView, is_comment=True)
+			if GL.showComments:
+				xID = getIDForTreeView('comment', dicTagsInTree)
+				dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, xBase, appTreeView, is_comment=True)
 			
 		if type(xChild.tag).__name__ == 'str':
 			xID = getIDForTreeView(xChild.tag, dicTagsInTree)
@@ -675,13 +689,18 @@ def mChangeLang(mainApp, newLang):
 		GL.updateConfigFile('Configuration', 'language', dicLang['lang'])
 		refreshApp(mainApp)
 		
-def mSwitchGlobal(varName, varConfigName):
+def mSwitchGlobal(varName, varConfigName, refreshTree=False):
 	if eval(varName) == True:
 		exec('%s = False' % varName)
 		GL.updateConfigFile('Configuration', varConfigName, 'False')
 	else:
 		exec('%s = True' % varName)
 		GL.updateConfigFile('Configuration', varConfigName, 'True')
+	
+	if refreshTree:
+		refreshTreeview(GL.appTreeView.master.master.master)	
+		#la manera mas sencilla de traer el mainApp sin cambiar todo
+		#esto es porque el objeto es mainApp.center(frame).treeview(frame).treeview(mi appTreeView)
 			
 #####################
 
