@@ -4,7 +4,7 @@ from operator import methodcaller
 
 
 class TagInTree(object):
-	def __init__(self, parent_id, id, xmltag, parent_tag, treeview, order='end'):
+	def __init__(self, parent_id, id, xmltag, parent_tag, treeview, order='end', is_comment=False):
 		#print 'new TagInTree'
 		#inicializo las variables del objeto
 		self.id = id
@@ -16,6 +16,7 @@ class TagInTree(object):
 		self.parent_treeview = None
 		self.parent_id = parent_id
 		self.tag_order = 0
+		self.is_comment = is_comment
 		##########
 		self.setTag(xmltag)
 		self.setNode(parent_id, id, treeview, order)
@@ -44,8 +45,12 @@ class TagInTree(object):
 	# SETS
 	def setTag(self, xmltag):
 		self.xmltag = xmltag
-		self.tagname = self.getTagName()
-		self.subname = getSubnameOfTag(self.xmltag)
+		if self.is_comment:
+			self.tagname = '<!-- comment -->'
+			self.subname = ''
+		else:
+			self.tagname = self.getTagName()
+			self.subname = getSubnameOfTag(self.xmltag)
 		#self.haschild = self.hasChild()
 		
 	def getTagName(self):
@@ -56,6 +61,10 @@ class TagInTree(object):
 		#self.treenode = treeview.insert(parent_id, order, id, text= self.tagname + ' ' + getSubnameOfTag(self.xmltag) )
 		self.treenode = treeview.insert(parent_id, order, id, text= self.tagname)
 		self.parent_treeview = treeview
+		
+		if self.is_comment:
+			self.parent_treeview.tag_bind('comment', '<TreeviewOpen>', self.treenode)
+			self.parent_treeview.tag_configure('comment', background='green')
 		
 	def setColumn(self, column, value):
 		#print value

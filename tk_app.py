@@ -5,7 +5,7 @@ from ttk import *
 import tkFileDialog
 import tkMessageBox
 from ScrolledText import ScrolledText as ScrollText
-from xml.etree.ElementTree import Comment
+import xml.etree.ElementTree as ET
 import os.path
 
 import globals as GL
@@ -448,11 +448,15 @@ def getIDForTreeView(xTag, dicTagsInTree):
 	
 def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 	for xChild in xBase:
-		if xChild.tag is Comment:
+		if xChild.tag is ET.Comment:
 			print "IS COMMENT"
 			print xChild.text
 			print xChild.tag
 			print xChild.tail
+			
+			xID = getIDForTreeView('comment', dicTagsInTree)
+			dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, xBase, appTreeView, is_comment=True)
+			
 		if type(xChild.tag).__name__ == 'str':
 			xID = getIDForTreeView(xChild.tag, dicTagsInTree)
 			dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, xBase, appTreeView)
