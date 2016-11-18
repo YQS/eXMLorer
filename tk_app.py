@@ -549,15 +549,21 @@ def saveXML(mainApp, modo):
 		mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
 		
 
-def createNewTagInTree(mainApp, baseTIG, mode, oTag=None):
+def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False):
 	if baseTIG <> None:
 		if baseTIG.parent_id <> '':
+			#consigo datos para nuevo tag
 			xTag = ''
-			if oTag == None:
+			if is_comment:
+				xTag = 'comment'
+				stringXML = xml_man.getStringXML(baseTIG.getTag())
+				xText = stringXML[ stringXML.find('\n')+1:]
+			elif oTag == None:
 				xTag, xText = getTagFromUser(mainApp)
 				
 			if (xTag <> '') or (oTag <> None):
 				xAttrib = {}
+				#consigo datos para crear el TagInTree
 				if mode == 'SIBLING':
 					xBaseID = baseTIG.parent_id
 					xParentTag = baseTIG.parent_tag
@@ -567,16 +573,24 @@ def createNewTagInTree(mainApp, baseTIG, mode, oTag=None):
 					xParentTag = baseTIG.getTag()
 					xOrder = baseTIG.getNumberOfSiblings() + 1
 				
-				if oTag == None:
+				#creo o inserto el tag en el XML
+				if is_comment:
+					xNewTag = xml_man.newComment(xParentTag, xText, xOrder)
+				elif oTag == None:
 					xNewTag = xml_man.newElement(xParentTag, xTag, xText, xAttrib, xOrder)
 				else:
 					if mode == 'SIBLING':
 						xml_man.insertElement(xParentTag, oTag, xOrder)
 					xNewTag = oTag
 				
-				xID = getIDForTreeView( xNewTag.tag, GL.dicTagsInTree)
-				
-				newTagInTree = TIG.TagInTree(xBaseID, xID, xNewTag, xParentTag, GL.appTreeView, order = xOrder)
+				#creo el newTagInTree
+				if is_comment:
+					xID = getIDForTreeView( 'comment', GL.dicTagsInTree)
+					newTagInTree = TIG.TagInTree(xBaseID, xID, xNewTag, xParentTag, GL.appTreeView, order = xOrder, is_comment=True)
+				else:
+					xID = getIDForTreeView( xNewTag.tag, GL.dicTagsInTree)
+					newTagInTree = TIG.TagInTree(xBaseID, xID, xNewTag, xParentTag, GL.appTreeView, order = xOrder)
+					
 				GL.dicTagsInTree[xID] = newTagInTree
 				selectAndFocus(xID)
 				return newTagInTree

@@ -133,6 +133,11 @@ def newElement(xParent, xTag, xText, xAttrib, xOrder):
 	xNewElement.text = xText
 	return xNewElement
 	
+def newComment(xParent, xText, xOrder):
+	xComment = ET.Comment(xText)
+	xParent.insert(xOrder, xComment)
+	return xComment
+	
 def insertElement(xParent, xElement, xOrder):
 	xParent.insert(xOrder, xElement)
 	

@@ -14,8 +14,8 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	
 	setScrollbar(mainApp, appTreeView)
 	
-	appTreeView.column('subname', width=150, anchor='w')
-	appTreeView.column('data', width=500, anchor='w')
+	appTreeView.column('subname', width=120, anchor='w', stretch=True)
+	appTreeView.column('data', width=480, anchor='w', stretch=True)
 	appTreeView.heading('subname', text= GL.names['column-subname'])
 	appTreeView.heading('data', text= GL.names['column-data'])
 	
@@ -232,6 +232,13 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	menu.add_command(label=GL.names['submenu_pastetag'], state=ACTIVE, command= lambda:pasteFromClipboard(mainApp, focusTIG))
 	menu.add_command(label=GL.names['submenu_pastetagaschild'], state=ACTIVE, command= lambda:pasteFromClipboard(mainApp, focusTIG, mode='CHILD'))
 	menu.add_separator()
+	#comment commands
+	if focusTIG.is_comment:
+		#menu.add_command(label=GL.names[], state=ACTIVE, command= lambda: )
+		pass
+	else:
+		menu.add_command(label=GL.names['submenu_comment'], state=ACTIVE, command= lambda: commentTag(mainApp, focusTIG))
+		menu.add_separator()
 	
 	menu.add_command(label= GL.names['submenu_selectParentSubname'], 
 					 state= subnameCmdState, 
@@ -297,3 +304,9 @@ def pasteFromClipboard(mainApp, baseTIG, mode='SIBLING'):
 		
 		rootTIG = tk_app.createNewTagInTree(mainApp, baseTIG, mode, oTag=root)
 		createChildTIGs(mainApp, rootTIG, level=0)
+		
+def commentTag(mainApp, oTIG):
+	if oTIG <> None:
+		#stringXML = xml_man.getStringXML(oTIG.getTag())
+		newComment = tk_app.createNewTagInTree(mainApp, oTIG, 'SIBLING', is_comment=True)
+		tk_app.deleteTagInTree(oTIG.id)
