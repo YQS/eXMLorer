@@ -69,11 +69,11 @@ class TagInTree(object):
 	def setColumn(self, column, value):
 		#print value
 		if value <> None:
-			uvalue = value
+			uvalue = value[:GL.dataColumnTextLimit].replace('\n', '')
 			#uvalue = value.encode(encoding='UTF-8')
 			#uvalue = value.decode(encoding=GL.XMLEncoding)
-			self.parent_treeview.set( self.id, column, uvalue[:GL.dataColumnTextLimit] )
-			#self.parent_treeview.set( self.id, column, value )
+			#self.parent_treeview.set( self.id, column, uvalue[:GL.dataColumnTextLimit] )
+			self.parent_treeview.set( self.id, column, uvalue )
 	
 	
 	def hasChild(self):
