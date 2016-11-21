@@ -235,11 +235,10 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	#comment commands
 	if focusTIG.is_comment:
 		menu.add_command(label=GL.names['submenu_uncomment'], state=ACTIVE, command= lambda: unCommentTag(mainApp, focusTIG))
-		pass
 	else:
 		menu.add_command(label=GL.names['submenu_comment'], state=ACTIVE, command= lambda: commentTag(mainApp, focusTIG))
-		menu.add_separator()
-	
+		
+	menu.add_separator()
 	menu.add_command(label= GL.names['submenu_selectParentSubname'], 
 					 state= subnameCmdState, 
 					 command= lambda
@@ -296,17 +295,10 @@ def pasteFromClipboard(mainApp, baseTIG, mode='SIBLING'):
 		pasteRoot = xml_man.parseStringXML(stringXML)
 		print 'pasteRoot', pasteRoot
 		
-		'''
-		def createChildTIGs(mainApp, parentTIG, level):
-			for xChild in parentTIG.getTag():
-				print 'paste has child level', level
-				xChildTIG = tk_app.createNewTagInTree(mainApp, parentTIG, 'CHILD', oTag=xChild)
-				createChildTIGs(mainApp, xChildTIG, level=level+1)
-		'''
-		
 		rootTIG = tk_app.createNewTagInTree(mainApp, baseTIG, mode, oTag=pasteRoot)
 		createChildTIGs(mainApp, rootTIG, level=0)
 		
+		tk_app.selectAndFocus(rootTIG.id)
 
 
 def createChildTIGs(mainApp, parentTIG, level):
@@ -337,4 +329,5 @@ def unCommentTag(mainApp, commentTIG):
 	if newTIG <> None:
 		createChildTIGs(mainApp, newTIG, level=0)
 		tk_app.deleteTagInTree(commentTIG.id)
+		tk_app.selectAndFocus(newTIG.id)
 		
