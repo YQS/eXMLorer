@@ -293,28 +293,28 @@ def pasteFromClipboard(mainApp, baseTIG, mode='SIBLING'):
 	if baseTIG <> None:
 		stringXML = mainApp.selection_get(selection='CLIPBOARD')
 		print stringXML
-		root = xml_man.parseStringXML(stringXML)
-		print 'root', root
+		pasteRoot = xml_man.parseStringXML(stringXML)
+		print 'pasteRoot', pasteRoot
 		
+		'''
 		def createChildTIGs(mainApp, parentTIG, level):
 			for xChild in parentTIG.getTag():
 				print 'paste has child level', level
 				xChildTIG = tk_app.createNewTagInTree(mainApp, parentTIG, 'CHILD', oTag=xChild)
 				createChildTIGs(mainApp, xChildTIG, level=level+1)
+		'''
 		
-		rootTIG = tk_app.createNewTagInTree(mainApp, baseTIG, mode, oTag=root)
+		rootTIG = tk_app.createNewTagInTree(mainApp, baseTIG, mode, oTag=pasteRoot)
 		createChildTIGs(mainApp, rootTIG, level=0)
+		
 
-'''		
+
 def createChildTIGs(mainApp, parentTIG, level):
-	#c=0
 	for xChild in parentTIG.getTag():
-		#if c==10: break
 		print 'paste has child level', level
 		xChildTIG = tk_app.createNewTagInTree(mainApp, parentTIG, 'CHILD', oTag=xChild)
 		createChildTIGs(mainApp, xChildTIG, level=level+1)
-		#c+=1
-'''
+
 		
 def commentTag(mainApp, oTIG):
 	if oTIG <> None:

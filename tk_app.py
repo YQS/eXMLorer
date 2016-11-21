@@ -582,8 +582,8 @@ def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False, text
 				elif oTag == None:
 					xNewTag = xml_man.newElement(xParentTag, xTag, xText, xAttrib, xOrder)
 				else:
-					#if mode == 'SIBLING':
-					xml_man.insertElement(xParentTag, oTag, xOrder)
+					if mode == 'SIBLING':
+						xml_man.insertElement(xParentTag, oTag, xOrder)
 					xNewTag = oTag
 				
 				#creo el newTagInTree
