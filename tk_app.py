@@ -505,10 +505,11 @@ def quitApp(mainApp):
 		
 # BUTTON METHODS
 
-def openXML(mainApp):
+def openXML(mainApp, filename=''):
 	if askSaveChanges(mainApp):
 		label_filename = mainApp.frames.menu.dic['label_filename']
-		filename = getFilename()
+		if filename=='':
+			filename = getFilename()
 		
 		if filename <> '':
 			mainApp.frames.treeview.clean()

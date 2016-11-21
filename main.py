@@ -1,10 +1,12 @@
 # encoding: UTF-8
 
+import argparse
+
 import globals as GL
 import tk_app
 import module_interface as MOD
 
-def main(mode = 'main'):
+def main(mode = 'main', filepath=''):
 	lExcludeMenu = ['button_analyze',
 					'button_glTreeView',
 					'button_dicSubnames',
@@ -24,7 +26,10 @@ def main(mode = 'main'):
 	MOD.startModules()
 	
 	mainApp = tk_app.MainApp(lExcludeMenu=lExcludeMenu)
-	tk_app.openXML(mainApp)
+	if filepath == None:
+		tk_app.openXML(mainApp)
+	else:
+		tk_app.openXML(mainApp, filename=filepath)
 	
 	mainApp.focus_set()
 	mainApp.mainloop()
@@ -35,4 +40,10 @@ def main(mode = 'main'):
 		pass
 
 if __name__ == '__main__':
-	main('testing')
+	#parsing CLI arguments
+	parser = argparse.ArgumentParser()
+	parser.add_argument('filepath', nargs="?")
+	
+	args = parser.parse_args()
+	
+	main(filepath=args.filepath)
