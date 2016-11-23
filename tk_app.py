@@ -85,6 +85,13 @@ class ToplevelFromMain(Toplevel):
 			self.firstField = xEntry
 		
 	def textFieldConstructor(self, labelText, value):
+		def selectAllText(event):
+			xField = event.widget
+			xField.tag_add(SEL, '1.0', 'end')
+			xField.mark_set(INSERT, "1.0")
+			xField.see(INSERT)
+			return 'break'
+			
 		#Label(self.body, text=labelText).grid(row=0, column=0, sticky='nw')
 		Label(self.body, text=labelText).pack(side=TOP)
 		
