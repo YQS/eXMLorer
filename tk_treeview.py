@@ -8,11 +8,13 @@ import xml_man
 import tk_app
 import SSF
 
-def getTreeView(mainApp, band_buttons, dicTagsInTree):
-	appTreeView = Treeview(mainApp, columns=('data','subname',))
+def getTreeView(treeview_frame, band_buttons, dicTagsInTree):
+	appTreeView = Treeview(treeview_frame, columns=('data','subname',))
 	appTreeView.pack(side="left",fill=BOTH)
 	
-	setScrollbar(mainApp, appTreeView)
+	setScrollbar(treeview_frame, appTreeView)
+	
+	mainApp = treeview_frame.master.master
 	
 	appTreeView.column('subname', width=120, anchor='w', stretch=True)
 	appTreeView.column('data', width=480, anchor='w', stretch=True)
@@ -34,6 +36,13 @@ def getTreeView(mainApp, band_buttons, dicTagsInTree):
 	appTreeView.bind('<Control-Key-V>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None)))
 	appTreeView.bind('<Control-Alt-Key-v>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None, mode='CHILD')))
 	appTreeView.bind('<Control-Alt-Key-V>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None, mode='CHILD')))
+	
+	appTreeView.bind('<Control-Key-n>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'SIBLING'))
+	appTreeView.bind('<Control-Key-N>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'SIBLING'))
+	appTreeView.bind('<Control-Key-i>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'CHILD'))
+	appTreeView.bind('<Control-Key-I>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'CHILD'))
+	
+	
 	
 	return appTreeView
 	
