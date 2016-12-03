@@ -14,7 +14,6 @@ import TagInTree as TIG
 import xml_man
 import tk_treeview
 from search_man import BasicSearch
-import sql_formatter as SQLFORMAT
 import module_interface as MOD
 
 
