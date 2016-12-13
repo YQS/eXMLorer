@@ -59,6 +59,9 @@ def createButton(parent, label, function, align='pack', alignParams={}):
 		
 	return button
 	
+def createMenuElement(parent, label, function, state=ACTIVE):
+	parent.add_command(label=GL.names[label], state=state, command=function)
+	
 	
 '''
 primero armo una lista de modulos a cargar (veo de buscar las carpetas, o algo)
