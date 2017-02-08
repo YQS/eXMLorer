@@ -538,22 +538,25 @@ def openXML(mainApp, filename=''):
 				addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
 
 def saveXML(mainApp, modo):
-	if modo == 'SAVEAS':
-		save_filename = tkFileDialog.asksaveasfilename( filetypes=[('Archivos XML', '.xml'), ('Todos los archivos', '.*')], 
-														initialfile = GL.filename,
-														parent = mainApp)
-	else:
-		save_filename = GL.filename
-	
-	if save_filename:
-		#print 'saving in ' + save_filename
-		#GL.XMLTree.write(save_filename)
-		print save_filename[-4:]
-		if save_filename[-4:] <> '.xml':
-			save_filename += '.xml'
-		xml_man.saveXML(GL.XMLTree, save_filename)
-		GL.filename = save_filename
-		mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
+	try:
+		if modo == 'SAVEAS':
+			save_filename = tkFileDialog.asksaveasfilename( filetypes=[('Archivos XML', '.xml'), ('Todos los archivos', '.*')], 
+															initialfile = GL.filename,
+															parent = mainApp)
+ 		else:
+			save_filename = GL.filename
+		
+		if save_filename:
+			#print 'saving in ' + save_filename
+			#GL.XMLTree.write(save_filename)
+			print save_filename[-4:]
+			if save_filename[-4:] <> '.xml':
+				save_filename += '.xml'
+			xml_man.saveXML(GL.XMLTree, save_filename)
+			GL.filename = save_filename
+			mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
+	except Exception, e:
+		tkMessageBox.showerror('eXMLorer', 'Error al guardar.\n%s' % e)
 		
 
 def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False, text=''):
