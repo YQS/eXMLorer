@@ -74,9 +74,9 @@ def getEncoding(filename):
 				
 			
 			
-	return xEncoding			
+	return xEncoding
 
-		
+
 def saveXML(XMLTree, filename):#, prettyPrint, eliminateSpaceInSelfClosingTag=True):
 	print 'saving in %s' % filename
 	#XMLTree.write(filename, encoding=GL.XMLEncoding, xml_declaration=True)

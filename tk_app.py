@@ -15,6 +15,7 @@ import xml_man
 import tk_treeview
 from search_man import BasicSearch
 import module_interface as MOD
+from TempData import TempData
 
 
 # CLASSES
@@ -165,6 +166,7 @@ class MainApp(Tk):
 		self.rootTIG = None
 		self.menubar = None
 		self.currentSearch = None
+		self.temp = TempData(GL.tempDataFile)
 		#BooleanVars para los menues
 		self.bool_menu_config_lang_eng = BooleanVar()
 		self.bool_menu_config_lang_spa = BooleanVar()
@@ -387,7 +389,7 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_captureStringXML', lExcludeMenu, 2, 2, command = lambda: printStringXML(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None)))
 	getButton(xFrame, 'button_showSearchResult', lExcludeMenu, 2, 2, command = lambda: bShowGuts(mainApp.currentSearch.result))
 	getButton(xFrame, 'button_showSearchStartingPoint', lExcludeMenu, 2, 3, command = lambda: bShowGuts(mainApp.currentSearch.startingPoint))
-	
+	getButton(xFrame, 'button_lastFolder', lExcludeMenu, 2, 2, command = lambda: bShowGuts(mainApp.temp.getValue('lastVisitedFolder')))
 	
 	#campos para busqueda
 	frame_search = xFrame.addWidget('LabelFrame', 'frame_search')
@@ -455,10 +457,15 @@ def getButton(xMaster, name, lExcludeMenu, xRow, xColumn, command=''):
 		xButton.configure(text= GL.names[name], width= GL.buttonWidth, command=command)
 		xButton.grid(column=xColumn, row=xRow)
 
-def getFilename():
-	filename = tkFileDialog.askopenfilename(defaultextension='.xml', filetypes = [('XML files', '.xml'), ('all files', '.*')], initialdir=GL.lastFolderVisited)
+def getFilename(oTemp):
+	#filename = tkFileDialog.askopenfilename(defaultextension='.xml', filetypes = [('XML files', '.xml'), ('all files', '.*')], initialdir=GL.lastFolderVisited)
+	#print filename
+	#GL.lastFolderVisited = filename[:filename.rfind('\\')]
+	
+	filename = tkFileDialog.askopenfilename(defaultextension='.xml', filetypes = [('XML files', '.xml'), ('all files', '.*')], initialdir=oTemp.getValue('lastVisitedFolder'))
+	print "FILENAME"
 	print filename
-	GL.lastFolderVisited = filename[:filename.rfind('\\')]
+	oTemp.setValue('lastVisitedFolder', filename[:filename.rfind('\\')])
 	
 	return filename
 
@@ -515,7 +522,7 @@ def openXML(mainApp, filename=''):
 	if askSaveChanges(mainApp):
 		label_filename = mainApp.frames.menu.dic['label_filename']
 		if filename=='':
-			filename = getFilename()
+			filename = getFilename(mainApp.temp)
 		
 		if filename <> '':
 			mainApp.frames.treeview.clean()

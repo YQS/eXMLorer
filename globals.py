@@ -17,6 +17,10 @@ dicTagsInTree = {}
 appTreeView = None
 lastTreeViewFocus = None
 
+#TEMP RELATED
+tempDataFile = 'temp'
+tempDataSections = ['GLOBAL',  'FILE']
+
 #MODULES GLOBALS
 moduleDirectory = 'modules'
 moduleDic = {}

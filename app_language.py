@@ -75,6 +75,7 @@ spanish = {
 'submenu_pastetagaschild': 'Pegar Tag desde Portapapeles (como Hijo)', 
 'toplevel_sql_linefy': 'Linificar',
 'toplevel_sql_prettyprint': 'Formatear',
+'button_lastFolder':'button_lastFolder',
 }
 
 english = {
@@ -152,4 +153,5 @@ english = {
 'submenu_pastetagaschild':  'Paste Tag from Clipboard (as Child)', 
 'toplevel_sql_linefy': 'Linefy',
 'toplevel_sql_prettyprint': 'Pretty Print',
+'button_lastFolder':'button_lastFolder',
 }

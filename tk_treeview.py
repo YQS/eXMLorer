@@ -7,6 +7,7 @@ import globals as GL
 import xml_man
 import tk_app
 import SSF
+import module_interface as MOD
 
 def getTreeView(treeview_frame, band_buttons, dicTagsInTree):
 	appTreeView = Treeview(treeview_frame, columns=('data','subname',))
@@ -261,6 +262,10 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 							  focusTIG = focusTIG: 
 							  cleanSubname(focusTIG) 
 					)
+					
+	#run modules
+	params = {'parent':menu, 'parentTIG':focusTIG, 'mainApp':mainApp}
+	MOD.runModules('TREEVIEW_MENU', params)
 	
 					
 	print 'identify row shows %s' % GL.appTreeView.identify_row(event.y)
@@ -300,7 +305,13 @@ def copyToClipboard(mainApp, oTIG, mode='COPY'):
 def pasteFromClipboard(mainApp, baseTIG, mode='SIBLING'):
 	if baseTIG <> None:
 		stringXML = mainApp.selection_get(selection='CLIPBOARD')
-		print stringXML
+		#stringXML = stringXML.replace('\n', '')
+		try:
+			print stringXML
+		except UnicodeEncodeError:
+			print 'using unicode'
+			stringXML = unicode(stringXML, "utf-8")
+			print stringXML
 		pasteRoot = xml_man.parseStringXML(stringXML)
 		print 'pasteRoot', pasteRoot
 		

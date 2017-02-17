@@ -20,6 +20,7 @@ def main(mode = 'main', filepath=''):
 					'button_captureStringXML',
 					'button_showSearchResult', 
 					'button_showSearchStartingPoint', 
+					'button_lastFolder',
 					]
 
 	GL.globalVarsStart()
