@@ -390,6 +390,7 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_showSearchResult', lExcludeMenu, 2, 2, command = lambda: bShowGuts(mainApp.currentSearch.result))
 	getButton(xFrame, 'button_showSearchStartingPoint', lExcludeMenu, 2, 3, command = lambda: bShowGuts(mainApp.currentSearch.startingPoint))
 	getButton(xFrame, 'button_lastFolder', lExcludeMenu, 2, 2, command = lambda: bShowGuts(mainApp.temp.getValue('lastVisitedFolder')))
+	getButton(xFrame, 'button_foldTest', lExcludeMenu, 2, 2, command = lambda: bFoldNode(GL.appTreeView.focus()))
 	
 	#campos para busqueda
 	frame_search = xFrame.addWidget('LabelFrame', 'frame_search')
@@ -704,6 +705,9 @@ def printStringXML(oTIG):
 		print stringXML[ stringXML.find('\n')+1:]
 	else:
 		print 'None selected'
+		
+def bFoldNode(idNode):
+	GL.appTreeView.item(idNode, open=False)
 	
 def bShowGuts(thing):
 	print thing

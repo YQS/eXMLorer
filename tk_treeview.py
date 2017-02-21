@@ -242,6 +242,12 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	menu.add_command(label=GL.names['submenu_pastetag'], state=ACTIVE, command= lambda:pasteFromClipboard(mainApp, focusTIG))
 	menu.add_command(label=GL.names['submenu_pastetagaschild'], state=ACTIVE, command= lambda:pasteFromClipboard(mainApp, focusTIG, mode='CHILD'))
 	menu.add_separator()
+	
+	#fold/unfold
+	menu.add_command(label=GL.names['submenu_fold'], state=ACTIVE, command= lambda:unfoldingAll(xFocusIDContextMenu, False))
+	menu.add_command(label=GL.names['submenu_unfold'], state=ACTIVE, command= lambda:unfoldingAll(xFocusIDContextMenu, True))
+	menu.add_separator()
+	
 	#comment commands
 	if focusTIG.is_comment:
 		menu.add_command(label=GL.names['submenu_uncomment'], state=ACTIVE, command= lambda: unCommentTag(mainApp, focusTIG))
@@ -351,3 +357,8 @@ def unCommentTag(mainApp, commentTIG):
 		tk_app.deleteTagInTree(commentTIG.id)
 		tk_app.selectAndFocus(newTIG.id)
 		
+def unfoldingAll(idFocus, isOpen):
+	#for xIDChild in appTreeView.get_children(xIDFocus):
+	GL.appTreeView.item(idFocus, open=isOpen)
+	for idChild in GL.appTreeView.get_children(idFocus):
+		unfoldingAll(idChild, isOpen)
