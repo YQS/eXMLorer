@@ -3,6 +3,7 @@
 #Taken from: http://stackoverflow.com/questions/32063868/scrollable-frame-does-not-resize-properly-using-tkinter-in-python
 
 from Tkinter import *
+from ttk import *
 
 class scrollingFrame(Frame):
     def __init__(self, parentObject, background="#FFFFFF"):
