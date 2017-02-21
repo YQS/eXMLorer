@@ -21,6 +21,7 @@ def main(mode = 'main', filepath=''):
 					'button_showSearchResult', 
 					'button_showSearchStartingPoint', 
 					'button_lastFolder',
+					'button_foldTest',
 					]
 
 	GL.globalVarsStart()
