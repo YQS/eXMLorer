@@ -129,6 +129,14 @@ class TagInTree(object):
 	def getNumberOfSiblings(self):
 		return len(self.parent_tag.getchildren())
 	
+	def getPath(self):
+		xParent = self.getParent()
+		if xParent == None:
+			return self.xmltag.tag
+		else:
+			return xParent.getPath() + '/' + self.xmltag.tag
+			
+	
 
 
 def getSubnameOfTag(xTag):

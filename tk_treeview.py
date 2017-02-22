@@ -69,6 +69,11 @@ def fillBandButtons(appTreeView, band_buttons, dicTagsInTree):
 	
 	xRow = 0
 	
+	#showpath
+	#getLabel(dicTagsInTree[xIDFocus].getPath(), scrollFrame.frame, xRow)
+	Label(scrollFrame.frame, text=dicTagsInTree[xIDFocus].getPath(), font= '-weight bold').grid(column=0, row=xRow, stick='n', pady=5)
+	xRow += 1
+	
 	getButtonRow(dicTagsInTree[xIDFocus], scrollFrame.frame, xRow)
 	xRow += 1
 	Separator(scrollFrame.frame, orient=HORIZONTAL).grid(row=xRow, column=0, pady=4, columnspan=2, sticky='we')
@@ -248,6 +253,8 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	menu.add_command(label=GL.names['submenu_unfold'], state=ACTIVE, command= lambda:unfoldingAll(xFocusIDContextMenu, True))
 	menu.add_separator()
 	
+	menu.add_command(label='test_path', state=ACTIVE, command= lambda:showPath(focusTIG))
+	
 	#comment commands
 	if focusTIG.is_comment:
 		menu.add_command(label=GL.names['submenu_uncomment'], state=ACTIVE, command= lambda: unCommentTag(mainApp, focusTIG))
@@ -362,3 +369,6 @@ def unfoldingAll(idFocus, isOpen):
 	GL.appTreeView.item(idFocus, open=isOpen)
 	for idChild in GL.appTreeView.get_children(idFocus):
 		unfoldingAll(idChild, isOpen)
+		
+def showPath(oTIG):
+	print oTIG.getPath()
