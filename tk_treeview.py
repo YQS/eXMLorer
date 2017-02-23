@@ -140,7 +140,8 @@ def getEntry(value, band_buttons, xRow, oTagInTree):
 			getTextEntry(band_buttons, xButtonWidth, 1, xRow, oTagInTree, value)
 		else:
 			print 'Entry to Text'
-			xEntry = getTextEntry(band_buttons, xButtonWidth-xExtraButtonWidth, 1, xRow, oTagInTree, value)
+			xEntry = getTextEntry(band_buttons, xButtonWidth-xExtraButtonWidth, 1, xRow, oTagInTree, value[:xButtonWidth])
+			xEntry.configure(state=DISABLED)
 			xButton = Button(band_buttons, text='...', width= xExtraButtonWidth)
 			xButton.grid(column=1, row=xRow, sticky='e')
 			xButton.config(command= lambda: openTextWindow(band_buttons.master.master.master.master.master, oTagInTree, xEntry))
@@ -174,7 +175,8 @@ def openTextWindow(mainApp, oTagInTree, entry):
 	label = GL.names['message_value']
 	title = GL.names['message_editing'] + ' ' + oTagInTree.tagname
 	xWindow = mainApp.getToplevel2(title, container)
-	xWindow.textFieldConstructor(label, entry.get())
+	#xWindow.textFieldConstructor(label, entry.get())
+	xWindow.textFieldConstructor(label, oTagInTree.getTag().text)
 	xWindow.show()
 	
 	if len(container) > 0:
@@ -182,7 +184,8 @@ def openTextWindow(mainApp, oTagInTree, entry):
 		updateTreeNode(container[label], oTagInTree)
 		#actualizo tambien el entry asociado
 		entry.delete(0, END)
-		entry.insert(0, container[label])
+		#entry.insert(0, container[label])
+		entry.insert(0, container[label][:GL.labelButtonWidth])
 		
 	
 def updateTreeNode(value, oTagInTree):
