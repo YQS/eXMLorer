@@ -71,7 +71,7 @@ def fillBandButtons(appTreeView, band_buttons, dicTagsInTree):
 	
 	#showpath
 	#getLabel(dicTagsInTree[xIDFocus].getPath(), scrollFrame.frame, xRow)
-	Label(scrollFrame.frame, text=dicTagsInTree[xIDFocus].getPath(), font= '-weight bold').grid(column=0, row=xRow, stick='nw', pady=5, columnspan=2)
+	Label(scrollFrame.frame, text=dicTagsInTree[xIDFocus].getPath(), font= '-weight bold', width=GL.labelButtonWidth+GL.labelExtraButtonWidth, justify=LEFT).grid(column=0, row=xRow, stick='nw', pady=5, columnspan=2)
 	#Label(band_buttons, text=dicTagsInTree[xIDFocus].getPath(), font= '-weight bold').pack(side=TOP, expand=False)
 	xRow += 1
 	
