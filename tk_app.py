@@ -372,7 +372,7 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_newTag', lExcludeMenu, 1, 0, command= lambda: createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'SIBLING'))
 	getButton(xFrame, 'button_newChildTag', lExcludeMenu, 1, 1, command= lambda: createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'CHILD'))
 	getButton(xFrame, 'button_copyTag', lExcludeMenu, 1, 2, command = lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
-	getButton(xFrame, 'button_deleteTag', lExcludeMenu, 1, 3, command = lambda: deleteTagInTree( GL.appTreeView.focus() ))		
+	getButton(xFrame, 'button_deleteTag', lExcludeMenu, 1, 3, command = lambda: deleteSelectionTagInTree( GL.appTreeView.selection() ))
 	
 	## debug buttons
 	getButton(xFrame, 'button_glTreeView', lExcludeMenu, 1, 1, command = lambda: checkTreeView())
@@ -677,6 +677,9 @@ def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 	else:
 		print 'oldTagInTree is None'
 		
+def deleteSelectionTagInTree(selection):
+	for xID in selection:
+		deleteTagInTree(xID)
 		
 def deleteTagInTree(xID):
 	if xID <> '':
