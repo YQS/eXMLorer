@@ -42,6 +42,7 @@ def getTreeView(treeview_frame, band_buttons, dicTagsInTree):
 	appTreeView.bind('<Control-Key-N>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'SIBLING'))
 	appTreeView.bind('<Control-Key-i>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'CHILD'))
 	appTreeView.bind('<Control-Key-I>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'CHILD'))
+	appTreeView.bind('<Delete>', lambda event: tk_app.deleteTagInTree(GL.appTreeView.focus()))
 	
 	
 	

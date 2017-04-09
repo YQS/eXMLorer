@@ -679,12 +679,13 @@ def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 		
 		
 def deleteTagInTree(xID):
-	xTagInTree = GL.dicTagsInTree[xID]
-	xTagInTree.parent_tag.remove( xTagInTree.getTag() )
-	GL.appTreeView.delete( xTagInTree.id )
-	del GL.dicTagsInTree[xID]
-	del xTagInTree
-	print 'Deleted %s' % xID
+	if xID <> '':
+		xTagInTree = GL.dicTagsInTree[xID]
+		xTagInTree.parent_tag.remove( xTagInTree.getTag() )
+		GL.appTreeView.delete( xTagInTree.id )
+		del GL.dicTagsInTree[xID]
+		del xTagInTree
+		print 'Deleted %s' % xID
 	
 		
 def checkTreeView():
