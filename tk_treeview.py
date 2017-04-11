@@ -257,7 +257,7 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	menu.add_command(label=GL.names['submenu_unfold'], state=ACTIVE, command= lambda:unfoldingAll(xFocusIDContextMenu, True))
 	menu.add_separator()
 	
-	menu.add_command(label='test_path', state=ACTIVE, command= lambda:showPath(focusTIG))
+	#menu.add_command(label='test_path', state=ACTIVE, command= lambda:showPath(focusTIG))
 	
 	#comment commands
 	if focusTIG.is_comment:

@@ -25,7 +25,8 @@ class TagInTree(object):
 		#self.setColumn('size', self.subname)
 		
 	def __del__(self):
-		print 'TagInTree %s destroyed' % self.id
+		pass
+		#print 'TagInTree %s destroyed' % self.id
 		
 	def __repr__(self):
 		return self.id
@@ -131,10 +132,15 @@ class TagInTree(object):
 	
 	def getPath(self):
 		xParent = self.getParent()
-		if xParent == None:
-			return self.xmltag.tag
+		if self.is_comment:
+			xTag = 'comment'
 		else:
-			return xParent.getPath() + '/' + self.xmltag.tag
+			xTag = self.xmltag.tag
+			
+		if xParent == None:
+			return xTag
+		else:
+			return xParent.getPath() + '/' + xTag
 			
 	
 
