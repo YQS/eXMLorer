@@ -175,6 +175,7 @@ class MainApp(Tk):
 		self.bool_menu_config_linefyAtSave = BooleanVar()
 		self.bool_menu_config_caseSensitive = BooleanVar()
 		self.bool_menu_config_others_SQLButtons = BooleanVar()
+		self.bool_menu_config_others_showFileFullPath = BooleanVar()
 		self.bool_menu_config_showComments = BooleanVar()
 		self.string_optionmenu_search = StringVar()
 		
@@ -194,6 +195,8 @@ class MainApp(Tk):
 			self.bool_menu_config_caseSensitive.set(True)
 		if GL.useSQLButtons:
 			self.bool_menu_config_others_SQLButtons.set(True)
+		if GL.showFileFullPath:
+			self.bool_menu_config_others_showFileFullPath.set(True)
 		if GL.showComments:
 			self.bool_menu_config_showComments.set(True)
 		
@@ -258,7 +261,8 @@ def refreshApp(mainApp):
 	fillButtonBarFrame(mainApp)
 	fillFooterFrame(mainApp)
 	
-	mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
+	#mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
+	setFilenameLabel(mainApp.frames.menu.dic['label_filename'])
 	
 	refreshTreeview(mainApp)
 
@@ -354,6 +358,9 @@ def fillMenu(mainApp):
 		menu_config_others.add_checkbutton(label=GL.names['menu_config_others_SQLButtons'],
 										   variable=mainApp.bool_menu_config_others_SQLButtons,
 										   command= lambda: mSwitchGlobal('GL.useSQLButtons', 'use_SQL_buttons'))
+		menu_config_others.add_checkbutton(label=GL.names['menu_config_others_ShowFileFullPath'],
+										   variable=mainApp.bool_menu_config_others_showFileFullPath,
+										   command= lambda: mChangeFilenameLabel(mainApp.frames.menu.dic['label_filename']))
 		
 		
 def fillButtonBarFrame(mainApp):
@@ -529,7 +536,8 @@ def openXML(mainApp, filename=''):
 			mainApp.frames.treeview.clean()
 			mainApp.frames.buttons.clean()
 			GL.filename = filename
-			label_filename.config(text= GL.filename)
+			#label_filename.config(text= GL.filename)
+			setFilenameLabel(label_filename)
 			
 			root = xml_man.getXML(GL.filename)
 			#root = xml_man.getXML('stylers.xml')
@@ -562,7 +570,8 @@ def saveXML(mainApp, modo):
 				save_filename += '.xml'
 			xml_man.saveXML(GL.XMLTree, save_filename)
 			GL.filename = save_filename
-			mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
+			#mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
+			setFilenameLabel(mainApp.frames.menu.dic['label_filename'])
 	except Exception, e:
 		tkMessageBox.showerror('eXMLorer', GL.names['message_savingerror'] % e)
 		
@@ -710,6 +719,13 @@ def printStringXML(oTIG):
 	else:
 		print 'None selected'
 		
+def setFilenameLabel(label_filename):
+	print "setFilenameLabel"
+	if GL.showFileFullPath:
+		label_filename.config(text=GL.filename)
+	else:
+		label_filename.config(text=GL.filename[GL.filename.rfind('\\')+1:])
+		
 def bFoldNode(idNode):
 	GL.appTreeView.item(idNode, open=False)
 	
@@ -738,6 +754,10 @@ def mChangeLang(mainApp, newLang):
 		GL.names = dicLang
 		GL.updateConfigFile('Configuration', 'language', dicLang['lang'])
 		refreshApp(mainApp)
+		
+def mChangeFilenameLabel(label_filename):
+	mSwitchGlobal('GL.showFileFullPath', 'showFileFullPath')
+	setFilenameLabel(label_filename)
 		
 def mSwitchGlobal(varName, varConfigName, refreshTree=False):
 	if eval(varName) == True:
