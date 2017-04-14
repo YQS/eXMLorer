@@ -694,7 +694,8 @@ def deleteTagInTree(xID):
 	if xID <> '':
 		xTagInTree = GL.dicTagsInTree[xID]
 		xTagInTree.parent_tag.remove( xTagInTree.getTag() )
-		GL.appTreeView.delete( xTagInTree.id )
+		if GL.appTreeView.exists(xTagInTree.id):
+			GL.appTreeView.delete( xTagInTree.id )
 		del GL.dicTagsInTree[xID]
 		del xTagInTree
 		print 'Deleted %s' % xID
