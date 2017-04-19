@@ -398,6 +398,7 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_showSearchStartingPoint', lExcludeMenu, 2, 3, command = lambda: bShowGuts(mainApp.currentSearch.startingPoint))
 	getButton(xFrame, 'button_lastFolder', lExcludeMenu, 2, 2, command = lambda: bShowGuts(mainApp.temp.getValue('lastVisitedFolder')))
 	getButton(xFrame, 'button_foldTest', lExcludeMenu, 2, 2, command = lambda: bFoldNode(GL.appTreeView.focus()))
+	getButton(xFrame, 'button_newFromText', lExcludeMenu, 2, 2, command = lambda: openXMLFromText(mainApp))
 	
 	#campos para busqueda
 	frame_search = xFrame.addWidget('LabelFrame', 'frame_search')
@@ -545,13 +546,31 @@ def openXML(mainApp, filename=''):
 			if root == None:
 				tkMessageBox.showerror('eXMLorer', GL.names['message_nonvalidxml'] % GL.filename)
 				label_filename.config(text= '')
-			else:	
+			else:
 				GL.dicTagsInTree = {}
 				GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
 				
 				GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
 				mainApp.rootTIG = GL.dicTagsInTree[root.tag]
 				addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
+				
+def openXMLFromText(mainApp, stringXML=''):
+	if askSaveChanges(mainApp):
+		stringXML = '<main><cosa>a</cosa></main>'
+		root = xml_man.parseStringXML(stringXML)
+		print 'root', root
+		
+		if root == None:
+			tkMessageBox.showerror('eXMLorer', GL.names['message_nonvalidxml'] % GL.filename)
+			label_filename.config(text= '')
+		else:
+			GL.dicTagsInTree = {}
+			GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
+			
+			GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
+			mainApp.rootTIG = GL.dicTagsInTree[root.tag]
+			addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
+			
 
 def saveXML(mainApp, modo):
 	try:
