@@ -103,7 +103,9 @@ def getEntry(value, band_buttons, xRow, oTagInTree):
 	xExtraButtonWidth = GL.labelExtraButtonWidth
 	xMarginToExtendToText = GL.marginToExtendToText
 	
-	if value in xBoolOptions:
+	if value.title() in xBoolOptions:
+		# title devuelve el string capitalizado (o sea, la primera con mayúscula)
+		value = value.title()
 		'''
 		print 'OptionMenu'
 		xStringVar = StringVar()
