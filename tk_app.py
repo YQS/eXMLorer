@@ -556,6 +556,9 @@ def openXML(mainApp, filename=''):
 				
 def openXMLFromText(mainApp, stringXML=''):
 	if askSaveChanges(mainApp):
+		mainApp.frames.treeview.clean()
+		mainApp.frames.buttons.clean()
+		
 		stringXML = '<main><cosa>a</cosa></main>'
 		root = xml_man.parseStringXML(stringXML)
 		print 'root', root
