@@ -321,10 +321,11 @@ def copyToClipboard(mainApp, oTIG, mode='COPY'):
 		if mode == 'CUT':
 			tk_app.deleteTagInTree(oTIG.id)
 		
-def pasteFromClipboard(mainApp, baseTIG, mode='SIBLING'):
+def pasteFromClipboard(mainApp, baseTIG, mode='SIBLING', stringXML=''):
 	if baseTIG <> None:
-		stringXML = mainApp.selection_get(selection='CLIPBOARD')
-		#stringXML = stringXML.replace('\n', '')
+		if stringXML == '':
+			stringXML = mainApp.selection_get(selection='CLIPBOARD')
+			#stringXML = stringXML.replace('\n', '')
 		try:
 			print stringXML
 		except UnicodeEncodeError:
@@ -337,14 +338,18 @@ def pasteFromClipboard(mainApp, baseTIG, mode='SIBLING'):
 		rootTIG = tk_app.createNewTagInTree(mainApp, baseTIG, mode, oTag=pasteRoot)
 		createChildTIGs(mainApp, rootTIG, level=0)
 		
-		tk_app.selectAndFocus(rootTIG.id)
+		#tk_app.selectAndFocus(rootTIG.id)
 
 
 def createChildTIGs(mainApp, parentTIG, level):
+	qChildren = parentTIG.getNumberOfChildren()
 	for xChild in parentTIG.getTag():
-		print 'paste has child level', level
+		print 'paste has child level', level, 'Q', qChildren
 		xChildTIG = tk_app.createNewTagInTree(mainApp, parentTIG, 'CHILD', oTag=xChild)
 		createChildTIGs(mainApp, xChildTIG, level=level+1)
+		qChildren -= 1
+		if qChildren <= 0:
+			break
 
 		
 def commentTag(mainApp, oTIG):

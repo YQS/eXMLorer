@@ -399,6 +399,7 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_lastFolder', lExcludeMenu, 2, 2, command = lambda: bShowGuts(mainApp.temp.getValue('lastVisitedFolder')))
 	getButton(xFrame, 'button_foldTest', lExcludeMenu, 2, 2, command = lambda: bFoldNode(GL.appTreeView.focus()))
 	getButton(xFrame, 'button_newFromText', lExcludeMenu, 2, 2, command = lambda: openXMLFromText(mainApp))
+	getButton(xFrame, 'button_showChildQty', lExcludeMenu, 2, 1, command = lambda: bShowGuts(GL.dicTagsInTree[GL.appTreeView.focus()].getNumberOfChildren()))
 	
 	#campos para busqueda
 	frame_search = xFrame.addWidget('LabelFrame', 'frame_search')
@@ -623,7 +624,9 @@ def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False, text
 				elif mode == 'CHILD':
 					xBaseID = baseTIG.id
 					xParentTag = baseTIG.getTag()
-					xOrder = baseTIG.getNumberOfSiblings() + 1
+					#xOrder = baseTIG.getNumberOfSiblings() + 1
+					xOrder = baseTIG.getNumberOfChildren() + 1
+					print 'parenttag in newTIG', xParentTag, xParentTag.tag, xOrder
 				
 				#creo o inserto el tag en el XML
 				if is_comment:
@@ -631,8 +634,8 @@ def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False, text
 				elif oTag == None:
 					xNewTag = xml_man.newElement(xParentTag, xTag, xText, xAttrib, xOrder)
 				else:
-					if mode == 'SIBLING':
-						xml_man.insertElement(xParentTag, oTag, xOrder)
+					#if mode == 'SIBLING':
+					xml_man.insertElement(xParentTag, oTag, xOrder)
 					xNewTag = oTag
 				
 				#creo el newTagInTree
