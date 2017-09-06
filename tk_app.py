@@ -373,9 +373,10 @@ def fillButtonBarFrame(mainApp):
 		label_filename.configure(padding=(10,0,0,0))
 		label_filename.grid(row=0, column=4, columnspan=2)
 	
-	getButton(xFrame, 'button_open', lExcludeMenu, 0, 0, command = lambda: openXML(mainApp))
-	getButton(xFrame, 'button_save', lExcludeMenu, 0, 1, command = lambda: saveXML(mainApp, 'SAVE'))
-	getButton(xFrame, 'button_saveAs', lExcludeMenu, 0, 2, command = lambda: saveXML(mainApp, 'SAVEAS'))
+	getButton(xFrame, 'button_newFromText', lExcludeMenu, 0, 0, command = lambda: openXMLFromText(mainApp))
+	getButton(xFrame, 'button_open', lExcludeMenu, 0, 1, command = lambda: openXML(mainApp))
+	getButton(xFrame, 'button_save', lExcludeMenu, 0, 2, command = lambda: saveXML(mainApp, 'SAVE'))
+	getButton(xFrame, 'button_saveAs', lExcludeMenu, 0, 3, command = lambda: saveXML(mainApp, 'SAVEAS'))
 	getButton(xFrame, 'button_newTag', lExcludeMenu, 1, 0, command= lambda: createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'SIBLING'))
 	getButton(xFrame, 'button_newChildTag', lExcludeMenu, 1, 1, command= lambda: createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'CHILD'))
 	getButton(xFrame, 'button_copyTag', lExcludeMenu, 1, 2, command = lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
@@ -398,7 +399,7 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_showSearchStartingPoint', lExcludeMenu, 2, 3, command = lambda: bShowGuts(mainApp.currentSearch.startingPoint))
 	getButton(xFrame, 'button_lastFolder', lExcludeMenu, 2, 2, command = lambda: bShowGuts(mainApp.temp.getValue('lastVisitedFolder')))
 	getButton(xFrame, 'button_foldTest', lExcludeMenu, 2, 2, command = lambda: bFoldNode(GL.appTreeView.focus()))
-	getButton(xFrame, 'button_newFromText', lExcludeMenu, 2, 2, command = lambda: openXMLFromText(mainApp))
+	#getButton(xFrame, 'button_newFromText', lExcludeMenu, 2, 2, command = lambda: openXMLFromText(mainApp))
 	getButton(xFrame, 'button_showChildQty', lExcludeMenu, 2, 1, command = lambda: bShowGuts(GL.dicTagsInTree[GL.appTreeView.focus()].getNumberOfChildren()))
 	
 	#campos para busqueda
