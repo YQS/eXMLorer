@@ -556,24 +556,46 @@ def openXML(mainApp, filename=''):
 				addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
 				
 def openXMLFromText(mainApp, stringXML=''):
+	def getStringXMLFromUser(mainApp):
+		container = {}
+		label = GL.names['message_newxmlstring']
+		title = GL.names['message_newxml']
+		xWindow = mainApp.getToplevel2(title, container)
+		xWindow.textFieldConstructor(label, '')
+		xWindow.show()
+		
+		if len(container) > 0:
+			return container[label]
+		else:
+			return ''
+	
+	
+	label_filename = mainApp.frames.menu.dic['label_filename']
+	
 	if askSaveChanges(mainApp):
 		mainApp.frames.treeview.clean()
 		mainApp.frames.buttons.clean()
 		
-		stringXML = '<main><cosa>a</cosa></main>'
-		root = xml_man.parseStringXML(stringXML)
-		print 'root', root
+		#stringXML = '<main><cosa>a</cosa></main>'
+		stringXML = getStringXMLFromUser(mainApp)
 		
-		if root == None:
-			tkMessageBox.showerror('eXMLorer', GL.names['message_nonvalidxml'] % GL.filename)
-			label_filename.config(text= '')
-		else:
-			GL.dicTagsInTree = {}
-			GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
+		if stringXML <> '':
+			try:
+				root = xml_man.parseStringXML(stringXML)
+				print 'root', root
+			except:
+				root = None
 			
-			GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
-			mainApp.rootTIG = GL.dicTagsInTree[root.tag]
-			addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
+			if root == None:
+				tkMessageBox.showerror('eXMLorer', GL.names['message_nonvalidxmlstring'])
+				label_filename.config(text= '')
+			else:
+				GL.dicTagsInTree = {}
+				GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
+				
+				GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
+				mainApp.rootTIG = GL.dicTagsInTree[root.tag]
+				addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
 			
 
 def saveXML(mainApp, modo):
