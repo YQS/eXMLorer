@@ -10,7 +10,9 @@ import globals as GL
 
 def gatherModules():
 	#busco que archivos .py existen dentro del directorio local /modules
-	module_path = os.getcwd() + '\\%s' % GL.moduleDirectory
+	#module_path = os.getcwd() + '\\%s' % GL.moduleDirectory
+	module_path = os.path.join(os.getcwd(), GL.moduleDirectory)
+	print 'module_path ' + module_path
 	if os.path.exists(module_path):
 		return [splitext(f)[0]  for f in  os.listdir(module_path) if (splitext(f)[1] == '.py') and ('__' not in f)]
 	else:
@@ -35,7 +37,7 @@ def startModules():
 		#exec('xContext = %s.context' % mod)
 		print 'xContext', xContext
 		GL.moduleDic[mod] = xContext
-		
+
 
 def runModules(context, params):
 	for modPair in GL.moduleDic.items():
@@ -45,24 +47,24 @@ def runModules(context, params):
 			command = '{mod}.run(**params)'.format(mod=modPair[0])
 			print command
 			exec(command)
-			
-			
+
+
 #BUILDERS
 
 def createButton(parent, label, function, align='pack', alignParams={}):
 	button = Button(parent, text=GL.names[label], width=GL.buttonWidth, command=function)
-	
+
 	if align == 'pack':
 		button.pack(**alignParams)
 	else: #'grid'
 		button.grid(**alignParams)
-		
+
 	return button
-	
+
 def createMenuElement(parent, label, function, state=ACTIVE):
 	parent.add_command(label=GL.names[label], state=state, command=function)
-	
-	
+
+
 '''
 primero armo una lista de modulos a cargar (veo de buscar las carpetas, o algo)
 una vez que tengo la lista, importo los modulos con startModules()
