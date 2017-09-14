@@ -29,9 +29,10 @@ def main(mode = 'main', filepath=''):
 	MOD.startModules()
 	
 	mainApp = tk_app.MainApp(lExcludeMenu=lExcludeMenu)
-	if filepath == None:
-		tk_app.openXML(mainApp)
-	else:
+	#if filepath == None:
+	#	tk_app.openXML(mainApp)
+	#else:
+	if filepath <> None:
 		tk_app.openXML(mainApp, filename=filepath)
 	
 	mainApp.focus_set()
