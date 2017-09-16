@@ -42,7 +42,7 @@ class FrameExt(Frame):
 			widget.destroy()
 
 class ToplevelFromMain(Toplevel):
-	def __init__(self, master, title, container):
+	def __init__(self, master, title, container, useSQLButtons=True):
 		Toplevel.__init__(self)
 		#self.overrideredirect(1)
 		self.transient(master)
@@ -55,6 +55,8 @@ class ToplevelFromMain(Toplevel):
 		self.body    = Frame(self)
 		self.buttons = Frame(self)
 		self.firstField = None
+
+		self.useSQLButtons = useSQLButtons
 
 		self.upper.pack(side=TOP, fill=X)
 		self.body.pack(side=TOP, fill=BOTH, expand=True)
@@ -108,7 +110,7 @@ class ToplevelFromMain(Toplevel):
 			self.firstField = xTextbox
 
 		#SQL buttons from module
-		params = {'parent':self.upper, 'field':self.firstField}
+		params = {'parent':self.upper, 'field':self.firstField, 'useButtons':self.useSQLButtons}
 		MOD.runModules('TOPLEVEL', params)
 
 	def bSQLButtons(self, SQLfunction):
@@ -230,8 +232,8 @@ class MainApp(Tk):
 		self.bind('<F5>', lambda event: refreshTreeview(self))
 
 	#metodos del MainApp
-	def getToplevel2(self, title, container):
-		return ToplevelFromMain(self, title, container)
+	def getToplevel2(self, title, container, useSQLButtons=True):
+		return ToplevelFromMain(self, title, container, useSQLButtons)
 
 
 ##################
@@ -564,7 +566,7 @@ def openXMLFromText(mainApp, stringXML=''):
 		container = {}
 		label = GL.names['message_newxmlstring']
 		title = GL.names['message_newxml']
-		xWindow = mainApp.getToplevel2(title, container)
+		xWindow = mainApp.getToplevel2(title, container, useSQLButtons=False)
 		xWindow.textFieldConstructor(label, '')
 		xWindow.show()
 
