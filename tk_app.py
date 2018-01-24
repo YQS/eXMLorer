@@ -24,7 +24,7 @@ class FrameExt(Frame):
 	def __init__(self, master):
 		Frame.__init__(self, master)
 		self.dic = {}
-		
+
 	def addWidget(self, sWidget, sKey, sParameters='', sObject=None):
 		if sObject == None:
 			sCodeLine = '%s(self)' % sWidget
@@ -34,20 +34,20 @@ class FrameExt(Frame):
 			self.dic[sKey] = eval(sCodeLine)
 		else:
 			self.dic[sKey] = sObject
-			
+
 		return self.dic[sKey]
-		
+
 	def clean(self):
 		for widget in self.winfo_children():
 			widget.destroy()
-			
+
 class ToplevelFromMain(Toplevel):
-	def __init__(self, master, title, container):
+	def __init__(self, master, title, container, useSQLButtons=True):
 		Toplevel.__init__(self)
 		#self.overrideredirect(1)
 		self.transient(master)
 		self.title(title)
-		
+
 		self.parent  = master
 		self.result  = container
 		self.entries = {}
@@ -55,22 +55,24 @@ class ToplevelFromMain(Toplevel):
 		self.body    = Frame(self)
 		self.buttons = Frame(self)
 		self.firstField = None
-		
+
+		self.useSQLButtons = useSQLButtons
+
 		self.upper.pack(side=TOP, fill=X)
 		self.body.pack(side=TOP, fill=BOTH, expand=True)
 		self.buttons.pack(side=BOTTOM, fill=X)
 		self.createButtons()
-		
+
 		self.geometry('+%d+%d' % (master.winfo_rootx()+50, master.winfo_rooty()+50))
 		self.protocol('WM_DELETE_WINDOW', lambda: self.cancel())
-		
+
 		self.bind('<Alt-a>', lambda event: self.apply())
 		self.bind('<Alt-A>', lambda event: self.apply())
-		
+
 	def createButtons(self):
 		Button(self.buttons, text=GL.names['button_ok'], width=GL.buttonWidth, command=lambda: self.apply()).grid(row=0, column=0)
 		Button(self.buttons, text=GL.names['button_cancel'], width=GL.buttonWidth, command=lambda: self.cancel()).grid(row=0, column=1)
-		
+
 	def formConstructor(self, labelText, xRow):
 		Label(self.body, text=labelText).grid(row=xRow, column=0, sticky='e')
 		xEntry = Entry(self.body, width=30)
@@ -83,7 +85,7 @@ class ToplevelFromMain(Toplevel):
 		self.entries[labelText] = xEntry
 		if self.firstField == None:
 			self.firstField = xEntry
-		
+
 	def textFieldConstructor(self, labelText, value):
 		def selectAllText(event):
 			xField = event.widget
@@ -91,10 +93,10 @@ class ToplevelFromMain(Toplevel):
 			xField.mark_set(INSERT, "1.0")
 			xField.see(INSERT)
 			return 'break'
-			
+
 		#Label(self.body, text=labelText).grid(row=0, column=0, sticky='nw')
 		Label(self.body, text=labelText).pack(side=TOP)
-		
+
 		#xTextbox = Text(self.body) ## ver que width y height poner
 		xTextbox = ScrollText(self.body)
 		#xTextbox.bind('<KeyRelease>', lambda event: apply())
@@ -106,18 +108,18 @@ class ToplevelFromMain(Toplevel):
 		self.entries[labelText] = xTextbox
 		if self.firstField == None:
 			self.firstField = xTextbox
-			
+
 		#SQL buttons from module
-		params = {'parent':self.upper, 'field':self.firstField}
+		params = {'parent':self.upper, 'field':self.firstField, 'useButtons':self.useSQLButtons}
 		MOD.runModules('TOPLEVEL', params)
-			
+
 	def bSQLButtons(self, SQLfunction):
 		#asumo que si uso estas funciones, el firstField es el campo que me interesa
 		text = self.firstField.get('1.0', 'end')
 		text = SQLfunction(text)
 		self.firstField.delete('1.0', 'end')
 		self.firstField.insert('1.0', text)
-		
+
 	def show(self):
 		self.wait_visibility()
 		self.grab_set()
@@ -126,7 +128,7 @@ class ToplevelFromMain(Toplevel):
 			self.firstField.focus_set()
 		self.wait_window()
 		#self.grab_release()
-		
+
 	def apply(self):
 		for key in self.entries:
 			if isinstance(self.entries[key], Text):
@@ -135,32 +137,32 @@ class ToplevelFromMain(Toplevel):
 				self.result[key] = self.entries[key].get()
 		#print self.result
 		self.close()
-		
+
 	def cancel(self):
 		self.entries.clear()
 		self.close()
-		
+
 	def close(self):
 		self.grab_release()
 		self.parent.focus_set()
 		self.destroy()
 
-		
+
 class FramePack(object):
 	def __init__(self, master):
 		self.menu = FrameExt(master)
 		self.center = FrameExt(master)
 		self.footer = FrameExt(master)
-		
+
 		self.treeview = FrameExt(self.center)
 		self.buttons = FrameExt(self.center)
-		
+
 
 class MainApp(Tk):
 	def __init__(self, iconfile='test.gif', lExcludeMenu = []):
 		Tk.__init__(self)
 		self.title('eXMLorer')
-		
+
 		#elementos del main
 		self.excludeList = lExcludeMenu
 		self.rootTIG = None
@@ -178,13 +180,13 @@ class MainApp(Tk):
 		self.bool_menu_config_others_showFileFullPath = BooleanVar()
 		self.bool_menu_config_showComments = BooleanVar()
 		self.string_optionmenu_search = StringVar()
-		
+
 		#chequeo estado inicial de BooleanVars de menues
 		if GL.names['lang'] == 'Español':
 			self.bool_menu_config_lang_spa.set(True)
 		else:
 			self.bool_menu_config_lang_eng.set(True)
-			
+
 		if GL.defaultPrettyPrint:
 			self.bool_menu_config_prettyprint.set(True)
 		if GL.eliminateSpaceInSelfClosingTag:
@@ -199,52 +201,52 @@ class MainApp(Tk):
 			self.bool_menu_config_others_showFileFullPath.set(True)
 		if GL.showComments:
 			self.bool_menu_config_showComments.set(True)
-		
+
 		#icono
 		try:
 			self.iconImage = PhotoImage(file= iconfile)
 			self.tk.call('wm', 'iconphoto', self._w, self.iconImage)
 		except TclError:
 			print 'No se encontro el archivo de icono %s' % iconfile
-			
+
 		#captura de cierre del programa
 		self.protocol('WM_DELETE_WINDOW', lambda:quitApp(self))
-		
+
 		#frames
 		self.frames = FramePack(self)
 		self.frames.menu.pack(side=TOP, fill=X)
-		
+
 		self.frames.center.pack(side=TOP, fill=BOTH, expand=True)
 		self.frames.treeview.pack(side=LEFT, fill=BOTH)
 		self.frames.buttons.pack(side=LEFT, fill=BOTH, expand=True, ipadx=0, pady=20)
 		#setScrollbar(self, self.frames.buttons)
 		self.frames.footer.pack(side=BOTTOM, fill=X)
-		
+
 		fillMenu(self)				#menu real
 		fillButtonBarFrame(self)	#botones debajo del menu
 		fillFooterFrame(self)
-		
+
 		#refreshApp(self)
-		
+
 		#binds
 		self.bind('<F5>', lambda event: refreshTreeview(self))
-		
+
 	#metodos del MainApp
-	def getToplevel2(self, title, container):
-		return ToplevelFromMain(self, title, container)
-		
+	def getToplevel2(self, title, container, useSQLButtons=True):
+		return ToplevelFromMain(self, title, container, useSQLButtons)
+
 
 ##################
 def setScrollbar(parent, widget):
 	xScroll = Scrollbar(parent, command= widget.yview)
 	widget.configure(yscrollcommand= xScroll.set)
-	xScroll.pack(side='right',fill='y')		
+	xScroll.pack(side='right',fill='y')
 ##################
-		
+
 # METHODS
 def refreshApp(mainApp):
 	#mainApp = event.widget
-	
+
 	#clean bars
 	for i in range(0,50):	#habría que ver si se puede hacer esto más eficiente
 		try:
@@ -254,33 +256,33 @@ def refreshApp(mainApp):
 	mainApp.frames.menu.clean()
 	mainApp.frames.footer.clean()
 	mainApp.frames.treeview.clean()
-	mainApp.frames.buttons.clean()	
-			
-	#fill bars		
+	mainApp.frames.buttons.clean()
+
+	#fill bars
 	fillMenu(mainApp)
 	fillButtonBarFrame(mainApp)
 	fillFooterFrame(mainApp)
-	
+
 	#mainApp.frames.menu.dic['label_filename'].config(text= GL.filename)
 	setFilenameLabel(mainApp.frames.menu.dic['label_filename'])
-	
+
 	refreshTreeview(mainApp)
 
 def refreshTreeview(mainApp):
 	#clean treeview frame
 	mainApp.frames.treeview.clean()
-	
+
 	#set globals
 	GL.dicTagsInTree = {}
 	GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
-	
+
 	#load xml dic and TIGs
 	root = GL.XMLTree.getroot()
-	
+
 	GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
 	addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
 	mainApp.update()
-	
+
 	selectAndFocus(GL.lastTreeViewFocus)
 
 def selectAndFocus(xIDFocus):
@@ -289,30 +291,30 @@ def selectAndFocus(xIDFocus):
 		GL.appTreeView.focus(xIDFocus)
 		GL.appTreeView.selection_set(xIDFocus)
 
-		
+
 def fillMenu(mainApp):
 	menubar = Menu(mainApp)
 	mainApp.config(menu=menubar)
 	mainApp.menubar = menubar
-	
+
 	if not 'menu_file' in mainApp.excludeList:
 		menu_file = Menu(menubar, tearoff=0)
 		menubar.add_cascade(label=GL.names['menu_file'], menu=menu_file)
-		
+
 		menu_file.add_command(label= GL.names['menu_file_open'],   command= lambda: openXML(mainApp))
 		menu_file.add_command(label= GL.names['menu_file_save'],   command= lambda: saveXML(mainApp, 'SAVE'))
 		menu_file.add_command(label= GL.names['menu_file_saveas'], command= lambda: saveXML(mainApp, 'SAVEAS'))
 		menu_file.add_command(label= GL.names['menu_file_exit'],   command= lambda: quitApp(mainApp))
-	
+
 	if not 'menu_config' in mainApp.excludeList:
 		#seteo menu Configuración
 		menu_config = Menu(menubar, tearoff=0)
 		menubar.add_cascade(label= GL.names['menu_config'], menu=menu_config)
-		
+
 		menu_config_language = Menu(menubar, tearoff=0)
 		menu_config.add_cascade(label=GL.names['menu_config_language']+ ' ', menu=menu_config_language)
 		#menu_config.add_command(label= GL.names['menu_config_language'], command=None)
-		
+
 		#seteo lenguajes
 		#menu_config_language.add_command(label=GL.names['menu_config_language_spa'], command= lambda: mChangeLang(mainApp, 'SPA'))
 		#menu_config_language.add_command(label=GL.names['menu_config_language_eng'], command= lambda: mChangeLang(mainApp, 'ENG'))
@@ -322,36 +324,36 @@ def fillMenu(mainApp):
 		menu_config_language.add_checkbutton(label=GL.names['menu_config_language_eng'],
 											 variable= mainApp.bool_menu_config_lang_eng,
 											 command= lambda: mChangeLang(mainApp, 'ENG'))
-		
+
 		#menu_config.add_separator()
-		
+
 		#menu de visualizacion
 		menu_config_visualization = Menu(menubar, tearoff=0)
 		menu_config.add_cascade(label=GL.names['menu_config_visualization'], menu=menu_config_visualization)
 		menu_config_visualization.add_checkbutton(label=GL.names['menu_config_visualization_showcomments'],
 												  variable= mainApp.bool_menu_config_showComments,
 												  command= lambda: mSwitchGlobal('GL.showComments', 'show_comments', refreshTree=True))
-		
+
 		#seteo config de print modes
 		menu_config_printmode = Menu(menubar, tearoff=0)
 		menu_config.add_cascade(label=GL.names['menu_config_printmode'], menu=menu_config_printmode)
 		menu_config_printmode.add_checkbutton(label=GL.names['menu_config_printmode_prettyprint'],
-											  variable= mainApp.bool_menu_config_prettyprint, 
+											  variable= mainApp.bool_menu_config_prettyprint,
 											  command= lambda: mSwitchGlobal('GL.defaultPrettyPrint', 'pretty_print'))
 		menu_config_printmode.add_checkbutton(label=GL.names['menu_config_printmode_nospaceclosedtag'],
-											  variable= mainApp.bool_menu_config_noSpaceInSelfClosingTag, 
+											  variable= mainApp.bool_menu_config_noSpaceInSelfClosingTag,
 											  command= lambda: mSwitchGlobal('GL.eliminateSpaceInSelfClosingTag', 'no_spaces_in_closed_tag'))
 		menu_config_printmode.add_checkbutton(label=GL.names['menu_config_printmode_linefyatsave'],
-											  variable= mainApp.bool_menu_config_linefyAtSave, 
+											  variable= mainApp.bool_menu_config_linefyAtSave,
 											  command= lambda: mSwitchGlobal('GL.linefyAtSave', 'no_spaces_in_closed_tag'))
-											  
+
 		#menu de búsqueda
 		menu_config_search = Menu(menubar, tearoff=0)
 		menu_config.add_cascade(label=GL.names['menu_config_search'], menu=menu_config_search)
 		menu_config_search.add_checkbutton(label=GL.names['menu_config_search_caseSensitive'],
 										   variable=mainApp.bool_menu_config_caseSensitive,
 										   command= lambda: mSwitchGlobal('GL.caseSensitiveSearch', 'case_sensitive'))
-										   
+
 		#menu otros
 		menu_config_others = Menu(menubar, tearoff=0)
 		menu_config.add_cascade(label=GL.names['menu_config_others'], menu=menu_config_others)
@@ -361,8 +363,8 @@ def fillMenu(mainApp):
 		menu_config_others.add_checkbutton(label=GL.names['menu_config_others_ShowFileFullPath'],
 										   variable=mainApp.bool_menu_config_others_showFileFullPath,
 										   command= lambda: mChangeFilenameLabel(mainApp.frames.menu.dic['label_filename']))
-		
-		
+
+
 def fillButtonBarFrame(mainApp):
 	#mainApp = xFrame.master
 	xFrame = mainApp.frames.menu
@@ -372,7 +374,7 @@ def fillButtonBarFrame(mainApp):
 		label_filename = xFrame.addWidget('Label', 'label_filename')
 		label_filename.configure(padding=(10,0,0,0))
 		label_filename.grid(row=0, column=4, columnspan=2)
-	
+
 	getButton(xFrame, 'button_newFromText', lExcludeMenu, 0, 0, command = lambda: openXMLFromText(mainApp))
 	getButton(xFrame, 'button_open', lExcludeMenu, 0, 1, command = lambda: openXML(mainApp))
 	getButton(xFrame, 'button_save', lExcludeMenu, 0, 2, command = lambda: saveXML(mainApp, 'SAVE'))
@@ -381,7 +383,7 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_newChildTag', lExcludeMenu, 1, 1, command= lambda: createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'CHILD'))
 	getButton(xFrame, 'button_copyTag', lExcludeMenu, 1, 2, command = lambda: copyTagInTree(GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 0 ))
 	getButton(xFrame, 'button_deleteTag', lExcludeMenu, 1, 3, command = lambda: deleteSelectionTagInTree( GL.appTreeView.selection() ))
-	
+
 	## debug buttons
 	getButton(xFrame, 'button_glTreeView', lExcludeMenu, 1, 1, command = lambda: checkTreeView())
 	getButton(xFrame, 'button_analyze', lExcludeMenu, 0, 1, command = lambda: bCheckEntries(mainApp.frames.buttons))
@@ -401,23 +403,23 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_foldTest', lExcludeMenu, 2, 2, command = lambda: bFoldNode(GL.appTreeView.focus()))
 	#getButton(xFrame, 'button_newFromText', lExcludeMenu, 2, 2, command = lambda: openXMLFromText(mainApp))
 	getButton(xFrame, 'button_showChildQty', lExcludeMenu, 2, 1, command = lambda: bShowGuts(GL.dicTagsInTree[GL.appTreeView.focus()].getNumberOfChildren()))
-	
+
 	#campos para busqueda
 	frame_search = xFrame.addWidget('LabelFrame', 'frame_search')
 	frame_search.configure(text=GL.names['frame_search'])
 	frame_search.grid(row=1, column=4, sticky='wn')
-	
+
 	searchOptions = (GL.names['option_tags'], GL.names['option_values'], GL.names['option_xpath'])
 	optionmenu_search = OptionMenu(frame_search, mainApp.string_optionmenu_search, searchOptions[0], *searchOptions)
 	optionmenu_search.configure(width= GL.buttonWidth)
 	optionmenu_search.grid(row=0, column=0, sticky='wn')
-	
+
 	entry_search = Entry(frame_search)
 	entry_search.configure(width= GL.labelButtonWidth) #, validate='focus', validatecommand= lambda: printEntrySearch(entry_search))
 	entry_search.grid(row=0, column=1, sticky='wn')
 	entry_search.bind('<Return>', lambda event: basicSearch(mainApp, entry_search.get(), GL.appTreeView.focus() ))
-	
-	
+
+
 def basicSearch(mainApp, searchString, xIDFocus):
 	if searchString <> '':
 		if (mainApp.currentSearch == None) or (mainApp.currentSearch.searchString <> searchString):
@@ -426,36 +428,36 @@ def basicSearch(mainApp, searchString, xIDFocus):
 			except:
 				xStartingPoint = 0
 			mainApp.currentSearch = BasicSearch(searchString, GL.dicTagsInTree, mainApp.string_optionmenu_search.get(), xStartingPoint)
-		
+
 		nextFocus = mainApp.currentSearch.output.next()
 		if nextFocus == '':
 			tkMessageBox.showinfo("eXMLorer", GL.names['message_nofinds'])
 		else:
 			selectAndFocus(nextFocus)
-	
-	
+
+
 def fillFooterFrame(mainApp):
 	xFrame = mainApp.frames.footer
 	lExcludeMenu = mainApp.excludeList
-	
+
 	getButton(xFrame, 'button_moveUp', lExcludeMenu, 0, 1, command = lambda: tk_treeview.moveNode(
 																						 GL.appTreeView.focus(),
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getTreeViewIndex() - 1,
 																						 GL.dicTagsInTree))
-																						 
+
 	getButton(xFrame, 'button_moveDown', lExcludeMenu, 0, 2, command = lambda: tk_treeview.moveNode(
 																						 GL.appTreeView.focus(),
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getTreeViewIndex() + 1,
 																						 GL.dicTagsInTree))
-																						 
+
 	getButton(xFrame, 'button_moveBeginnnig', lExcludeMenu, 0, 3, command = lambda: tk_treeview.moveNode(
 																						 GL.appTreeView.focus(),
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
 																						 0,
 																						 GL.dicTagsInTree))
-																						 
+
 	getButton(xFrame, 'button_moveEnd', lExcludeMenu, 0, 4, command = lambda: tk_treeview.moveNode(
 																						 GL.appTreeView.focus(),
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
@@ -472,21 +474,24 @@ def getFilename(oTemp):
 	#filename = tkFileDialog.askopenfilename(defaultextension='.xml', filetypes = [('XML files', '.xml'), ('all files', '.*')], initialdir=GL.lastFolderVisited)
 	#print filename
 	#GL.lastFolderVisited = filename[:filename.rfind('\\')]
-	
+
 	filename = tkFileDialog.askopenfilename(defaultextension='.xml', filetypes = [('XML files', '.xml'), ('all files', '.*')], initialdir=oTemp.getValue('lastVisitedFolder'))
 	print "FILENAME"
 	print filename
-	oTemp.setValue('lastVisitedFolder', filename[:filename.rfind('\\')])
-	
-	return filename
+	print type(filename)
+	if not isinstance(filename, tuple):
+		oTemp.setValue('lastVisitedFolder', filename[:filename.rfind('\\')])
+		return filename
+	else:
+		return ''
 
 def getIDForTreeView(xTag, dicTagsInTree):
 	i = 0
 	while dicTagsInTree.has_key(xTag + str(i)):
 		i += 1
 	dicTagsInTree[xTag + str(i)] = 0
-	return xTag + str(i)	
-	
+	return xTag + str(i)
+
 def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 	for xChild in xBase:
 		if xChild.tag is ET.Comment:
@@ -494,12 +499,12 @@ def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 			if GL.showComments:
 				xID = getIDForTreeView('comment', dicTagsInTree)
 				dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, xBase, appTreeView, is_comment=True)
-			
+
 		if type(xChild.tag).__name__ == 'str':
 			xID = getIDForTreeView(xChild.tag, dicTagsInTree)
 			dicTagsInTree[xID] = TIG.TagInTree(xBaseID, xID, xChild, xBase, appTreeView)
 			addXMLToTree(xChild, xID, dicTagsInTree, appTreeView)
-		
+
 def askSaveChanges(mainApp):
 	#print xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename)
 	#tkMessageBox.showerror('eXMLorer', 'Está saliendo del eXMLorer. Que tenga un buen día :)')
@@ -511,7 +516,7 @@ def askSaveChanges(mainApp):
 		response = tkMessageBox.showwarning("eXMLorer", GL.names['message_exitsave'] % GL.filename, type=tkMessageBox.YESNOCANCEL)
 	else:
 		response = 'no'
-		
+
 	####################
 	if response == 'yes':
 		saveXML(mainApp, 'SAVE')
@@ -520,13 +525,13 @@ def askSaveChanges(mainApp):
 		return False
 	elif response == 'no':
 		return True
-	
-		
+
+
 def quitApp(mainApp):
 	if askSaveChanges(mainApp):
 		mainApp.destroy()
-		
-		
+
+
 # BUTTON METHODS
 
 def openXML(mainApp, filename=''):
@@ -534,52 +539,52 @@ def openXML(mainApp, filename=''):
 		label_filename = mainApp.frames.menu.dic['label_filename']
 		if filename=='':
 			filename = getFilename(mainApp.temp)
-		
+
 		if filename <> '':
 			mainApp.frames.treeview.clean()
 			mainApp.frames.buttons.clean()
 			GL.filename = filename
 			#label_filename.config(text= GL.filename)
 			setFilenameLabel(label_filename)
-			
+
 			root = xml_man.getXML(GL.filename)
 			#root = xml_man.getXML('stylers.xml')
-			
+
 			if root == None:
 				tkMessageBox.showerror('eXMLorer', GL.names['message_nonvalidxml'] % GL.filename)
 				label_filename.config(text= '')
 			else:
 				GL.dicTagsInTree = {}
 				GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
-				
+
 				GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
 				mainApp.rootTIG = GL.dicTagsInTree[root.tag]
 				addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
-				
+
 def openXMLFromText(mainApp, stringXML=''):
 	def getStringXMLFromUser(mainApp):
 		container = {}
 		label = GL.names['message_newxmlstring']
 		title = GL.names['message_newxml']
-		xWindow = mainApp.getToplevel2(title, container)
+		xWindow = mainApp.getToplevel2(title, container, useSQLButtons=False)
 		xWindow.textFieldConstructor(label, '')
 		xWindow.show()
-		
+
 		if len(container) > 0:
 			return container[label]
 		else:
 			return ''
-	
-	
+
+
 	label_filename = mainApp.frames.menu.dic['label_filename']
-	
+
 	if askSaveChanges(mainApp):
 		mainApp.frames.treeview.clean()
 		mainApp.frames.buttons.clean()
-		
+
 		#stringXML = '<main><cosa>a</cosa></main>'
 		stringXML = getStringXMLFromUser(mainApp)
-		
+
 		if stringXML <> '':
 			try:
 				encodedStringXML = stringXML.encode('utf-8')
@@ -588,28 +593,28 @@ def openXMLFromText(mainApp, stringXML=''):
 			except Exception as e:
 				root = None
 				print e
-			
+				
 			if root == None:
 				tkMessageBox.showerror('eXMLorer', GL.names['message_nonvalidxmlstring'])
 				label_filename.config(text= '')
 			else:
 				GL.dicTagsInTree = {}
 				GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
-				
+
 				GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
 				mainApp.rootTIG = GL.dicTagsInTree[root.tag]
 				addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
-			
+
 
 def saveXML(mainApp, modo):
 	try:
 		if modo == 'SAVEAS':
-			save_filename = tkFileDialog.asksaveasfilename( filetypes=[(GL.names['saveas_filetype_xml'], '.xml'), (GL.names['saveas_filetype_all'], '.*')], 
+			save_filename = tkFileDialog.asksaveasfilename( filetypes=[(GL.names['saveas_filetype_xml'], '.xml'), (GL.names['saveas_filetype_all'], '.*')],
 															initialfile = GL.filename,
 															parent = mainApp)
  		else:
 			save_filename = GL.filename
-		
+
 		if save_filename:
 			#print 'saving in ' + save_filename
 			#GL.XMLTree.write(save_filename)
@@ -622,7 +627,7 @@ def saveXML(mainApp, modo):
 			setFilenameLabel(mainApp.frames.menu.dic['label_filename'])
 	except Exception, e:
 		tkMessageBox.showerror('eXMLorer', GL.names['message_savingerror'] % e)
-		
+
 
 def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False, text=''):
 	if baseTIG <> None:
@@ -638,7 +643,7 @@ def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False, text
 				xText = text
 			elif oTag == None:
 				xTag, xText = getTagFromUser(mainApp, getValue=True)
-				
+
 			if (xTag <> '') or (oTag <> None):
 				xAttrib = {}
 				#consigo datos para crear el TagInTree
@@ -652,7 +657,7 @@ def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False, text
 					#xOrder = baseTIG.getNumberOfSiblings() + 1
 					xOrder = baseTIG.getNumberOfChildren() + 1
 					print 'parenttag in newTIG', xParentTag, xParentTag.tag, xOrder
-				
+
 				#creo o inserto el tag en el XML
 				if is_comment:
 					xNewTag = xml_man.newComment(xParentTag, xText, xOrder)
@@ -662,7 +667,7 @@ def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False, text
 					#if mode == 'SIBLING':
 					xml_man.insertElement(xParentTag, oTag, xOrder)
 					xNewTag = oTag
-				
+
 				#creo el newTagInTree
 				if is_comment:
 					xID = getIDForTreeView( 'comment', GL.dicTagsInTree)
@@ -670,12 +675,12 @@ def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False, text
 				else:
 					xID = getIDForTreeView( xNewTag.tag, GL.dicTagsInTree)
 					newTagInTree = TIG.TagInTree(xBaseID, xID, xNewTag, xParentTag, GL.appTreeView, order = xOrder)
-					
+
 				GL.dicTagsInTree[xID] = newTagInTree
 				selectAndFocus(xID)
 				print 'newTagInTree'
 				return newTagInTree
-	
+
 def getTagFromUser(mainApp, getValue=False):
 	container = {}
 	xWindow = mainApp.getToplevel2(GL.names['message_newtag'], container)
@@ -683,7 +688,7 @@ def getTagFromUser(mainApp, getValue=False):
 	if getValue:
 		xWindow.formConstructor('Value', 1)
 	xWindow.show()
-	
+
 	if len(container) > 0:
 		if getValue:
 			return container['Tag'], container['Value']
@@ -694,8 +699,8 @@ def getTagFromUser(mainApp, getValue=False):
 			return '', ''
 		else:
 			return ''
-		
-		
+
+
 def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 	if oldTagInTree <> None:
 		if newparent == None:
@@ -704,20 +709,20 @@ def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 		else:
 			xParentID = newparent.id
 			xParentTag = newparent.getTag()
-		
+
 		xOrder = oldTagInTree.getTreeViewIndex() + 1
-		
+
 		xNewTag = xml_man.newElement( xParentTag,
 									  oldTagInTree.getTag().tag,
 									  oldTagInTree.getTag().text,
 									  oldTagInTree.getTag().attrib,
 									  xOrder)
-		
+
 		xID = getIDForTreeView( xNewTag.tag, GL.dicTagsInTree)
-		
+
 		newTagInTree = TIG.TagInTree(xParentID, xID, xNewTag, xParentTag, GL.appTreeView, order = xOrder)
 		GL.dicTagsInTree[xID] = newTagInTree
-		
+
 		def getTagInTreeFromTag(xTag, dicTagsInTree):
 			xReturn = None
 			for xTuple in dicTagsInTree.items():
@@ -726,20 +731,20 @@ def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 					xReturn = xTuple[1]
 					break
 			return xReturn
-			
+
 		for xChildTag in oldTagInTree.getTag():
 			xChildTagInTree = getTagInTreeFromTag(xChildTag, GL.dicTagsInTree)
 			copyTagInTree( xChildTagInTree, xLevel + 1, newparent = newTagInTree)
-			
+
 		selectAndFocus(xID)
-			
+
 	else:
 		print 'oldTagInTree is None'
-		
+
 def deleteSelectionTagInTree(selection):
 	for xID in selection:
 		deleteTagInTree(xID)
-		
+
 def deleteTagInTree(xID):
 	if xID <> '':
 		xTagInTree = GL.dicTagsInTree[xID]
@@ -749,41 +754,41 @@ def deleteTagInTree(xID):
 		del GL.dicTagsInTree[xID]
 		del xTagInTree
 		print 'Deleted %s' % xID
-	
-		
+
+
 def checkTreeView():
 	if GL.appTreeView == None:
 		print 'TreeView does not exist'
 	else:
 		print 'TreeView is A-OK!'
 
-		
+
 def bCheckEntries(band_buttons):
 	for widget in band_buttons.winfo_children():
 		if isinstance(widget, Entry):
 			print widget.get()
-			
+
 def printStringXML(oTIG):
 	if oTIG <> None:
 		stringXML = xml_man.getStringXML(oTIG.getTag())
 		print stringXML[ stringXML.find('\n')+1:]
 	else:
 		print 'None selected'
-		
+
 def setFilenameLabel(label_filename):
 	print "setFilenameLabel"
 	if GL.showFileFullPath:
 		label_filename.config(text=GL.filename)
 	else:
 		label_filename.config(text=GL.filename[GL.filename.rfind('\\')+1:])
-		
+
 def bFoldNode(idNode):
 	GL.appTreeView.item(idNode, open=False)
-	
+
 def bShowGuts(thing):
 	print thing
-	
-	
+
+
 # MENU METHODS
 
 def mChangeLang(mainApp, newLang):
@@ -792,24 +797,24 @@ def mChangeLang(mainApp, newLang):
 		dicLang = LANG.english
 		mainApp.bool_menu_config_lang_eng.set(True)
 		mainApp.bool_menu_config_lang_spa.set(False)
-		
+
 	elif newLang == 'SPA':
 		dicLang = LANG.spanish
 		mainApp.bool_menu_config_lang_eng.set(False)
 		mainApp.bool_menu_config_lang_spa.set(True)
-		
+
 	else:
 		return
-	
+
 	if dicLang['lang'] <> GL.names['lang']:
 		GL.names = dicLang
 		GL.updateConfigFile('Configuration', 'language', dicLang['lang'])
 		refreshApp(mainApp)
-		
+
 def mChangeFilenameLabel(label_filename):
 	mSwitchGlobal('GL.showFileFullPath', 'showFileFullPath')
 	setFilenameLabel(label_filename)
-		
+
 def mSwitchGlobal(varName, varConfigName, refreshTree=False):
 	if eval(varName) == True:
 		exec('%s = False' % varName)
@@ -817,12 +822,12 @@ def mSwitchGlobal(varName, varConfigName, refreshTree=False):
 	else:
 		exec('%s = True' % varName)
 		GL.updateConfigFile('Configuration', varConfigName, 'True')
-	
+
 	if refreshTree:
-		refreshTreeview(GL.appTreeView.master.master.master)	
+		refreshTreeview(GL.appTreeView.master.master.master)
 		#la manera mas sencilla de traer el mainApp sin cambiar todo
 		#esto es porque el objeto es mainApp.center(frame).treeview(frame).treeview(mi appTreeView)
-			
+
 #####################
 
 if __name__ == '__main__':
