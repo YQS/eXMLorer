@@ -133,7 +133,7 @@ class ToplevelFromMain(Toplevel):
 				self.result[key] = self.entries[key].get('1.0', 'end')
 			else:
 				self.result[key] = self.entries[key].get()
-		print self.result
+		#print self.result
 		self.close()
 		
 	def cancel(self):
@@ -582,10 +582,12 @@ def openXMLFromText(mainApp, stringXML=''):
 		
 		if stringXML <> '':
 			try:
-				root = xml_man.parseStringXML(stringXML)
-				print 'root', root
-			except:
+				encodedStringXML = stringXML.encode('utf-8')
+				root = xml_man.parseStringXML(encodedStringXML)
+				#print 'root', root
+			except Exception as e:
 				root = None
+				print e
 			
 			if root == None:
 				tkMessageBox.showerror('eXMLorer', GL.names['message_nonvalidxmlstring'])
