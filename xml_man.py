@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from xml.dom.minidom import parseString
 import globals as GL
 import re
+import StringIO
 
 class ParserWithComments(ET.XMLTreeBuilder):
 	#robado del mismisimo autor del módulo ElementTree
@@ -48,7 +49,14 @@ def getXML(filename):
 	return root
 	
 def parseStringXML(stringXML):
-	return ET.fromstring(stringXML)
+	#return ET.fromstring(stringXML)
+	#se genera un objeto en memoria con StringIO para poder usar el ET.parse y que sin importar el origen, se parsee igual
+	print stringXML
+	fileObj = StringIO.StringIO(stringXML)
+	root = getXML(fileObj)
+	fileObj.close()
+	return root
+	
 
 def getEncoding(filename):
 	def regex_search(xPattern, xString):
@@ -60,19 +68,27 @@ def getEncoding(filename):
 			return xReturn
 	
 	xEncoding = ''
-	with open(filename, 'r') as xmlfile:
+	
+	#reviso si filename es un objeto en memoria
+	if isinstance(filename, StringIO.StringIO):
+		first_line = filename.getvalue()
+	else:
+		#es un path
+		xmlfile = open(filename, 'r')
 		first_line = xmlfile.readline()
-		if first_line[0:2] == '<?':
-			xEncoding = regex_search('encoding="(\S)*"', first_line)
+	
+	if first_line[0:2] == '<?':
+		xEncoding = regex_search('encoding="(\S)*"', first_line)
+		xEncoding = xEncoding.replace('encoding=', '')
+		xEncoding = xEncoding.replace('"', '')
+		
+		if xEncoding == '':
+			xEncoding = regex_search('encoding=\'(\S)*\'', first_line)
 			xEncoding = xEncoding.replace('encoding=', '')
-			xEncoding = xEncoding.replace('"', '')
+			xEncoding = xEncoding.replace('\'', '')
 			
-			if xEncoding == '':
-				xEncoding = regex_search('encoding=\'(\S)*\'', first_line)
-				xEncoding = xEncoding.replace('encoding=', '')
-				xEncoding = xEncoding.replace('\'', '')
-				
-			
+	if not isinstance(filename, StringIO.StringIO):
+		xmlfile.close()
 			
 	return xEncoding
 
