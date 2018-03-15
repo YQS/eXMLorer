@@ -57,6 +57,10 @@ def parseStringXML(stringXML):
 	fileObj.close()
 	return root
 	
+def parseStringXML_old(stringXML):
+	#creado porque el la funcion pasteFromClipboard() parsea un string pero no devuelve root
+	#TODO: agregar la excepción en parseStringXML() y getXML()
+	return ET.fromstring(stringXML)
 
 def getEncoding(filename):
 	def regex_search(xPattern, xString):

@@ -332,13 +332,16 @@ def pasteFromClipboard(mainApp, baseTIG, mode='SIBLING', stringXML=''):
 			print 'using unicode'
 			stringXML = unicode(stringXML, "utf-8")
 			print stringXML
-		pasteRoot = xml_man.parseStringXML(stringXML)
+		pasteRoot = xml_man.parseStringXML_old(stringXML)
 		print 'pasteRoot', pasteRoot
 		
 		rootTIG = tk_app.createNewTagInTree(mainApp, baseTIG, mode, oTag=pasteRoot)
-		createChildTIGs(mainApp, rootTIG, level=0)
+		#comentado porque duplicaba los childs al pegar
+		#createChildTIGs(mainApp, rootTIG, level=0)
+		#reemplazado por un refresh, que actualiza el arbol
+		tk_app.refreshTreeview(mainApp)
 		
-		#tk_app.selectAndFocus(rootTIG.id)
+		tk_app.selectAndFocus(rootTIG.id)
 
 
 def createChildTIGs(mainApp, parentTIG, level):
@@ -363,7 +366,7 @@ def unCommentTag(mainApp, commentTIG):
 	newTIG = None
 	response = 'no'
 	try:
-		newTag = xml_man.parseStringXML(stringXML)
+		newTag = xml_man.parseStringXML_old(stringXML)
 		newTIG = tk_app.createNewTagInTree(mainApp, commentTIG, 'SIBLING', oTag = newTag)
 	except:
 		response = tkMessageBox.showwarning("eXMLorer", GL.names['message_uncomment_newtag'], type=tkMessageBox.YESNO)
