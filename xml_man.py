@@ -6,11 +6,11 @@ import globals as GL
 import re
 import StringIO
 
-class ParserWithComments(ET.XMLTreeBuilder):
+class ParserWithComments(ET.XMLParser):
 	#robado del mismisimo autor del módulo ElementTree
 	#http://effbot.org/zone/element-pi.htm
 	def __init__(self):
-		ET.XMLTreeBuilder.__init__(self)
+		ET.XMLParser.__init__(self)
 		#asumes ElementTree 1.2.X
 		self._parser.CommentHandler = self.handle_comment
 		
