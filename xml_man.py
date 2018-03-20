@@ -9,8 +9,11 @@ import StringIO
 class ParserWithComments(ET.XMLParser):
 	#robado del mismisimo autor del módulo ElementTree
 	#http://effbot.org/zone/element-pi.htm
-	def __init__(self):
-		ET.XMLParser.__init__(self)
+	def __init__(self, useEncoding):
+		if useEncoding:
+			ET.XMLParser.__init__(self, encoding='utf-8')
+		else:
+			ET.XMLParser.__init__(self)
 		#asumes ElementTree 1.2.X
 		self._parser.CommentHandler = self.handle_comment
 		
@@ -19,10 +22,10 @@ class ParserWithComments(ET.XMLParser):
 		self._target.data(data)
 		self._target.end(ET.Comment)
 
-def getXML(filename):
+def getXML(filename, useEncoding=False):
 	#parseo el xml y instancio el root, para analizarlo todo
 	try:
-		parser = ParserWithComments()
+		parser = ParserWithComments(useEncoding)
 		GL.XMLTree = ET.parse(filename, parser)
 	except:
 		return None
@@ -53,7 +56,7 @@ def parseStringXML(stringXML):
 	#se genera un objeto en memoria con StringIO para poder usar el ET.parse y que sin importar el origen, se parsee igual
 	print stringXML
 	fileObj = StringIO.StringIO(stringXML)
-	root = getXML(fileObj)
+	root = getXML(fileObj, useEncoding=True)
 	fileObj.close()
 	return root
 	
