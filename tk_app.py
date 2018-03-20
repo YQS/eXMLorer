@@ -463,6 +463,11 @@ def fillFooterFrame(mainApp):
 																						 GL.dicTagsInTree[GL.appTreeView.focus()].getParent().id,
 																						 'end',
 																						 GL.dicTagsInTree))
+	if not 'label_encoding' in lExcludeMenu:
+		label_encoding = xFrame.addWidget('Label', 'label_encoding')
+		label_encoding.configure(padding=(10,0,0,0))
+		label_encoding.grid(row=0, column=5, sticky='e')
+		#label_encoding.config(text='test')
 
 def getButton(xMaster, name, lExcludeMenu, xRow, xColumn, command=''):
 	if not name in lExcludeMenu:
@@ -537,6 +542,7 @@ def quitApp(mainApp):
 def openXML(mainApp, filename=''):
 	if askSaveChanges(mainApp):
 		label_filename = mainApp.frames.menu.dic['label_filename']
+		label_encoding = mainApp.frames.footer.dic['label_encoding']
 		if filename=='':
 			filename = getFilename(mainApp.temp)
 
@@ -560,6 +566,9 @@ def openXML(mainApp, filename=''):
 				GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
 				mainApp.rootTIG = GL.dicTagsInTree[root.tag]
 				addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
+				
+				label_encoding.config(text = GL.XMLEncoding)
+
 
 def openXMLFromText(mainApp, stringXML=''):
 	def getStringXMLFromUser(mainApp):
@@ -577,6 +586,7 @@ def openXMLFromText(mainApp, stringXML=''):
 
 
 	label_filename = mainApp.frames.menu.dic['label_filename']
+	label_encoding = mainApp.frames.footer.dic['label_encoding']
 
 	if askSaveChanges(mainApp):
 		mainApp.frames.treeview.clean()
@@ -604,6 +614,8 @@ def openXMLFromText(mainApp, stringXML=''):
 				GL.dicTagsInTree[root.tag] = TIG.TagInTree('', root.tag, root, None, GL.appTreeView)
 				mainApp.rootTIG = GL.dicTagsInTree[root.tag]
 				addXMLToTree(root, root.tag, GL.dicTagsInTree, GL.appTreeView)
+				
+				label_encoding.config(text = GL.XMLEncoding)
 
 
 def saveXML(mainApp, modo):
