@@ -14,6 +14,7 @@ import TagInTree as TIG
 import xml_man
 import tk_treeview
 from search_man import BasicSearch
+from db_man import PG_Connection
 import module_interface as MOD
 from TempData import TempData
 
@@ -73,10 +74,12 @@ class ToplevelFromMain(Toplevel):
 		Button(self.buttons, text=GL.names['button_ok'], width=GL.buttonWidth, command=lambda: self.apply()).grid(row=0, column=0)
 		Button(self.buttons, text=GL.names['button_cancel'], width=GL.buttonWidth, command=lambda: self.cancel()).grid(row=0, column=1)
 
-	def formConstructor(self, labelText, xRow):
+	def formConstructor(self, labelText, xRow, hidden=False):
 		Label(self.body, text=labelText).grid(row=xRow, column=0, sticky='e')
 		xEntry = Entry(self.body, width=30)
 		xEntry.grid(row=xRow, column=1, sticky='w')
+		if hidden:
+			xEntry.config(show='*')
 		stringToInsert = self.result.setdefault(labelText, '')
 		if stringToInsert == None:
 			stringToInsert = ''
@@ -403,6 +406,7 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_foldTest', lExcludeMenu, 2, 2, command = lambda: bFoldNode(GL.appTreeView.focus()))
 	#getButton(xFrame, 'button_newFromText', lExcludeMenu, 2, 2, command = lambda: openXMLFromText(mainApp))
 	getButton(xFrame, 'button_showChildQty', lExcludeMenu, 2, 1, command = lambda: bShowGuts(GL.dicTagsInTree[GL.appTreeView.focus()].getNumberOfChildren()))
+	getButton(xFrame, 'button_ConnectDB', lExcludeMenu, 3, 0, command = lambda: bConnectDB(mainApp))
 
 	#campos para busqueda
 	frame_search = xFrame.addWidget('LabelFrame', 'frame_search')
@@ -796,6 +800,24 @@ def setFilenameLabel(label_filename):
 
 def bFoldNode(idNode):
 	GL.appTreeView.item(idNode, open=False)
+	
+def bConnectDB(mainApp):
+	#pido datos de conexión al usuario
+	container = {}
+	xWindow = mainApp.getToplevel2('DBConnect', container)
+	xWindow.formConstructor('host', 0)
+	xWindow.formConstructor('port', 1)
+	xWindow.formConstructor('dbname', 2)
+	xWindow.formConstructor('user', 3)
+	xWindow.formConstructor('password', 4, hidden=True)
+	xWindow.show()
+	
+	if len(container) > 0:
+		conn = PG_Connection(**container)
+		conn.open()
+		print conn.getSelect('select id from biframewebentity')
+		#return container['Tag'], container['Value']
+
 
 def bShowGuts(thing):
 	print thing
