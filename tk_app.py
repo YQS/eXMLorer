@@ -414,6 +414,7 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_showChildQty', lExcludeMenu, 2, 1, command = lambda: bShowGuts(GL.dicTagsInTree[GL.appTreeView.focus()].getNumberOfChildren()))
 	getButton(xFrame, 'button_connectDB', lExcludeMenu, 3, 0, command = lambda: bConnectDB(mainApp))
 	getButton(xFrame, 'button_changeTitle', lExcludeMenu, 3, 1, command = lambda: mainApp.changeTitle('ASDFASDFS'))
+	getButton(xFrame, 'button_showFilePath', lExcludeMenu, 3, 1, command = lambda: bShowGuts(GL.showFileFullPath))
 
 	#campos para busqueda
 	frame_search = xFrame.addWidget('LabelFrame', 'frame_search')
@@ -804,10 +805,13 @@ def printStringXML(oTIG):
 
 def setFilenameLabel(label_filename):
 	print "setFilenameLabel"
+	print "full: " + GL.filename
+	print "file: " + os.path.basename(GL.filename)
 	if GL.showFileFullPath:
 		label_filename.config(text=GL.filename)
 	else:
-		label_filename.config(text=GL.filename[GL.filename.rfind('\\')+1:])
+		#label_filename.config(text=GL.filename[GL.filename.rfind('\\')+1:])
+		label_filename.config(text=os.path.basename(GL.filename))
 
 def bFoldNode(idNode):
 	GL.appTreeView.item(idNode, open=False)
