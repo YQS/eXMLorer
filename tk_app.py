@@ -569,7 +569,9 @@ def openXML(mainApp, filename=''):
 
 			if root == None:
 				tkMessageBox.showerror('eXMLorer', GL.names['message_nonvalidxml'] % GL.filename)
-				label_filename.config(text= '')
+				#label_filename.config(text= '')
+				GL.filename = ''
+				setFilenameLabel(label_filename)
 			else:
 				GL.dicTagsInTree = {}
 				GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
@@ -617,7 +619,9 @@ def openXMLFromText(mainApp, stringXML=''):
 				
 			if root == None:
 				tkMessageBox.showerror('eXMLorer', GL.names['message_nonvalidxmlstring'])
-				label_filename.config(text= '')
+				#label_filename.config(text= '')
+				GL.filename = ''
+				setFilenameLabel(label_filename)
 			else:
 				GL.dicTagsInTree = {}
 				GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
