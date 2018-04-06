@@ -23,6 +23,7 @@ def main(mode = 'main', filepath=''):
 					'button_lastFolder',
 					'button_foldTest',
 					'button_showChildQty',
+					'button_changeTitle', 
 					]
 
 	GL.globalVarsStart()

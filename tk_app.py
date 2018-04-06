@@ -237,6 +237,12 @@ class MainApp(Tk):
 	#metodos del MainApp
 	def getToplevel2(self, title, container, useSQLButtons=True):
 		return ToplevelFromMain(self, title, container, useSQLButtons)
+		
+	def changeTitle(self, newTitle):
+		if newTitle == '':
+			self.title('eXMLorer')
+		else:
+			self.title('eXMLorer  -  ' + newTitle)
 
 
 ##################
@@ -406,7 +412,8 @@ def fillButtonBarFrame(mainApp):
 	getButton(xFrame, 'button_foldTest', lExcludeMenu, 2, 2, command = lambda: bFoldNode(GL.appTreeView.focus()))
 	#getButton(xFrame, 'button_newFromText', lExcludeMenu, 2, 2, command = lambda: openXMLFromText(mainApp))
 	getButton(xFrame, 'button_showChildQty', lExcludeMenu, 2, 1, command = lambda: bShowGuts(GL.dicTagsInTree[GL.appTreeView.focus()].getNumberOfChildren()))
-	getButton(xFrame, 'button_ConnectDB', lExcludeMenu, 3, 0, command = lambda: bConnectDB(mainApp))
+	getButton(xFrame, 'button_connectDB', lExcludeMenu, 3, 0, command = lambda: bConnectDB(mainApp))
+	getButton(xFrame, 'button_changeTitle', lExcludeMenu, 3, 1, command = lambda: mainApp.changeTitle('ASDFASDFS'))
 
 	#campos para busqueda
 	frame_search = xFrame.addWidget('LabelFrame', 'frame_search')
