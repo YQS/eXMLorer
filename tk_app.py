@@ -382,7 +382,7 @@ def fillButtonBarFrame(mainApp):
 	if not 'label_filename' in lExcludeMenu:
 		label_filename = xFrame.addWidget('Label', 'label_filename')
 		label_filename.configure(padding=(10,0,0,0))
-		label_filename.grid(row=0, column=4, columnspan=2)
+		label_filename.grid(row=0, column=4, columnspan=2, sticky='w')
 
 	getButton(xFrame, 'button_newFromText', lExcludeMenu, 0, 0, command = lambda: openXMLFromText(mainApp))
 	getButton(xFrame, 'button_open', lExcludeMenu, 0, 1, command = lambda: openXML(mainApp))
