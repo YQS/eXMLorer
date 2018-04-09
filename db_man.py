@@ -34,6 +34,7 @@ class PG_Connection(object):
 				print 'CONECTADO'
 			else:
 				print 'NO CONECTADO'
+			return success
 		
 	def close(self):
 		if self.conn.closed == 0:

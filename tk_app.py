@@ -314,6 +314,10 @@ def fillMenu(mainApp):
 		menu_file.add_command(label= GL.names['menu_file_save'],   command= lambda: saveXML(mainApp, 'SAVE'))
 		menu_file.add_command(label= GL.names['menu_file_saveas'], command= lambda: saveXML(mainApp, 'SAVEAS'))
 		menu_file.add_command(label= GL.names['menu_file_exit'],   command= lambda: quitApp(mainApp))
+		
+	if not 'menu_database' in mainApp.excludeList:
+		menu_database = Menu(menubar, tearoff=0)
+		menubar.add_cascade(label=GL.names['menu_database'], menu=menu_database)
 
 	if not 'menu_config' in mainApp.excludeList:
 		#seteo menu Configuración
@@ -622,7 +626,7 @@ def openXMLFromText(mainApp, stringXML=''):
 				tkMessageBox.showerror('eXMLorer', GL.names['message_nonvalidxmlstring'])
 				#label_filename.config(text= '')
 				GL.filename = ''
-				setFilenameLabel(label_filename)
+				setFilenameLabel(label_filename, text=GL.names['label_newFile'])
 			else:
 				GL.dicTagsInTree = {}
 				GL.appTreeView = tk_treeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons, GL.dicTagsInTree)
@@ -803,15 +807,18 @@ def printStringXML(oTIG):
 	else:
 		print 'None selected'
 
-def setFilenameLabel(label_filename):
-	print "setFilenameLabel"
-	print "full: " + GL.filename
-	print "file: " + os.path.basename(GL.filename)
-	if GL.showFileFullPath:
-		label_filename.config(text=GL.filename)
+def setFilenameLabel(label_filename, text=''):
+	if text <> '':
+		label_filename.config(text=text)
 	else:
-		#label_filename.config(text=GL.filename[GL.filename.rfind('\\')+1:])
-		label_filename.config(text=os.path.basename(GL.filename))
+		print "setFilenameLabel"
+		print "full: " + GL.filename
+		print "file: " + os.path.basename(GL.filename)
+		if GL.showFileFullPath:
+			label_filename.config(text=GL.filename)
+		else:
+			#label_filename.config(text=GL.filename[GL.filename.rfind('\\')+1:])
+			label_filename.config(text=os.path.basename(GL.filename))
 
 def bFoldNode(idNode):
 	GL.appTreeView.item(idNode, open=False)
@@ -838,9 +845,10 @@ def bConnectDB(mainApp):
 	
 	if len(container) > 0:
 		GL.DBconn = PG_Connection(**container)
-		GL.DBconn.open()
-		print GL.DBconn.getSelect('select id from biframewebentity')
-		#return container['Tag'], container['Value']
+		if GL.DBconn.open():
+			print GL.DBconn.getSelect('select id from biframewebentity')
+			mainApp.changeTitle('CONECTADO A DB')
+			#return container['Tag'], container['Value']
 
 
 def bShowGuts(thing):
