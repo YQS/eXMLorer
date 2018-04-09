@@ -24,6 +24,7 @@ def main(mode = 'main', filepath=''):
 					'button_foldTest',
 					'button_showChildQty',
 					'button_changeTitle', 
+					'button_showFilePath',
 					]
 
 	GL.globalVarsStart()

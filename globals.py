@@ -16,6 +16,7 @@ XMLEncoding = ''
 dicTagsInTree = {}
 appTreeView = None
 lastTreeViewFocus = None
+DBconn = None
 
 #TEMP RELATED
 tempDataFile = 'temp'

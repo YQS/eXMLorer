@@ -817,6 +817,15 @@ def bFoldNode(idNode):
 	GL.appTreeView.item(idNode, open=False)
 	
 def bConnectDB(mainApp):
+	if GL.DBconn <> None:
+		#cierro anterior conexion?
+		response = tkMessageBox.showwarning("eXMLorer", GL.names['message_closeConnection'], type=tkMessageBox.YESNOCANCEL)
+		if response == 'yes':
+			del GL.DBconn
+		else:
+			#salgo de la funcion
+			return
+		
 	#pido datos de conexión al usuario
 	container = {}
 	xWindow = mainApp.getToplevel2('DBConnect', container)
@@ -828,9 +837,9 @@ def bConnectDB(mainApp):
 	xWindow.show()
 	
 	if len(container) > 0:
-		conn = PG_Connection(**container)
-		conn.open()
-		print conn.getSelect('select id from biframewebentity')
+		GL.DBconn = PG_Connection(**container)
+		GL.DBconn.open()
+		print GL.DBconn.getSelect('select id from biframewebentity')
 		#return container['Tag'], container['Value']
 
 
