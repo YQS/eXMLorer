@@ -513,8 +513,13 @@ def addXMLToTree(xBase, xBaseID, dicTagsInTree, appTreeView):
 def askSaveChanges(mainApp):
 	#print xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename)
 	#tkMessageBox.showerror('eXMLorer', 'Está saliendo del eXMLorer. Que tenga un buen día :)')
+	saveType = 'SAVE'
 	if mainApp.rootTIG == None:
 		response = 'no'
+	elif GL.filename == '':
+		response = tkMessageBox.showwarning("eXMLorer", GL.names['message_filenotdefined'], type=tkMessageBox.YESNOCANCEL)
+		if response == 'yes':
+			saveType = 'SAVEAS'
 	elif not os.path.isfile(GL.filename):
 		response = tkMessageBox.showwarning("eXMLorer", GL.names['message_filenotfound'] % GL.filename, type=tkMessageBox.YESNOCANCEL)
 	elif xml_man.fileHasChanged(mainApp.rootTIG.getTag(), GL.filename):
@@ -524,7 +529,7 @@ def askSaveChanges(mainApp):
 
 	####################
 	if response == 'yes':
-		saveXML(mainApp, 'SAVE')
+		saveXML(mainApp, saveType)
 		return True
 	elif response == 'cancel':
 		return False
