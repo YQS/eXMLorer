@@ -3,7 +3,7 @@
 import ConfigParser
 from os.path import isfile
 
-import globals as GL 
+from config import globals as GL
 
 '''
 datos temporales no configurables:

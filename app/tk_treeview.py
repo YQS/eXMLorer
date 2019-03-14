@@ -3,11 +3,11 @@
 from Tkinter import *
 from ttk import *
 import tkMessageBox
-import globals as GL
-import xml_man
-import tk_app
-import SSF
-import module_interface as MOD
+
+from config import globals as GL
+from xml_parser import xml_man
+from app import module_interface as MOD
+from app import SSF
 
 def getTreeView(treeview_frame, band_buttons, dicTagsInTree):
 	appTreeView = Treeview(treeview_frame, columns=('data','subname',))
@@ -38,10 +38,10 @@ def getTreeView(treeview_frame, band_buttons, dicTagsInTree):
 	appTreeView.bind('<Control-Alt-Key-v>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None, mode='CHILD')))
 	appTreeView.bind('<Control-Alt-Key-V>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None, mode='CHILD')))
 	
-	appTreeView.bind('<Control-Key-n>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'SIBLING'))
-	appTreeView.bind('<Control-Key-N>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'SIBLING'))
-	appTreeView.bind('<Control-Key-i>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'CHILD'))
-	appTreeView.bind('<Control-Key-I>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault( GL.appTreeView.focus(), None), 'CHILD'))
+	appTreeView.bind('<Control-Key-n>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault(GL.appTreeView.focus(), None), 'SIBLING'))
+	appTreeView.bind('<Control-Key-N>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault(GL.appTreeView.focus(), None), 'SIBLING'))
+	appTreeView.bind('<Control-Key-i>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault(GL.appTreeView.focus(), None), 'CHILD'))
+	appTreeView.bind('<Control-Key-I>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault(GL.appTreeView.focus(), None), 'CHILD'))
 	appTreeView.bind('<Delete>', lambda event: tk_app.deleteSelectionTagInTree(GL.appTreeView.selection()))
 	
 	
@@ -220,7 +220,7 @@ def moveNode(xIDFocus, xIDParent, xPosition, dicTagsInTree):
 	if xPosition == 'end':
 		xPosition = dicTagsInTree[xIDFocus].getNumberOfSiblings()
 	
-	xml_man.moveTag( dicTagsInTree[xIDParent].getTag(), dicTagsInTree[xIDFocus].getTag(), xPosition)
+	xml_man.moveTag(dicTagsInTree[xIDParent].getTag(), dicTagsInTree[xIDFocus].getTag(), xPosition)
 
 def contextMenu(event, band_buttons, dicTagsInTree):
 	print 'context menu'

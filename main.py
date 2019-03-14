@@ -2,9 +2,8 @@
 
 import argparse
 
-import globals as GL
-import tk_app
-import module_interface as MOD
+from config import globals as GL
+from app import tk_app, module_interface as MOD
 
 
 def main(mode='main', filepath=''):

@@ -6,7 +6,8 @@ from os.path import splitext
 from Tkinter import *
 from ttk import *
 
-import globals as GL
+from config import globals as GL
+
 
 def gatherModules():
 	#busco que archivos .py existen dentro del directorio local /modules

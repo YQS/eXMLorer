@@ -8,15 +8,13 @@ from ScrolledText import ScrolledText as ScrollText
 import xml.etree.ElementTree as ET
 import os.path
 
-import globals as GL
-import app_language as LANG
+from config import globals as GL, app_language as LANG
 import TagInTree as TIG
-import xml_man
+from xml_parser import xml_man
 import tk_treeview
 from search_man import BasicSearch
 import module_interface as MOD
 from TempData import TempData
-
 
 # CLASSES
 
@@ -729,11 +727,11 @@ def copyTagInTree(oldTagInTree, xLevel, newparent = None):
 
 		xOrder = oldTagInTree.getTreeViewIndex() + 1
 
-		xNewTag = xml_man.newElement( xParentTag,
-									  oldTagInTree.getTag().tag,
-									  oldTagInTree.getTag().text,
-									  oldTagInTree.getTag().attrib,
-									  xOrder)
+		xNewTag = xml_man.newElement(xParentTag,
+									 oldTagInTree.getTag().tag,
+									 oldTagInTree.getTag().text,
+									 oldTagInTree.getTag().attrib,
+									 xOrder)
 
 		xID = getIDForTreeView( xNewTag.tag, GL.dicTagsInTree)
 

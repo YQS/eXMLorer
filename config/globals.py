@@ -1,10 +1,10 @@
 # encoding: UTF-8
 
-import dicext as DICEXT
-import app_language as LANG
-
 import ConfigParser
 from os.path import isfile
+
+import app_language as LANG
+from app.dicext import DictionaryFile
 
 # GLOBAL VARIABLES
 
@@ -44,7 +44,7 @@ labelExtraButtonWidth = 8
 marginToExtendToText = 30
 dataColumnTextLimit = 100
 
-dicTagSubnames = DICEXT.DictionaryFile('namedic')
+dicTagSubnames = DictionaryFile('namedic')
 
 def globalVarsStart():
 	global configFileName

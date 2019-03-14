@@ -5,12 +5,12 @@ import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
+import re
 
-import globals as GL
-import module_interface as INT
+from config import globals as GL
+from app import module_interface as INT
 #import sql_formatter
 
-import re
 
 
 

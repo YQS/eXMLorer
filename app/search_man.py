@@ -1,7 +1,9 @@
 #encoding: UTF-8
+
 import re
 from operator import attrgetter
-import globals as GL
+
+from config import globals as GL
 
 
 class BasicSearch(object):

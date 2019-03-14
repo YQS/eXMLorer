@@ -1,63 +1,65 @@
-#encoding: UTF-8
-#Stolen Scrollable Frame
-#Taken from: http://stackoverflow.com/questions/32063868/scrollable-frame-does-not-resize-properly-using-tkinter-in-python
+# encoding: UTF-8
+# Stolen Scrollable Frame
+# Taken from: http://stackoverflow.com/questions/32063868/scrollable-frame-does-not-resize-properly-using-tkinter-in-python
 
 from Tkinter import *
 from ttk import *
 
+
 class scrollingFrame(Frame):
     def __init__(self, parentObject, background="#FFFFFF"):
-		Frame.__init__(self, parentObject)
-		self.canvas = Canvas(self, borderwidth=0, highlightthickness=0)
-		self.frame = Frame(self.canvas)
-		self.frame.pack(expand=True, fill=BOTH)
+        Frame.__init__(self, parentObject)
+        self.canvas = Canvas(self, borderwidth=0, highlightthickness=0)
+        self.frame = Frame(self.canvas)
+        self.frame.pack(expand=True, fill=BOTH)
 
-		self.vsb = Scrollbar(self, orient="vertical", command=self.canvas.yview)
-		self.canvas.configure(yscrollcommand=self.vsb.set)
-		self.vsb.grid(row=0, column=1, sticky=N+S)
+        self.vsb = Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.vsb.set)
+        self.vsb.grid(row=0, column=1, sticky=N + S)
 
-		self.hsb = Scrollbar(self, orient="horizontal", command=self.canvas.xview)
-		self.canvas.configure(xscrollcommand=self.hsb.set)
-		self.hsb.grid(row=1, column=0, sticky=E+W)
+        self.hsb = Scrollbar(self, orient="horizontal", command=self.canvas.xview)
+        self.canvas.configure(xscrollcommand=self.hsb.set)
+        self.hsb.grid(row=1, column=0, sticky=E + W)
 
-		self.canvas.grid(row=0, column=0, sticky=N+S+E+W)
-		self.window = self.canvas.create_window(0,0, window=self.frame, anchor="nw", tags="self.frame")
+        self.canvas.grid(row=0, column=0, sticky=N + S + E + W)
+        self.window = self.canvas.create_window(0, 0, window=self.frame, anchor="nw", tags="self.frame")
 
-		self.grid_columnconfigure(0, weight=1)
-		self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
-		self.frame.bind("<Configure>", self.onFrameConfigure)
-		self.canvas.bind("<Configure>", self.onCanvasConfigure)
-
+        self.frame.bind("<Configure>", self.onFrameConfigure)
+        self.canvas.bind("<Configure>", self.onCanvasConfigure)
 
     def onFrameConfigure(self, event):
-        #Reset the scroll region to encompass the inner frame
+        # Reset the scroll region to encompass the inner frame
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
     def onCanvasConfigure(self, event):
-        #Resize the inner frame to match the canvas
+        # Resize the inner frame to match the canvas
         minWidth = self.frame.winfo_reqwidth()
         minHeight = self.frame.winfo_reqheight()
 
         if self.winfo_width() >= minWidth:
             newWidth = self.winfo_width()
-            #Hide the scrollbar when not needed
+            # Hide the scrollbar when not needed
             self.hsb.grid_remove()
         else:
             newWidth = minWidth
-            #Show the scrollbar when needed
+            # Show the scrollbar when needed
             self.hsb.grid()
 
         if self.winfo_height() >= minHeight:
             newHeight = self.winfo_height()
-            #Hide the scrollbar when not needed
+            # Hide the scrollbar when not needed
             self.vsb.grid_remove()
         else:
             newHeight = minHeight
-            #Show the scrollbar when needed
+            # Show the scrollbar when needed
             self.vsb.grid()
 
         self.canvas.itemconfig(self.window, width=newWidth, height=newHeight)
+
+
 '''
 class messageList(object):
     def __init__(self, scrollFrame, innerFrame):

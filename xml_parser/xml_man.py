@@ -1,10 +1,10 @@
 # encoding: UTF-8
 
 import xml.etree.ElementTree as ET
-from xml.dom.minidom import parseString
-import globals as GL
 import re
 import StringIO
+
+from config import globals as GL
 
 class ParserWithComments(ET.XMLParser):
 	#robado del mismisimo autor del módulo ElementTree

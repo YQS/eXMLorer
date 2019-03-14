@@ -1,5 +1,4 @@
 # encoding: UTF-8
-import globals as GL
 import os.path
 
 class DictionaryFile(object):

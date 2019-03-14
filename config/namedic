@@ -1,0 +1,24 @@
+{'CategoryOrder': 'Section',
+ 'ReferenceParam': 'TextQueryFieldName',
+ 'DataViewAttributeDef': 'Name',
+ 'DependsOn': 'ColumnName',
+ 'asdf': 'sdfasdf',
+ 'OwnershipListAttributeDef': 'Name',
+ 'SimpleAttributeDef': 'Name',
+ 'DataViewActionDef': 'Name',
+ 'SimpleParam': 'Name',
+ 'EnumFieldDef': 'FieldName',
+ 'QueryFieldDef': 'FieldName',
+ 'food': 'name',
+ 'DataViewDef': 'DescriptionColumnName',
+ 'ReferenceListAttributeDef': 'QueryName',
+ 'ActionDef': 'Name',
+ '{http://billetera.prismamp.com.ar/WalletPayment/}WalletPayment': 'StreetName',
+ 'ColumnDef': 'QueryFieldName',
+ 'VariableDef': 'AttributeName',
+ 'FlagAttributeDef': 'TransactionTypeFieldName',
+ 'Entity': 'SchemaName',
+ 'QueryDef': 'ConnectionName',
+ 'ReferenceAttributeDef': 'Name',
+ 'FilterField': 'QueryFieldName',
+ 'EnumDataSourceDef': 'Name'}
