@@ -13,6 +13,7 @@
  'DataViewDef': 'DescriptionColumnName',
  'ReferenceListAttributeDef': 'QueryName',
  'ActionDef': 'Name',
+ '{http://billetera.prismamp.com.ar/WalletPayment/}WalletPayment': 'StreetName',
  'ColumnDef': 'QueryFieldName',
  'VariableDef': 'AttributeName',
  'FlagAttributeDef': 'TransactionTypeFieldName',
