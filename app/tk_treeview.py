@@ -6,8 +6,9 @@ import tkMessageBox
 
 from config import globals as GL
 from xml_parser import xml_man
-from app import module_interface as MOD
-from app import SSF
+import module_interface as MOD
+import SSF
+import tk_app
 
 def getTreeView(treeview_frame, band_buttons, dicTagsInTree):
 	appTreeView = Treeview(treeview_frame, columns=('data','subname',))
