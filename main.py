@@ -2,44 +2,42 @@
 
 import argparse
 
-from config import globals as GL
-from app import tk_app, module_interface as MOD
+from config import Globals
+from config import Config
+from app import tk_app, module_interface
 
 
-def main(mode='main', filepath=''):
-    lExcludeMenu = ['button_analyze',
-                    'button_glTreeView',
-                    'button_dicSubnames',
-                    'button_getDicSubnames',
-                    'button_printEncoding',
-                    'button_printPrettyPrint',
-                    'button_showCurrentSearch',
-                    'button_showDicTagsInTree',
-                    'button_showXMLParentMap',
-                    'button_showCaseSensitive',
-                    'button_captureStringXML',
-                    'button_showSearchResult',
-                    'button_showSearchStartingPoint',
-                    'button_lastFolder',
-                    'button_foldTest',
-                    'button_showChildQty',
-                    ]
+def main(filepath=''):
+    exclude_items_from_menu = ['button_analyze',
+                               'button_glTreeView',
+                               'button_dicSubnames',
+                               'button_getDicSubnames',
+                               'button_printEncoding',
+                               'button_printPrettyPrint',
+                               'button_showCurrentSearch',
+                               'button_showDicTagsInTree',
+                               'button_showXMLParentMap',
+                               'button_showCaseSensitive',
+                               'button_captureStringXML',
+                               'button_showSearchResult',
+                               'button_showSearchStartingPoint',
+                               'button_lastFolder',
+                               'button_foldTest',
+                               'button_showChildQty',
+                               ]
 
-    GL.globalVarsStart()
-    MOD.startModules()
+    Globals.config = Config.ConfigFile()
+    module_interface.startModules()
 
-    mainApp = tk_app.MainApp(lExcludeMenu=lExcludeMenu)
-    # if filepath == None:
-    #	tk_app.openXML(mainApp)
-    # else:
-    if filepath <> None:
-        tk_app.openXML(mainApp, filename=filepath)
+    Globals.app = tk_app.MainApp(lExcludeMenu=exclude_items_from_menu)
+    if filepath is not None:
+        tk_app.openXML(Globals.app, filename=filepath)
 
-    mainApp.focus_set()
-    mainApp.mainloop()
+    Globals.app.focus_set()
+    Globals.app.mainloop()
 
     try:
-        mainApp.destroy()
+        Globals.app.destroy()
     except:
         pass
 

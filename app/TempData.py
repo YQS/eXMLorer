@@ -3,7 +3,7 @@
 import ConfigParser
 from os.path import isfile
 
-from config import globals as GL
+from config import Globals as GL
 
 '''
 datos temporales no configurables:
@@ -19,7 +19,7 @@ class TempData(ConfigParser.RawConfigParser):
     def __init__(self, filename):
         ConfigParser.RawConfigParser.__init__(self)
         self.filename = filename
-        for section in GL.tempDataSections:
+        for section in GL.temp_data_sections:
             self.add_section(section)
         #self.add_section('GLOBAL')
         #self.add_section('FILE')
@@ -45,7 +45,7 @@ class TempData(ConfigParser.RawConfigParser):
             
     def getValue(self, key):
         value = None
-        for section in GL.tempDataSections:
+        for section in GL.temp_data_sections:
             try:
                 value = self.get(section, key)
                 if value <> None:
@@ -55,7 +55,7 @@ class TempData(ConfigParser.RawConfigParser):
         return value
     
     def setValue(self, key, value):
-        for section in GL.tempDataSections:
+        for section in GL.temp_data_sections:
             try:
                 self.set(section, key, value)
             except:

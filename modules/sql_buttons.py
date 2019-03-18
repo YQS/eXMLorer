@@ -7,7 +7,7 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
 import re
 
-from config import globals as GL
+from config import Globals as GL
 from app import module_interface as INT
 #import sql_formatter
 
@@ -17,7 +17,7 @@ from app import module_interface as INT
 context = 'TOPLEVEL'
 
 def run(parent=None, field=None, useButtons=True):
-	if GL.useSQLButtons and useButtons:
+	if GL.use_sql_buttons and useButtons:
 		INT.createButton(parent, 'toplevel_sql_linefy', lambda: bSQLButtons(field, simpleLinefy), align='grid', alignParams={'row':0, 'column':0})
 		INT.createButton(parent, 'toplevel_sql_prettyprint', lambda: bSQLButtons(field, simplePrettify), align='grid', alignParams={'row':0, 'column':1})
 

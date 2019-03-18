@@ -2,7 +2,7 @@
 
 from operator import methodcaller
 
-from config import globals as GL
+from config import Globals as GL
 
 
 class TagInTree(object):
@@ -37,7 +37,7 @@ class TagInTree(object):
 
     def __iter__(self):
         childList = []
-        for xTIG in GL.dicTagsInTree.values():
+        for xTIG in GL.tags_in_tree_dictionary.values():
             if xTIG.parent_id == self.id:
                 childList.append(xTIG)
         childList = sorted(childList, key=methodcaller('getXMLPosition'))
@@ -74,7 +74,7 @@ class TagInTree(object):
     def setColumn(self, column, value):
         # print value
         if value <> None:
-            uvalue = value[:GL.dataColumnTextLimit].replace('\n', '')
+            uvalue = value[:GL.data_column_text_size].replace('\n', '')
             # uvalue = value.encode(encoding='UTF-8')
             # uvalue = value.decode(encoding=GL.XMLEncoding)
             # self.parent_treeview.set( self.id, column, uvalue[:GL.dataColumnTextLimit] )
@@ -115,7 +115,7 @@ class TagInTree(object):
 
     def getParent(self):
         try:
-            xParent = GL.dicTagsInTree[self.parent_treeview.parent(self.id)]
+            xParent = GL.tags_in_tree_dictionary[self.parent_treeview.parent(self.id)]
         except:
             xParent = None
 
@@ -153,7 +153,7 @@ def getSubnameOfTag(xTag):
     xName = ''
     xPossibleChildForName = None
     # print xTag, xTag.tag, xTag.text
-    xStringToFind = GL.dicTagSubnames.dic.get(xTag.tag, '*******')  # I hope that I don't find a tag like this!
+    xStringToFind = GL.tag_subnames.dic.get(xTag.tag, '*******')  # I hope that I don't find a tag like this!
     for xChild in xTag:
         if type(xChild.tag).__name__ == 'str':
             # if xChild.tag is a XML tag and not a Comment
@@ -169,7 +169,7 @@ def getSubnameOfTag(xTag):
     if xName == '':
         if xPossibleChildForName <> None:
             xName = str(xPossibleChildForName.text)
-            GL.dicTagSubnames.dic[xTag.tag] = xPossibleChildForName.tag
-            GL.dicTagSubnames.save()
+            GL.tag_subnames.dic[xTag.tag] = xPossibleChildForName.tag
+            GL.tag_subnames.save()
 
     return xName

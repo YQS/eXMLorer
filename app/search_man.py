@@ -3,7 +3,7 @@
 import re
 from operator import attrgetter
 
-from config import globals as GL
+from config import Globals as GL
 
 
 class BasicSearch(object):
@@ -18,7 +18,7 @@ class BasicSearch(object):
 		self.numberTags()
 		
 		#defino si es case sensitive (y para otros flags del regex, si se llegan a usar)
-		if not GL.caseSensitiveSearch:
+		if not GL.case_sensitive_search:
 			self.flags = re.IGNORECASE
 		
 		if mode == "XPath":
@@ -79,7 +79,7 @@ class BasicSearch(object):
 		
 		
 	def xPathSearch(self, searchString):
-		root = GL.XMLTree.getroot()
+		root = GL.xml_tree.getroot()
 		foundTags = root.findall(searchString)
 		
 		for xTIG in self.dicUsed.values():
@@ -98,7 +98,7 @@ class BasicSearch(object):
 			return n
 		
 		n = 1
-		rootTIG = GL.dicTagsInTree[GL.XMLTree.getroot().tag]
+		rootTIG = GL.tags_in_tree_dictionary[GL.xml_tree.getroot().tag]
 		rootTIG.tag_order = n
 		n+=1
 		numberChilds(rootTIG, n)
@@ -108,7 +108,7 @@ def xPathSearch(path, tag=None):
 	if tag <> None:
 		return tag.findall(path)
 	else:
-		return GL.XMLTree.getroot().findall(path)
+		return GL.xml_tree.getroot().findall(path)
 '''
 class XPathSearch(object):
 	def __init__(self, root, path):

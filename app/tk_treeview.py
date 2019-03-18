@@ -4,8 +4,8 @@ from Tkinter import *
 from ttk import *
 import tkMessageBox
 
-from config import globals as GL
-from xml_parser import xml_man
+from config import Globals as GL
+from xml_parser import XmlParser
 import module_interface as MOD
 import SSF
 import tk_app
@@ -20,8 +20,8 @@ def getTreeView(treeview_frame, band_buttons, dicTagsInTree):
 	
 	appTreeView.column('subname', width=120, anchor='w', stretch=True)
 	appTreeView.column('data', width=480, anchor='w', stretch=True)
-	appTreeView.heading('subname', text= GL.names['column-subname'])
-	appTreeView.heading('data', text= GL.names['column-data'])
+	appTreeView.heading('subname', text= GL.language['column-subname'])
+	appTreeView.heading('data', text= GL.language['column-data'])
 	
 	#indico las columnas a mostrar
 	appTreeView.configure(displaycolumns=('subname', 'data'))
@@ -39,11 +39,11 @@ def getTreeView(treeview_frame, band_buttons, dicTagsInTree):
 	appTreeView.bind('<Control-Alt-Key-v>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None, mode='CHILD')))
 	appTreeView.bind('<Control-Alt-Key-V>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None, mode='CHILD')))
 	
-	appTreeView.bind('<Control-Key-n>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault(GL.appTreeView.focus(), None), 'SIBLING'))
-	appTreeView.bind('<Control-Key-N>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault(GL.appTreeView.focus(), None), 'SIBLING'))
-	appTreeView.bind('<Control-Key-i>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault(GL.appTreeView.focus(), None), 'CHILD'))
-	appTreeView.bind('<Control-Key-I>', lambda event: tk_app.createNewTagInTree(mainApp, GL.dicTagsInTree.setdefault(GL.appTreeView.focus(), None), 'CHILD'))
-	appTreeView.bind('<Delete>', lambda event: tk_app.deleteSelectionTagInTree(GL.appTreeView.selection()))
+	appTreeView.bind('<Control-Key-n>', lambda event: tk_app.createNewTagInTree(mainApp, GL.tags_in_tree_dictionary.setdefault(GL.app_treeview.focus(), None), 'SIBLING'))
+	appTreeView.bind('<Control-Key-N>', lambda event: tk_app.createNewTagInTree(mainApp, GL.tags_in_tree_dictionary.setdefault(GL.app_treeview.focus(), None), 'SIBLING'))
+	appTreeView.bind('<Control-Key-i>', lambda event: tk_app.createNewTagInTree(mainApp, GL.tags_in_tree_dictionary.setdefault(GL.app_treeview.focus(), None), 'CHILD'))
+	appTreeView.bind('<Control-Key-I>', lambda event: tk_app.createNewTagInTree(mainApp, GL.tags_in_tree_dictionary.setdefault(GL.app_treeview.focus(), None), 'CHILD'))
+	appTreeView.bind('<Delete>', lambda event: tk_app.deleteSelectionTagInTree(GL.app_treeview.selection()))
 	
 	
 	return appTreeView
@@ -64,15 +64,15 @@ def fillBandButtons(appTreeView, band_buttons, dicTagsInTree):
 	scrollFrame.pack(side=BOTTOM, fill=BOTH, expand=True)
 	
 	xIDFocus = appTreeView.focus()
-	GL.lastTreeViewFocus = xIDFocus
-	print 'focus in ' + xIDFocus + ' - order ' + str(GL.dicTagsInTree[xIDFocus].tag_order)
+	GL.last_treeview_focus = xIDFocus
+	print 'focus in ' + xIDFocus + ' - order ' + str(GL.tags_in_tree_dictionary[xIDFocus].tag_order)
 	print 'is in dicTagsInTree? ' + str(xIDFocus in dicTagsInTree)
 	
 	xRow = 0
 	
 	#showpath
 	#getLabel(dicTagsInTree[xIDFocus].getPath(), scrollFrame.frame, xRow)
-	Label(scrollFrame.frame, text=dicTagsInTree[xIDFocus].getPath(), font= '-weight bold', width=GL.labelButtonWidth+GL.labelExtraButtonWidth, justify=LEFT).grid(column=0, row=xRow, stick='nw', pady=5, columnspan=2)
+	Label(scrollFrame.frame, text=dicTagsInTree[xIDFocus].getPath(), font= '-weight bold', width=GL.label_button_width + GL.label_extra_button_width, justify=LEFT).grid(column=0, row=xRow, stick='nw', pady=5, columnspan=2)
 	#Label(band_buttons, text=dicTagsInTree[xIDFocus].getPath(), font= '-weight bold').pack(side=TOP, expand=False)
 	xRow += 1
 	
@@ -100,9 +100,9 @@ def getLabel(name, band_buttons, xRow):
 	
 def getEntry(value, band_buttons, xRow, oTagInTree):
 	xBoolOptions = ('True', 'False')
-	xButtonWidth = GL.labelButtonWidth
-	xExtraButtonWidth = GL.labelExtraButtonWidth
-	xMarginToExtendToText = GL.marginToExtendToText
+	xButtonWidth = GL.label_button_width
+	xExtraButtonWidth = GL.label_extra_button_width
+	xMarginToExtendToText = GL.margin_to_extend_for_text
 	
 	if value.title() in xBoolOptions:
 		# title devuelve el string capitalizado (o sea, la primera con mayúscula)
@@ -129,7 +129,7 @@ def getEntry(value, band_buttons, xRow, oTagInTree):
 		else:
 			xEntry.insert(0,'<\>')
 			xEntry.config(width=xButtonWidth - xExtraButtonWidth)
-			xButton = Button(band_buttons, text=GL.names['button_open'], width= xExtraButtonWidth)
+			xButton = Button(band_buttons, text=GL.language['button_open'], width= xExtraButtonWidth)
 			xButton.grid(column=1, row=xRow, sticky='e')
 			xButton.config(command= lambda xEntry=xEntry,
 										   xButton=xButton,
@@ -175,8 +175,8 @@ def selectAllText(event):
 	
 def openTextWindow(mainApp, oTagInTree, entry):
 	container = {}
-	label = GL.names['message_value']
-	title = GL.names['message_editing'] + ' ' + oTagInTree.tagname
+	label = GL.language['message_value']
+	title = GL.language['message_editing'] + ' ' + oTagInTree.tagname
 	xWindow = mainApp.getToplevel2(title, container)
 	#xWindow.textFieldConstructor(label, entry.get())
 	xWindow.textFieldConstructor(label, oTagInTree.getTag().text)
@@ -188,7 +188,7 @@ def openTextWindow(mainApp, oTagInTree, entry):
 		#actualizo tambien el entry asociado
 		entry.delete(0, END)
 		#entry.insert(0, container[label])
-		entry.insert(0, container[label][:GL.labelButtonWidth])
+		entry.insert(0, container[label][:GL.label_button_width])
 		
 	
 def updateTreeNode(value, oTagInTree):
@@ -211,17 +211,17 @@ def moveNodeBind(event, dicTagsInTree):
 		xPosition = dicTagsInTree[xIDFocus].getTreeViewIndex() + xDirection
 		moveNode( xIDFocus, xIDParent, xPosition, dicTagsInTree)
 		#appTreeView.move( xIDFocus, xIDParent, xPosition)
-		#xml_man.moveTag( dicTagsInTree[xIDParent].getTag(), dicTagsInTree[xIDFocus].getTag(), xPosition)
+		#xml_man.move_tag( dicTagsInTree[xIDParent].getTag(), dicTagsInTree[xIDFocus].getTag(), xPosition)
 		
 		return 'break'
 		
 def moveNode(xIDFocus, xIDParent, xPosition, dicTagsInTree):
-	GL.appTreeView.move( xIDFocus, xIDParent, xPosition)
+	GL.app_treeview.move(xIDFocus, xIDParent, xPosition)
 	
 	if xPosition == 'end':
 		xPosition = dicTagsInTree[xIDFocus].getNumberOfSiblings()
 	
-	xml_man.moveTag(dicTagsInTree[xIDParent].getTag(), dicTagsInTree[xIDFocus].getTag(), xPosition)
+	XmlParser.move_tag(dicTagsInTree[xIDParent].getTag(), dicTagsInTree[xIDFocus].getTag(), xPosition)
 
 def contextMenu(event, band_buttons, dicTagsInTree):
 	print 'context menu'
@@ -229,9 +229,9 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	#la ruta es evento.TreeView.BandaTreeView.BandaCenter.mainApp
 	mainApp = event.widget.master.master.master
 	
-	xFocusIDContextMenu = GL.appTreeView.identify_row(event.y)
+	xFocusIDContextMenu = GL.app_treeview.identify_row(event.y)
 	print 'identify row shows %s' % xFocusIDContextMenu
-	GL.appTreeView.focus(xFocusIDContextMenu)
+	GL.app_treeview.focus(xFocusIDContextMenu)
 	
 	# getting variables for commands
 	focusTIG = dicTagsInTree[xFocusIDContextMenu]
@@ -246,63 +246,63 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 		cleanCmdState = ACTIVE
 	
 	#menu
-	menu = Menu(GL.appTreeView, tearoff=0)
+	menu = Menu(GL.app_treeview, tearoff=0)
 	
-	menu.add_command(label=GL.names['submenu_edittag'], state=ACTIVE, command= lambda:editTag(mainApp, focusTIG))
-	menu.add_command(label=GL.names['submenu_copytag'], state=ACTIVE, command= lambda:copyToClipboard(mainApp, focusTIG))
-	menu.add_command(label=GL.names['submenu_cuttag'], state=ACTIVE, command= lambda:copyToClipboard(mainApp, focusTIG, mode='CUT'))
-	menu.add_command(label=GL.names['submenu_pastetag'], state=ACTIVE, command= lambda:pasteFromClipboard(mainApp, focusTIG))
-	menu.add_command(label=GL.names['submenu_pastetagaschild'], state=ACTIVE, command= lambda:pasteFromClipboard(mainApp, focusTIG, mode='CHILD'))
+	menu.add_command(label=GL.language['submenu_edittag'], state=ACTIVE, command= lambda:editTag(mainApp, focusTIG))
+	menu.add_command(label=GL.language['submenu_copytag'], state=ACTIVE, command= lambda:copyToClipboard(mainApp, focusTIG))
+	menu.add_command(label=GL.language['submenu_cuttag'], state=ACTIVE, command= lambda:copyToClipboard(mainApp, focusTIG, mode='CUT'))
+	menu.add_command(label=GL.language['submenu_pastetag'], state=ACTIVE, command= lambda:pasteFromClipboard(mainApp, focusTIG))
+	menu.add_command(label=GL.language['submenu_pastetagaschild'], state=ACTIVE, command= lambda:pasteFromClipboard(mainApp, focusTIG, mode='CHILD'))
 	menu.add_separator()
 	
 	#fold/unfold
-	menu.add_command(label=GL.names['submenu_fold'], state=ACTIVE, command= lambda:unfoldingAll(xFocusIDContextMenu, False))
-	menu.add_command(label=GL.names['submenu_unfold'], state=ACTIVE, command= lambda:unfoldingAll(xFocusIDContextMenu, True))
+	menu.add_command(label=GL.language['submenu_fold'], state=ACTIVE, command= lambda:unfoldingAll(xFocusIDContextMenu, False))
+	menu.add_command(label=GL.language['submenu_unfold'], state=ACTIVE, command= lambda:unfoldingAll(xFocusIDContextMenu, True))
 	menu.add_separator()
 	
 	#menu.add_command(label='test_path', state=ACTIVE, command= lambda:showPath(focusTIG))
 	
 	#comment commands
 	if focusTIG.is_comment:
-		menu.add_command(label=GL.names['submenu_uncomment'], state=ACTIVE, command= lambda: unCommentTag(mainApp, focusTIG))
+		menu.add_command(label=GL.language['submenu_uncomment'], state=ACTIVE, command= lambda: unCommentTag(mainApp, focusTIG))
 	else:
-		menu.add_command(label=GL.names['submenu_comment'], state=ACTIVE, command= lambda: commentTag(mainApp, focusTIG))
+		menu.add_command(label=GL.language['submenu_comment'], state=ACTIVE, command= lambda: commentTag(mainApp, focusTIG))
 		
 	menu.add_separator()
-	menu.add_command(label= GL.names['submenu_selectParentSubname'], 
-					 state= subnameCmdState, 
+	menu.add_command(label= GL.language['submenu_selectParentSubname'],
+					 state= subnameCmdState,
 					 command= lambda
 							  parentTIG = parentTIG, 
 							  focusTIG = focusTIG: 
 							  setAsParentSubname(parentTIG, focusTIG)
-					)
-	menu.add_command(label= GL.names['submenu_cleanParentSubname'], 
-					 state= cleanCmdState, 
+					 )
+	menu.add_command(label= GL.language['submenu_cleanParentSubname'],
+					 state= cleanCmdState,
 					 command= lambda 
 							  focusTIG = focusTIG: 
-							  cleanSubname(focusTIG) 
-					)
+							  cleanSubname(focusTIG)
+					 )
 					
 	#run modules
 	params = {'parent':menu, 'parentTIG':focusTIG, 'mainApp':mainApp}
 	MOD.runModules('TREEVIEW_MENU', params)
 	
 					
-	print 'identify row shows %s' % GL.appTreeView.identify_row(event.y)
+	print 'identify row shows %s' % GL.app_treeview.identify_row(event.y)
 	menu.post(event.x_root, event.y_root)
 	
 def setAsParentSubname(parentTIG, childTIG):
-	GL.dicTagSubnames.updateDic( parentTIG.getTag().tag, childTIG.getTag().tag )
+	GL.tag_subnames.updateDic(parentTIG.getTag().tag, childTIG.getTag().tag)
 	parentTIG.updateSubname( childTIG.getTag().text)
 	
 def cleanSubname(oTIG):
-	GL.dicTagSubnames.updateDic( oTIG.getTag().tag, '')
+	GL.tag_subnames.updateDic(oTIG.getTag().tag, '')
 	oTIG.updateSubname('')
-	GL.dicTagSubnames.deleteFromDic(oTIG.getTag().tag)
+	GL.tag_subnames.deleteFromDic(oTIG.getTag().tag)
 
 def editTag(mainApp, oTIG):
 	container = {'Tag': oTIG.getTag().tag, 'Value':oTIG.getTag().text}
-	xWindow = mainApp.getToplevel2(GL.names['message_edittag'], container)
+	xWindow = mainApp.getToplevel2(GL.language['message_edittag'], container)
 	xWindow.formConstructor('Tag', 0)
 	xWindow.formConstructor('Value', 1)
 	xWindow.show()
@@ -312,11 +312,11 @@ def editTag(mainApp, oTIG):
 		updateTreeNode(container['Value'], oTIG)
 		oTIG.parent_treeview.item(oTIG.id, text=oTIG.getTagName())
 		
-		fillBandButtons(GL.appTreeView, mainApp.frames.buttons, GL.dicTagsInTree)
+		fillBandButtons(GL.app_treeview, mainApp.frames.buttons, GL.tags_in_tree_dictionary)
 		
 def copyToClipboard(mainApp, oTIG, mode='COPY'):
 	if oTIG <> None:
-		stringXML = xml_man.getStringXML(oTIG.getTag())
+		stringXML = XmlParser.get_string_from_xml_node(oTIG.getTag())
 		mainApp.clipboard_clear()
 		mainApp.clipboard_append(stringXML[ stringXML.find('\n')+1:])
 		if mode == 'CUT':
@@ -333,7 +333,7 @@ def pasteFromClipboard(mainApp, baseTIG, mode='SIBLING', stringXML=''):
 			print 'using unicode'
 			stringXML = unicode(stringXML, "utf-8")
 			print stringXML
-		pasteRoot = xml_man.parseStringXML_old(stringXML)
+		pasteRoot = XmlParser.get_xml_from_string(stringXML)
 		print 'pasteRoot', pasteRoot
 		
 		rootTIG = tk_app.createNewTagInTree(mainApp, baseTIG, mode, oTag=pasteRoot)
@@ -358,7 +358,7 @@ def createChildTIGs(mainApp, parentTIG, level):
 		
 def commentTag(mainApp, oTIG):
 	if oTIG <> None:
-		#stringXML = xml_man.getStringXML(oTIG.getTag())
+		#stringXML = xml_man.get_string_from_xml_node(oTIG.getTag())
 		newComment = tk_app.createNewTagInTree(mainApp, oTIG, 'SIBLING', is_comment=True)
 		tk_app.deleteTagInTree(oTIG.id)
 		
@@ -367,10 +367,10 @@ def unCommentTag(mainApp, commentTIG):
 	newTIG = None
 	response = 'no'
 	try:
-		newTag = xml_man.parseStringXML_old(stringXML)
+		newTag = XmlParser.get_xml_from_string(stringXML)
 		newTIG = tk_app.createNewTagInTree(mainApp, commentTIG, 'SIBLING', oTag = newTag)
 	except:
-		response = tkMessageBox.showwarning("eXMLorer", GL.names['message_uncomment_newtag'], type=tkMessageBox.YESNO)
+		response = tkMessageBox.showwarning("eXMLorer", GL.language['message_uncomment_newtag'], type=tkMessageBox.YESNO)
 		if response == 'yes':
 			newTIG = tk_app.createNewTagInTree(mainApp, commentTIG, 'SIBLING', text=commentTIG.getTag().text)
 	
@@ -381,8 +381,8 @@ def unCommentTag(mainApp, commentTIG):
 		
 def unfoldingAll(idFocus, isOpen):
 	#for xIDChild in appTreeView.get_children(xIDFocus):
-	GL.appTreeView.item(idFocus, open=isOpen)
-	for idChild in GL.appTreeView.get_children(idFocus):
+	GL.app_treeview.item(idFocus, open=isOpen)
+	for idChild in GL.app_treeview.get_children(idFocus):
 		unfoldingAll(idChild, isOpen)
 		
 def showPath(oTIG):
