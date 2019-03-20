@@ -53,7 +53,7 @@ def runModules(context, params):
 #BUILDERS
 
 def createButton(parent, label, function, align='pack', alignParams={}):
-	button = Button(parent, text=GL.language[label], width=GL.button_width, command=function)
+	button = Button(parent, text=GL.lang[label], width=GL.button_width, command=function)
 
 	if align == 'pack':
 		button.pack(**alignParams)
@@ -63,7 +63,7 @@ def createButton(parent, label, function, align='pack', alignParams={}):
 	return button
 
 def createMenuElement(parent, label, function, state=ACTIVE):
-	parent.add_command(label=GL.language[label], state=state, command=function)
+	parent.add_command(label=GL.lang[label], state=state, command=function)
 
 
 '''

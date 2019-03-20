@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-import app_language
+import Language
 from app.dicext import DictionaryFile
 
 
@@ -31,7 +31,7 @@ case_sensitive_search = False
 use_sql_buttons = False
 show_comments = True
 show_file_full_path = True
-language = app_language.spanish
+lang = Language.spanish
 
 # SIZES
 button_width = 15

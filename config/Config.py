@@ -3,7 +3,7 @@
 import ConfigParser
 from os.path import isfile
 
-import app_language
+import Language
 import Globals
 
 
@@ -31,9 +31,9 @@ class ConfigFile:
         Globals.show_file_full_path = config_parser.getboolean('Configuration', 'show_file_full_path')
 
         if config_parser.get('Configuration', 'language') != 'English':
-            Globals.language = app_language.spanish
+            Globals.lang = Language.spanish
         else:
-            Globals.language = app_language.english
+            Globals.lang = Language.english
 
     def create(self):
         config_parser = ConfigParser.RawConfigParser()

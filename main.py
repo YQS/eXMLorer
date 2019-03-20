@@ -4,7 +4,7 @@ import argparse
 
 from config import Globals
 from config import Config
-from app import tk_app, module_interface
+from app import App, module_interface
 
 
 def main(filepath=''):
@@ -29,9 +29,9 @@ def main(filepath=''):
     Globals.config = Config.ConfigFile()
     module_interface.startModules()
 
-    Globals.app = tk_app.MainApp(lExcludeMenu=exclude_items_from_menu)
+    Globals.app = App.App(exclude_buttons=exclude_items_from_menu)
     if filepath is not None:
-        tk_app.openXML(Globals.app, filename=filepath)
+        App.openXML(Globals.app, filename=filepath)
 
     Globals.app.focus_set()
     Globals.app.mainloop()
