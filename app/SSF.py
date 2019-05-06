@@ -59,6 +59,9 @@ class scrollingFrame(Frame):
 
         self.canvas.itemconfig(self.window, width=newWidth, height=newHeight)
 
+    def create_separator(self):
+        Separator(self.frame, orient=HORIZONTAL).grid(row=2, column=0, pady=4, columnspan=2, sticky='we')
+
 
 '''
 class messageList(object):

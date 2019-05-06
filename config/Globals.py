@@ -1,18 +1,21 @@
 # encoding: UTF-8
 
 import Language
-from app.dicext import DictionaryFile
+from app.DictionaryFile import DictionaryFile
 
 
 # GLOBAL VARIABLES
+app_name = 'eXMLorer'
 last_folder_visited = ''
 xml_tree = None
 xml_encoding = ''
-tags_in_tree_dictionary = {}
+editag_dictionary = {}
 app = None
 app_treeview = None
 last_treeview_focus = None
 config = None
+file_path = ''
+entry_bool_options = ('True', 'False')
 
 # TEMP RELATED
 temp_data_file = 'temp'
@@ -41,4 +44,4 @@ label_extra_button_width = 8
 margin_to_extend_for_text = 30
 data_column_text_size = 100
 
-tag_subnames = DictionaryFile('namedic')
+subnames = DictionaryFile('namedic')

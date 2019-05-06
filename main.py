@@ -31,7 +31,7 @@ def main(filepath=''):
 
     Globals.app = App.App(exclude_buttons=exclude_items_from_menu)
     if filepath is not None:
-        App.openXML(Globals.app, filename=filepath)
+        Globals.app.open_xml(filepath)
 
     Globals.app.focus_set()
     Globals.app.mainloop()

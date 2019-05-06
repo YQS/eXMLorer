@@ -53,7 +53,7 @@ class AuxWindow(Toplevel):
         if self.first_field is None:
             self.first_field = entry
 
-    def text_field_constructor(self, label, value):
+    def text_field_constructor(self, label, value=''):
         def select_all_text(event):
             field = event.widget
             field.tag_add(SEL, '1.0', 'end')
@@ -90,7 +90,6 @@ class AuxWindow(Toplevel):
                 self.result[key] = self.entries[key].get('1.0', 'end')
             else:
                 self.result[key] = self.entries[key].get()
-        # print self.result
         self.close()
 
     def cancel(self):

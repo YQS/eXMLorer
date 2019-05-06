@@ -2,7 +2,6 @@
 from Tkinter import *
 
 from config import Globals, Language
-import App
 
 
 class AppMenu(Menu):
@@ -18,10 +17,10 @@ class AppMenu(Menu):
         if 'menu_file' not in app.exclude_buttons:
             menu_file = Menu(self, tearoff=0)
             self.add_cascade(label=Globals.lang['menu_file'], menu=menu_file)
-            menu_file.add_command(label=Globals.lang['menu_file_open'], command=lambda: App.openXML(app))
+            menu_file.add_command(label=Globals.lang['menu_file_open'], command=lambda: self.app.open_xml())
             menu_file.add_command(label=Globals.lang['menu_file_save'], command=lambda: App.saveXML(app, 'SAVE'))
             menu_file.add_command(label=Globals.lang['menu_file_saveas'], command=lambda: App.saveXML(app, 'SAVEAS'))
-            menu_file.add_command(label=Globals.lang['menu_file_exit'], command=lambda: App.quitApp(app))
+            menu_file.add_command(label=Globals.lang['menu_file_exit'], command=lambda: App.quit_app(app))
 
         if 'menu_config' not in app.exclude_buttons:
             # seteo menu Configuración
@@ -79,7 +78,7 @@ class AppMenu(Menu):
 
     def switch_global_and_refresh(self, variable_name):
         self.switch_global(variable_name)
-        App.refreshTreeview(self.app)
+        app.App.refreshTreeview(self.app)
 
     def switch_global(self, variable_name):
         if eval('Globals.' + variable_name):
@@ -107,7 +106,8 @@ class AppMenu(Menu):
             Globals.lang = new_dictionary
             Globals.config.update('Configuration', 'language', new_dictionary['lang'])
             self.app.refresh()
+            # App.refreshTreeview(self.app)
 
     def change_filename_label(self, label_filename):
         self.switch_global('show_file_full_path')
-        App.setFilenameLabel(label_filename)
+        self.app.frames.button_bar.set_filename_label()

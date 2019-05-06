@@ -3,8 +3,8 @@ from ttk import *
 
 
 class FrameExtension(Frame):
-    def __init__(self, master, **kw):
-        Frame.__init__(self, master, **kw)
+    def __init__(self, master):
+        Frame.__init__(self, master)
         self.dic = {}
 
     def add_widget(self, widget, key, parameters='', widget_object=None):
