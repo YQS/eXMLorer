@@ -5,6 +5,8 @@ from ttk import *
 
 from app.EdiTagEntry import EdiTagEntry
 from config import Globals
+from xml_parser import XmlParser
+from app import App
 
 
 class EdiTag(object):
@@ -23,11 +25,14 @@ class EdiTag(object):
         ##########
         self.set_xmltag_info()
         self.set_tree_node()
-        self.set_column_value('data', self.xmltag().text)
+        self.set_column_value('data', self.xmltag.text)
         self.set_column_value('subname', self.subname)
 
     def __del__(self):
-        pass
+        self.parent_editag.remove(self.xmltag)
+        if Globals.app_treeview.exists(self.id):
+            Globals.app_treeview.delete(self.id)
+        del Globals.editag_dictionary[self.id]
 
     def __repr__(self):
         return self.id
@@ -36,7 +41,7 @@ class EdiTag(object):
         # TODO optimize
         child_list = []
         for editag in Globals.editag_dictionary.values():
-            if editag.parent_id == self.id:
+            if editag.parent_editag.id == self.id:
                 child_list.append(editag)
         child_list = sorted(child_list, key=methodcaller('get_xml_position'))
 
@@ -62,7 +67,9 @@ class EdiTag(object):
             return ''
 
     def set_tree_node(self):
+        # TODO: parent_editag viene como el xmltag, ver como trabajar con eso
         self.set_new_id()
+        Globals.editag_dictionary[self.id] = self
         if self.treeview is None:
             self.treeview = self.parent_editag.treeview
             self.treenode = self.treeview.insert(self.parent_editag.id,
@@ -70,7 +77,7 @@ class EdiTag(object):
                                                  self.id,
                                                  text=self.name)
         else:
-            self.treenode = self.treeview.insert(None,
+            self.treenode = self.treeview.insert('',
                                                  self.treeview_order,
                                                  self.id,
                                                  text=self.name)
@@ -182,3 +189,67 @@ class EdiTag(object):
         self.xmltag.text = new_value
         self.set_column_value('data', new_value)
         return True
+
+    @staticmethod
+    def build(base_editag, mode, xml_tag=None, is_comment=False, text=''):
+        if not base_editag:
+            if not base_editag.get_parent():
+                # consigo datos para xml tag
+                tag_label = ''
+                if is_comment:
+                    tag_label = 'comment'
+                    xml_string = XmlParser.get_string_from_xml_node(base_editag.xmltag)
+                    tag_text = xml_string[xml_string.find('\n') + 1:]
+                elif text <> '':
+                    tag_label = Globals.app.get_tag_from_user()
+                    tag_text = text
+                elif not xml_tag:
+                    tag_label, tag_text = Globals.app.get_tag_from_user(get_value=True)
+
+                # consigo datos para editag
+                if (tag_label <> '') or (not xml_tag is None):
+                    if mode == 'SIBLING':
+                        parent_tag = base_editag.get_parent()
+                        order = base_editag.get_treeview_index() + 1
+                    elif mode == 'CHILD':
+                        parent_tag = base_editag.xmltag
+                        order = base_editag.get_number_of_children() +1
+
+                # creo o inserto el tag en el XML
+                if is_comment:
+                    new_tag = XmlParser.new_comment(parent_tag, tag_text, order)
+                elif xml_tag is None:
+                    new_tag = XmlParser.new_element(parent_tag, tag_label, tag_text, {}, order)
+                else:
+                    XmlParser.insert_element(parent_tag, xml_tag, order)
+                    new_tag = xml_tag
+
+                # creo nuevo EdiTag
+                new_editag = EdiTag(new_tag, parent_tag, order=order, is_comment=is_comment)
+
+                Globals.app_treeview.select_and_focus(new_editag.id)
+                return new_editag
+
+    @staticmethod
+    def copy(old_editag, new_parent=None):
+        if not old_editag is None:
+            if new_parent:
+                parent_tag = new_parent.xmltag
+            else:
+                parent_tag = old_editag.get_parent()
+
+            order = old_editag.get_treeview_index() + 1
+
+            new_tag = XmlParser.new_element(parent_tag,
+                                            old_editag.xmltag.tag,
+                                            old_editag.xmltag.text,
+                                            old_editag.xmltag.attrib,
+                                            order)
+            new_editag = EdiTag(new_tag, parent_tag, order=order)
+
+            for child_editag in old_editag:
+                EdiTag.copy(child_editag, new_parent=new_editag)
+
+            Globals.app_treeview.select_and_focus(new_editag.id)
+
+

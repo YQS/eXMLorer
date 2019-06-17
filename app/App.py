@@ -205,15 +205,13 @@ class App(Tk):
 
     def load_xmlroot_in_app(self, xmlroot):
         Globals.editag_dictionary = {}
-        Globals.app_treeview = AppTreeview.getTreeView(self.frames.treeview,
-                                                       self.frames.buttons,
-                                                       Globals.editag_dictionary)
+        Globals.app_treeview = AppTreeview.AppTreeview(self)
 
         self.root = Globals.editag_dictionary[xmlroot.tag] = EdiTag(xmlroot,
                                                                     None,
                                                                     treeview=Globals.app_treeview)
 
-        addXMLToTree(xmlroot, Globals.editag_dictionary, Globals.app_treeview)
+        self.add_xml_to_tree(xmlroot)
 
         self.frames.footer.update_label_encoding()
 
@@ -285,6 +283,14 @@ class App(Tk):
             else:
                 return ''
 
+    def add_xml_to_tree(self, base_editag):
+        for child in base_editag:
+            if child.tag is ElementTree.Comment:
+                EdiTag(child, base_editag, is_comment=True)
+            elif type(child.tag).__name__ == 'str': #TODO revisar por qué se hace así
+                EdiTag(child, base_editag)
+                self.add_xml_to_tree(child)
+
     @staticmethod
     def get_save_filename(save_type):
         if save_type == 'SAVEAS':
@@ -298,180 +304,16 @@ class App(Tk):
             save_filename += '.xml'
         return save_filename
 
+    def refresh_treeview(self):
+        self.clean_xml_app_elements()
 
-# BUTTON METHODS
-def addXMLToTree(base_editag, editag_dictionary, treeview):
-    for child in base_editag:
-        if child.tag is ElementTree.Comment:
-            if Globals.show_comments:
-                id_for_treeview = getIDForTreeView('comment', editag_dictionary)
-                editag_dictionary[id_for_treeview] = EdiTag(child, base_editag, is_comment=True)
+        del Globals.editag_dictionary
+        Globals.editag_dictionary = {}
+        Globals.app_treeview = AppTreeview.AppTreeview(self)
 
-        if type(child.tag).__name__ == 'str':
-            id_for_treeview = getIDForTreeView(child.tag, editag_dictionary)
-            editag_dictionary[id_for_treeview] = EdiTag(child, base_editag)
-            addXMLToTree(child, editag_dictionary, treeview)
+        root = Globals.xml_tree.getroot()
 
+        self.add_xml_to_tree(root.tag, None)
+        self.update()
 
-def createNewTagInTree(mainApp, baseTIG, mode, oTag=None, is_comment=False, text=''):
-    if baseTIG <> None:
-        if baseTIG.parent_id <> '':
-            # consigo datos para nuevo tag
-            xTag = ''
-            if is_comment:
-                xTag = 'comment'
-                stringXML = XmlParser.get_string_from_xml_node(baseTIG.xmltag())
-                xText = stringXML[stringXML.find('\n') + 1:]
-            elif text <> '':
-                xTag = mainApp.get_tag_from_user()
-                xText = text
-            elif oTag == None:
-                xTag, xText = mainApp.get_tag_from_user(get_value=True)
-
-            if (xTag <> '') or (oTag <> None):
-                xAttrib = {}
-                # consigo datos para crear el TagInTree
-                if mode == 'SIBLING':
-                    xBaseID = baseTIG.parent_id
-                    xParentTag = baseTIG.parent_tag
-                    xOrder = baseTIG.get_treeview_index() + 1
-                elif mode == 'CHILD':
-                    xBaseID = baseTIG.id
-                    xParentTag = baseTIG.xmltag()
-                    # xOrder = baseTIG.get_number_of_siblings() + 1
-                    xOrder = baseTIG.get_number_of_children() + 1
-                    print 'parenttag in newTIG', xParentTag, xParentTag.tag, xOrder
-
-                # creo o inserto el tag en el XML
-                if is_comment:
-                    xNewTag = XmlParser.new_comment(xParentTag, xText, xOrder)
-                elif oTag == None:
-                    xNewTag = XmlParser.new_element(xParentTag, xTag, xText, xAttrib, xOrder)
-                else:
-                    # if mode == 'SIBLING':
-                    XmlParser.insert_element(xParentTag, oTag, xOrder)
-                    xNewTag = oTag
-
-                # creo el newTagInTree
-                if is_comment:
-                    xID = getIDForTreeView('comment', Globals.editag_dictionary)
-                    newTagInTree = EdiTag.TagInTree(xBaseID, xID, xNewTag, xParentTag, Globals.app_treeview,
-                                                    order=xOrder,
-                                                    is_comment=True)
-                else:
-                    xID = getIDForTreeView(xNewTag.tag, Globals.editag_dictionary)
-                    newTagInTree = EdiTag.TagInTree(xBaseID, xID, xNewTag, xParentTag, Globals.app_treeview,
-                                                    order=xOrder)
-
-                Globals.editag_dictionary[xID] = newTagInTree
-                selectAndFocus(xID)
-                print 'newTagInTree'
-                return newTagInTree
-
-
-def copyTagInTree(oldTagInTree, xLevel, newparent=None):
-    if oldTagInTree <> None:
-        if newparent == None:
-            xParentID = oldTagInTree.parent_id
-            xParentTag = oldTagInTree.parent_tag
-        else:
-            xParentID = newparent.id
-            xParentTag = newparent.xmltag()
-
-        xOrder = oldTagInTree.get_treeview_index() + 1
-
-        xNewTag = XmlParser.new_element(xParentTag,
-                                        oldTagInTree.xmltag().tag,
-                                        oldTagInTree.xmltag().text,
-                                        oldTagInTree.xmltag().attrib,
-                                        xOrder)
-
-        xID = getIDForTreeView(xNewTag.tag, Globals.editag_dictionary)
-
-        newTagInTree = EdiTag.TagInTree(xParentID, xID, xNewTag, xParentTag, Globals.app_treeview, order=xOrder)
-        Globals.editag_dictionary[xID] = newTagInTree
-
-        def getTagInTreeFromTag(xTag, dicTagsInTree):
-            xReturn = None
-            for xTuple in dicTagsInTree.items():
-                # xTuple = (key, value)
-                if xTuple[1].xmltag() == xTag:
-                    xReturn = xTuple[1]
-                    break
-            return xReturn
-
-        for xChildTag in oldTagInTree.xmltag():
-            xChildTagInTree = getTagInTreeFromTag(xChildTag, Globals.editag_dictionary)
-            copyTagInTree(xChildTagInTree, xLevel + 1, newparent=newTagInTree)
-
-        selectAndFocus(xID)
-
-    else:
-        print 'oldTagInTree is None'
-
-
-def getIDForTreeView(xTag, dicTagsInTree):
-    i = 0
-    while dicTagsInTree.has_key(xTag + str(i)):
-        i += 1
-    dicTagsInTree[xTag + str(i)] = 0
-    return xTag + str(i)
-
-
-def deleteSelectionTagInTree(selection):
-    for xID in selection:
-        deleteTagInTree(xID)
-
-
-def deleteTagInTree(xID):
-    if xID <> '':
-        xTagInTree = Globals.editag_dictionary[xID]
-        xTagInTree.parent_tag.remove(xTagInTree.xmltag())
-        if Globals.app_treeview.exists(xTagInTree.id):
-            Globals.app_treeview.delete(xTagInTree.id)
-        del Globals.editag_dictionary[xID]
-        del xTagInTree
-        print 'Deleted %s' % xID
-
-
-def bCheckEntries(band_buttons):
-    for widget in band_buttons.winfo_children():
-        if isinstance(widget, Entry):
-            print widget.get()
-
-
-def printStringXML(oTIG):
-    if oTIG <> None:
-        stringXML = XmlParser.get_string_from_xml_node(oTIG.xmltag())
-        print stringXML[stringXML.find('\n') + 1:]
-    else:
-        print 'None selected'
-
-
-# MENU METHODS
-
-
-def refreshTreeview(mainApp):
-    # clean treeview frame
-    mainApp.frames.treeview.clean()
-
-    # set globals
-    Globals.editag_dictionary = {}
-    Globals.app_treeview = AppTreeview.getTreeView(mainApp.frames.treeview, mainApp.frames.buttons,
-                                                   Globals.editag_dictionary)
-
-    # load xml dic and TIGs
-    root = Globals.xml_tree.getroot()
-
-    Globals.editag_dictionary[root.tag] = EdiTag.TagInTree('', root.tag, root, None, Globals.app_treeview)
-    addXMLToTree(root, Globals.editag_dictionary, Globals.app_treeview)
-    mainApp.update()
-
-    selectAndFocus(Globals.last_treeview_focus)
-
-
-def selectAndFocus(xIDFocus):
-    if xIDFocus <> '':
-        Globals.app_treeview.see(xIDFocus)
-        Globals.app_treeview.focus(xIDFocus)
-        Globals.app_treeview.selection_set(xIDFocus)
+        Globals.app_treeview.select_and_focus(Globals.last_treeview_focus)

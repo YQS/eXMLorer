@@ -7,6 +7,7 @@ import tkMessageBox
 from app import search_man
 from app.FrameExtension import FrameExtension
 from config import Globals, Utils
+from app.EdiTag import EdiTag
 
 
 class ButtonBar(FrameExtension):
@@ -44,8 +45,7 @@ class ButtonBar(FrameExtension):
                                                                             None),
                                                                         'CHILD'))
         Utils.create_button(self, 'button_copyTag', 1, 2,
-                            command=lambda: self.app.copyTagInTree(
-                                Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 0))
+                            command=lambda: EdiTag.copy(Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None)) )
         Utils.create_button(self, 'button_deleteTag', 1, 3,
                             command=lambda: self.app.deleteSelectionTagInTree(Globals.app_treeview.selection()))
 

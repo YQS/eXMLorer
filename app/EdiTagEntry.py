@@ -92,7 +92,7 @@ class EdiTagEntry:
         title = Globals.lang['message_editing'] + ' ' + self.editag.get_tag_name()
         text_window = Globals.app.get_aux_window(title, container)
 
-        text_window.text_field_constructor(label, self.editag.xmltag().text)
+        text_window.text_field_constructor(label, self.editag.xmltag.text)
         text_window.show()
 
         if len(container) > 0:

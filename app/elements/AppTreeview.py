@@ -9,6 +9,7 @@ from xml_parser import XmlParser
 import app.module_interface as MOD
 import app.SSF
 import app.App
+from app.EdiTag import EdiTag
 
 class AppTreeview(Treeview):
 	def __init__(self, app):
@@ -20,6 +21,18 @@ class AppTreeview(Treeview):
 		self.set_columns()
 		self.bind_events()
 
+	def get_focused_editag(self):
+		return Globals.editag_dictionary.setdefault(self.focus(), None)
+
+	def select_and_focus(self, id):
+		if not id is None:
+			self.see(id)
+			self.focus(id)
+			self.selection_set(id)
+
+	def delete_selection(self):
+		for id in self.selection():
+			del Globals.editag_dictionary[id]
 
 	def set_scrollbar(self):
 		scrollbar = Scrollbar(self.parent, orient=VERTICAL, command= self.yview)
@@ -46,11 +59,12 @@ class AppTreeview(Treeview):
 		self.bind('<Control-Alt-Key-v>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(self.focus(), None, mode='CHILD')))
 		self.bind('<Control-Alt-Key-V>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(self.focus(), None, mode='CHILD')))
 
-		self.bind('<Control-Key-n>', lambda event: app.App.createNewTagInTree(mainApp, Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 'SIBLING'))
-		self.bind('<Control-Key-N>', lambda event: app.App.createNewTagInTree(mainApp, Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 'SIBLING'))
-		self.bind('<Control-Key-i>', lambda event: app.App.createNewTagInTree(mainApp, Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 'CHILD'))
-		self.bind('<Control-Key-I>', lambda event: app.App.createNewTagInTree(mainApp, Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 'CHILD'))
-		self.bind('<Delete>', lambda event: app.App.deleteSelectionTagInTree(Globals.app_treeview.selection()))
+		self.bind('<Control-Key-n>', lambda: EdiTag.build(self.get_focused_editag(), 'SIBLING'))
+		self.bind('<Control-Key-N>', lambda: EdiTag.build(self.get_focused_editag(), 'SIBLING'))
+		self.bind('<Control-Key-i>', lambda: EdiTag.build(self.get_focused_editag(), 'CHILD'))
+		self.bind('<Control-Key-I>', lambda: EdiTag.build(self.get_focused_editag(), 'CHILD'))
+
+		self.bind('<Delete>', lambda: self.delete_selection())
 
 	def fill_buttons_frame(self):
 		buttons_frame = Globals.app.frames.buttons
@@ -78,51 +92,6 @@ class AppTreeview(Treeview):
 		for child_editag in focused_editag:
 			child_editag.get_as_button_row(scrolling_frame.frame, row)
 			row += 1
-
-
-def getTreeView(treeview_frame, band_buttons, dicTagsInTree):
-	appTreeView = Treeview(treeview_frame, columns=('data','subname',))
-	appTreeView.pack(side="left",fill=BOTH)
-
-	setScrollbar(treeview_frame, appTreeView)
-
-	mainApp = treeview_frame.master.master
-
-	appTreeView.column('subname', width=120, anchor='w', stretch=True)
-	appTreeView.column('data', width=480, anchor='w', stretch=True)
-	appTreeView.heading('subname', text= Globals.lang['column-subname'])
-	appTreeView.heading('data', text= Globals.lang['column-data'])
-
-	#indico las columnas a mostrar
-	appTreeView.configure(displaycolumns=('subname', 'data'))
-
-	#events
-	#appTreeView.bind('<Double-Button-2>', lambda event: editTag(event.widget.master.master.master, dicTagsInTree[GL.appTreeView.identify_row(event.y)])) #la ruta larga es para llegar bien al mainApp
-	appTreeView.bind('<<TreeviewSelect>>', lambda event: fillBandButtons(event.widget, band_buttons, dicTagsInTree))
-	appTreeView.bind('<Button-3>', lambda event: contextMenu(event, band_buttons, dicTagsInTree))
-	appTreeView.bind('<Shift-Up>', lambda event: moveNodeBind(event, dicTagsInTree))
-	appTreeView.bind('<Shift-Down>', lambda event: moveNodeBind(event, dicTagsInTree))
-	appTreeView.bind('<Control-Key-c>', lambda event: copyToClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None)))
-	appTreeView.bind('<Control-Key-C>', lambda event: copyToClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None)))
-	appTreeView.bind('<Control-Key-v>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None)))
-	appTreeView.bind('<Control-Key-V>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None)))
-	appTreeView.bind('<Control-Alt-Key-v>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None, mode='CHILD')))
-	appTreeView.bind('<Control-Alt-Key-V>', lambda event: pasteFromClipboard(mainApp, dicTagsInTree.setdefault(appTreeView.focus(), None, mode='CHILD')))
-
-	appTreeView.bind('<Control-Key-n>', lambda event: app.App.createNewTagInTree(mainApp, Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 'SIBLING'))
-	appTreeView.bind('<Control-Key-N>', lambda event: app.App.createNewTagInTree(mainApp, Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 'SIBLING'))
-	appTreeView.bind('<Control-Key-i>', lambda event: app.App.createNewTagInTree(mainApp, Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 'CHILD'))
-	appTreeView.bind('<Control-Key-I>', lambda event: app.App.createNewTagInTree(mainApp, Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 'CHILD'))
-	appTreeView.bind('<Delete>', lambda event: app.App.deleteSelectionTagInTree(Globals.app_treeview.selection()))
-
-
-	return appTreeView
-
-
-def setScrollbar(parent, widget):
-	xScroll = Scrollbar(parent, orient=VERTICAL, command= widget.yview)
-	widget.configure(yscrollcommand= xScroll.set)
-	xScroll.pack(side=RIGHT,fill=Y)
 
 
 def moveNodeBind(event, dicTagsInTree):
@@ -192,7 +161,7 @@ def contextMenu(event, band_buttons, dicTagsInTree):
 	if focusTIG.is_comment:
 		menu.add_command(label=Globals.lang['submenu_uncomment'], state=ACTIVE, command= lambda: unCommentTag(mainApp, focusTIG))
 	else:
-		menu.add_command(label=Globals.lang['submenu_comment'], state=ACTIVE, command= lambda: commentTag(mainApp, focusTIG))
+		menu.add_command(label=Globals.lang['submenu_comment'], state=ACTIVE, command= lambda: comment_tag(mainApp, focusTIG))
 
 	menu.add_separator()
 	menu.add_command(label= Globals.lang['submenu_selectParentSubname'],
@@ -246,7 +215,7 @@ def copyToClipboard(mainApp, oTIG, mode='COPY'):
 		mainApp.clipboard_clear()
 		mainApp.clipboard_append(stringXML[ stringXML.find('\n')+1:])
 		if mode == 'CUT':
-			app.App.deleteTagInTree(oTIG.id)
+			del oTIG
 
 def pasteFromClipboard(mainApp, baseTIG, mode='SIBLING', stringXML=''):
 	if baseTIG <> None:
@@ -262,31 +231,30 @@ def pasteFromClipboard(mainApp, baseTIG, mode='SIBLING', stringXML=''):
 		pasteRoot = XmlParser.get_xml_from_string(stringXML)
 		print 'pasteRoot', pasteRoot
 
-		rootTIG = app.App.createNewTagInTree(mainApp, baseTIG, mode, oTag=pasteRoot)
+		rootTIG = EdiTag.build(baseTIG, mode, xml_tag=pasteRoot)
 		#comentado porque duplicaba los childs al pegar
 		#createChildTIGs(mainApp, rootTIG, level=0)
 		#reemplazado por un refresh, que actualiza el arbol
 		app.App.refreshTreeview(mainApp)
 
-		app.App.selectAndFocus(rootTIG.id)
+		Globals.app_treeview.select_and_focus(rootTIG.id)
 
 
 def createChildTIGs(mainApp, parentTIG, level):
 	qChildren = parentTIG.get_number_of_children()
 	for xChild in parentTIG.xmltag():
 		print 'paste has child level', level, 'Q', qChildren
-		xChildTIG = app.App.createNewTagInTree(mainApp, parentTIG, 'CHILD', oTag=xChild)
+		xChildTIG = EdiTag.build(parentTIG, 'CHILD', xml_tag=xChild)
 		createChildTIGs(mainApp, xChildTIG, level=level+1)
 		qChildren -= 1
 		if qChildren <= 0:
 			break
 
 
-def commentTag(mainApp, oTIG):
-	if oTIG <> None:
-		#stringXML = xml_man.get_string_from_xml_node(oTIG.xmltag())
-		newComment = app.App.createNewTagInTree(mainApp, oTIG, 'SIBLING', is_comment=True)
-		app.App.deleteTagInTree(oTIG.id)
+def comment_tag(base_editag):
+	if not base_editag is None:
+		EdiTag.build(base_editag, 'SIBLING', is_comment=True)
+		del base_editag
 
 def unCommentTag(mainApp, commentTIG):
 	stringXML = commentTIG.xmltag().text
@@ -294,16 +262,16 @@ def unCommentTag(mainApp, commentTIG):
 	response = 'no'
 	try:
 		newTag = XmlParser.get_xml_from_string(stringXML)
-		newTIG = app.App.createNewTagInTree(mainApp, commentTIG, 'SIBLING', oTag = newTag)
+		newTIG = EdiTag.build(commentTIG, 'SIBLING', xml_tag=newTag)
 	except:
 		response = tkMessageBox.showwarning("eXMLorer", Globals.lang['message_uncomment_newtag'], type=tkMessageBox.YESNO)
 		if response == 'yes':
-			newTIG = app.App.createNewTagInTree(mainApp, commentTIG, 'SIBLING', text=commentTIG.xmltag().text)
+			newTIG = EdiTag.build(commentTIG, 'SIBLING', text=commentTIG.xmltag.text)
 
 	if newTIG <> None:
 		createChildTIGs(mainApp, newTIG, level=0)
-		app.App.deleteTagInTree(commentTIG.id)
-		app.App.selectAndFocus(newTIG.id)
+		del commentTIG
+		Globals.app_treeview.select_and_focus(newTIG.id)
 
 def unfoldingAll(idFocus, isOpen):
 	#for xIDChild in appTreeView.get_children(xIDFocus):
