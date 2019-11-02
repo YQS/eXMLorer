@@ -9,7 +9,7 @@ from xml_parser import XmlParser
 
 
 class EdiTag(object):
-    def __init__(self, xmltag, parent_editag, treeview=None, order='end', is_comment=False):
+    def __init__(self, xmltag, parent_editag, treeview=None, order='end', is_comment=False, is_root=False):
         self.id = None
         self.parent_editag = parent_editag
         self.xmltag = xmltag
@@ -23,7 +23,10 @@ class EdiTag(object):
         self.is_comment = is_comment
         ##########
         self.set_xmltag_info()
-        self.set_tree_node()
+        if is_root:
+            self.root_set_tree_node()
+        else:
+            self.set_tree_node()
         self.set_column_value('data', self.xmltag.text)
         self.set_column_value('subname', self.subname)
 
@@ -61,7 +64,8 @@ class EdiTag(object):
         self.set_new_id()
         Globals.editag_dictionary[self.id] = self
         if self.treeview is None:
-            self.treeview = self.parent_editag.treeview
+            # self.treeview = self.parent_editag.treeview
+            self.treeview = Globals.app_treeview
             self.treenode = self.treeview.insert(self.parent_editag.id,
                                                  self.treeview_order,
                                                  self.id,
@@ -76,7 +80,14 @@ class EdiTag(object):
             self.treeview.tag_bind('comment', '<TreeviewOpen>', self.treenode)
             self.treeview.tag_configure('comment', background='green')
 
-    def update_tree_node(self, ):
+    def root_set_tree_node(self):
+        self.set_new_id()
+        Globals.editag_dictionary[self.id] = self
+        self.treeview = Globals.app_treeview
+        self.treenode = self.treeview.insert('',
+                                             self.treeview_order,
+                                             self.id,
+                                             text=self.name)
 
     def set_column_value(self, column, value):
         if value is not None:
@@ -95,7 +106,7 @@ class EdiTag(object):
         self.subname = self.get_subname()
 
         self.treeview.item(self.id, text=self.name)
-        self.set_column_value('data', self.xmltag().text)
+        self.set_column_value('data', self.xmltag.text)
         self.set_column_value('subname', self.subname)
 
     def update_subname(self, subname):
@@ -125,7 +136,7 @@ class EdiTag(object):
 
     def get_xml_position(self):
         try:
-            return self.parent_editag.xmltag.getchildren().index(self.xmltag())
+            return self.parent_editag.xmltag.getchildren().index(self.xmltag)
         except ValueError:
             return '<Root>'
 

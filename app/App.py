@@ -16,7 +16,8 @@ from AuxWindow import AuxWindow
 from app.elements.AppMenu import AppMenu
 from app.elements.AppButtonBar import ButtonBar
 from app.elements.AppFooter import Footer
-from app.elements import AppMessageBox, AppTreeview
+from app.elements import AppMessageBox
+from app.elements.AppTreeview import AppTreeview
 
 
 # CLASSES
@@ -170,7 +171,7 @@ class App(Tk):
         elif not os.path.isfile(Globals.config_filename):
             response = AppMessageBox.warning(Globals.lang['message_filenotfound'] % Globals.config_filename)
 
-        elif XmlParser.file_has_changed(self.root.xmltag(), Globals.config_filename):
+        elif XmlParser.file_has_changed(self.root.xmltag, Globals.config_filename):
             response = AppMessageBox.warning(Globals.lang['message_exitsave'] % Globals.config_filename)
 
         else:
@@ -187,6 +188,7 @@ class App(Tk):
 
             if file_path != '':
                 self.open_xml_from_path(file_path)
+        Globals.app.update()
 
     def open_xml_from_path(self, file_path):
         self.clean_xml_app_elements()
@@ -201,15 +203,16 @@ class App(Tk):
         self.update_filename_label(file_path)
 
     def update_filename_label(self, file_path):
-        self.app.frames.button_bar.update_filename_label(file_path)
+        self.frames.button_bar.update_filename_label(file_path)
 
     def load_xmlroot_in_app(self, xmlroot):
         Globals.editag_dictionary = {}
-        Globals.app_treeview = AppTreeview.AppTreeview(self)
+        Globals.app_treeview = AppTreeview(self)
 
         self.root = Globals.editag_dictionary[xmlroot.tag] = EdiTag(xmlroot,
                                                                     None,
-                                                                    treeview=Globals.app_treeview)
+                                                                    treeview=Globals.app_treeview,
+                                                                    is_root=True)
 
         self.add_xml_to_tree(xmlroot)
 
@@ -283,12 +286,12 @@ class App(Tk):
             else:
                 return ''
 
-    def add_xml_to_tree(self, base_editag):
-        for child in base_editag:
-            if child.tag is ElementTree.Comment:
-                EdiTag(child, base_editag, is_comment=True)
-            elif type(child.tag).__name__ == 'str': #TODO revisar por qué se hace así
-                EdiTag(child, base_editag)
+    def add_xml_to_tree(self, base_tag):
+        for child in base_tag:
+            if child is ElementTree.Comment:
+                EdiTag(child, base_tag, is_comment=True)
+            elif type(child).__name__ == 'str': #TODO revisar por qué se hace así
+                EdiTag(child, base_tag)
                 self.add_xml_to_tree(child)
 
     @staticmethod
@@ -309,7 +312,7 @@ class App(Tk):
 
         del Globals.editag_dictionary
         Globals.editag_dictionary = {}
-        Globals.app_treeview = AppTreeview.AppTreeview(self)
+        Globals.app_treeview = AppTreeview(self)
 
         root = Globals.xml_tree.getroot()
 

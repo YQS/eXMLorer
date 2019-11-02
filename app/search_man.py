@@ -59,7 +59,7 @@ class BasicSearch(object):
 		searchString += '(.)*'
 		
 		for xTIG in self.dicUsed.values():
-			rawText = getattr(xTIG.xmltag(), self.attrName)
+			rawText = getattr(xTIG.xmltag, self.attrName)
 			if rawText == None:
 				rawText = ''
 			if re.search(searchString, rawText, self.flags):
@@ -72,7 +72,7 @@ class BasicSearch(object):
 		pattern = searchString.replace('*', '(.)*').replace('?', '(.)')
 		
 		for xTIG in self.dicUsed.values():
-			if re.search(pattern, getattr(xTIG.xmltag(), self.attrName), self.flags):
+			if re.search(pattern, getattr(xTIG.xmltag, self.attrName), self.flags):
 				self.result.append(xTIG)
 
 		self.output = self.outputGenerator()
@@ -83,7 +83,7 @@ class BasicSearch(object):
 		foundTags = root.findall(searchString)
 		
 		for xTIG in self.dicUsed.values():
-			if xTIG.xmltag() in foundTags:
+			if xTIG.xmltag in foundTags:
 				self.result.append(xTIG)
 
 		self.output = self.outputGenerator()

@@ -15,10 +15,16 @@ from app.elements.AppContextMenu import AppContextMenu, ContextMenuActions
 
 class AppTreeview(Treeview):
     def __init__(self, app):
-        parent = app.frames.treeview
-        Treeview.__init__(self, parent, columns=('data', 'subname',))
+        self.treeview_parent = app.frames.treeview
+        Treeview.__init__(self, self.treeview_parent, columns=('data', 'subname',))
 
+        self.do_pack()
+        self.fill()
+
+    def do_pack(self):
         self.pack(side='left', fill=BOTH)
+
+    def fill(self):
         self.set_scrollbar()
         self.set_columns()
         self.bind_events()
@@ -37,7 +43,7 @@ class AppTreeview(Treeview):
             del Globals.editag_dictionary[id]
 
     def set_scrollbar(self):
-        scrollbar = Scrollbar(self.parent, orient=VERTICAL, command=self.yview)
+        scrollbar = Scrollbar(self.treeview_parent, orient=VERTICAL, command=self.yview)
         self.configure(yscrollcommand=scrollbar.set)
         scrollbar.pack(side=RIGHT, fill=Y)
 
