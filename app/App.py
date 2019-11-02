@@ -69,7 +69,7 @@ class App(Tk):
         self.protocol('WM_DELETE_WINDOW', lambda: self.quit_app())
 
         # binds
-        self.bind('<F5>', lambda event: refreshTreeview(self))
+        self.bind('<F5>', lambda: Globals.app_treeview.refresh(self))
 
     # metodos del MainApp
     def get_aux_window(self, title, container, use_sql_buttons=True):
@@ -317,3 +317,14 @@ class App(Tk):
         self.update()
 
         Globals.app_treeview.select_and_focus(Globals.last_treeview_focus)
+
+    def get_clipboard_string(self):
+        xml_string = self.selection_get(selection='CLIPBOARD')
+        try:
+            print xml_string
+        except UnicodeEncodeError:
+            print 'using unicode'
+            xml_string = unicode(xml_string, "utf-8")
+            print xml_string
+        finally:
+            return xml_string

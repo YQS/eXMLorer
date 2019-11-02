@@ -6,7 +6,6 @@ from ttk import *
 from app.EdiTagEntry import EdiTagEntry
 from config import Globals
 from xml_parser import XmlParser
-from app import App
 
 
 class EdiTag(object):
@@ -57,15 +56,6 @@ class EdiTag(object):
             self.name = self.get_tag_name()
             self.subname = self.get_subname()
 
-    def get_tag_name(self):
-        return '<' + self.xmltag.tag + '>'
-
-    def get_tag_value(self):
-        try:
-            return self.xmltag.text
-        except:
-            return ''
-
     def set_tree_node(self):
         # TODO: parent_editag viene como el xmltag, ver como trabajar con eso
         self.set_new_id()
@@ -85,6 +75,8 @@ class EdiTag(object):
         if self.is_comment:
             self.treeview.tag_bind('comment', '<TreeviewOpen>', self.treenode)
             self.treeview.tag_configure('comment', background='green')
+
+    def update_tree_node(self, ):
 
     def set_column_value(self, column, value):
         if value is not None:
@@ -110,6 +102,18 @@ class EdiTag(object):
         self.subname = subname
 
     # GETS
+    def get_tag_name(self):
+        return '<' + self.xmltag.tag + '>'
+
+    def get_tag_actual_name(self):
+        return self.xmltag.tag
+
+    def get_tag_value(self):
+        try:
+            return self.xmltag.text
+        except:
+            return ''
+
     def get_parent(self):
         try:
             return Globals.editag_dictionary[self.treeview.parent(self.id)]
