@@ -12,7 +12,7 @@ from xml_parser import XmlParser
 
 class AppContextMenu(Menu):
     def __init__(self, parent, event):
-        Menu.__init__(parent, tearoff=0)
+        Menu.__init__(self, parent, tearoff=0)
         self.focus_tag = self.get_focus_tag(event)
         Globals.app_treeview.focus(self.focus_tag.id)
 
@@ -36,7 +36,7 @@ class AppContextMenu(Menu):
         self.post(event.x_root, event.y_root)
 
     def load_edit_submenu(self):
-        self.add_command(label=Globals.lang['submenu_edditag'],
+        self.add_command(label=Globals.lang['submenu_edittag'],
                          state=ACTIVE,
                          command=lambda: self.action_provider.edit_tag())
 
@@ -101,7 +101,7 @@ class ContextMenuActions:
         self.focus_tag = focus_tag
 
     def edit_tag(self):
-        container = {'Tag': self.focus_tag.get_tag_actual_name(), 'Value': self.focus_tag.get_tag_value}
+        container = {'Tag': self.focus_tag.get_tag_actual_name(), 'Value': self.focus_tag.get_tag_value()}
         edit_window = Globals.app.get_aux_window(Globals.lang['message_edittag'], container)
 
         edit_window.form_constructor('Tag', 0)

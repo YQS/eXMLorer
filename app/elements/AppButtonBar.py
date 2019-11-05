@@ -34,18 +34,14 @@ class ButtonBar(FrameExtension):
         Utils.create_button(self, 'button_save', 0, 2, command=lambda: self.app.saveXML('SAVE'))
         Utils.create_button(self, 'button_saveAs', 0, 3, command=lambda: self.app.saveXML('SAVEAS'))
         Utils.create_button(self, 'button_newTag', 1, 0,
-                            command=lambda: self.app.createNewTagInTree(self.app,
-                                                                        Globals.editag_dictionary.setdefault(
-                                                                            Globals.app_treeview.focus(),
-                                                                            None), 'SIBLING'))
+                            command=lambda: EdiTag.build(
+                                Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 'SIBLING'))
         Utils.create_button(self, 'button_newChildTag', 1, 1,
-                            command=lambda: self.app.createNewTagInTree(self.app,
-                                                                        Globals.editag_dictionary.setdefault(
-                                                                            Globals.app_treeview.focus(),
-                                                                            None),
-                                                                        'CHILD'))
+                            command=lambda: EdiTag.build(
+                                Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 'CHILD'))
         Utils.create_button(self, 'button_copyTag', 1, 2,
-                            command=lambda: EdiTag.copy(Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None)) )
+                            command=lambda: EdiTag.copy(
+                                Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None)))
         Utils.create_button(self, 'button_deleteTag', 1, 3,
                             command=lambda: self.app.deleteSelectionTagInTree(Globals.app_treeview.selection()))
 

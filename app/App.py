@@ -214,7 +214,7 @@ class App(Tk):
                                                                     treeview=Globals.app_treeview,
                                                                     is_root=True)
 
-        self.add_xml_to_tree(xmlroot)
+        self.add_xml_to_tree(self.root)
 
         self.frames.footer.update_label_encoding()
 
@@ -286,13 +286,13 @@ class App(Tk):
             else:
                 return ''
 
-    def add_xml_to_tree(self, base_tag):
-        for child in base_tag:
+    def add_xml_to_tree(self, base_editag):
+        for child in base_editag.xmltag:
             if child is ElementTree.Comment:
-                EdiTag(child, base_tag, is_comment=True)
-            elif type(child).__name__ == 'str': #TODO revisar por qué se hace así
-                EdiTag(child, base_tag)
-                self.add_xml_to_tree(child)
+                EdiTag(child, base_editag, is_comment=True)
+            elif type(child).__name__ == 'Element':
+                child_editag = EdiTag(child, base_editag)
+                self.add_xml_to_tree(child_editag)
 
     @staticmethod
     def get_save_filename(save_type):
@@ -316,7 +316,7 @@ class App(Tk):
 
         root = Globals.xml_tree.getroot()
 
-        self.add_xml_to_tree(root.tag, None)
+        self.add_xml_to_tree(root)
         self.update()
 
         Globals.app_treeview.select_and_focus(Globals.last_treeview_focus)

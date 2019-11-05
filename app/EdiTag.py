@@ -43,7 +43,7 @@ class EdiTag(object):
         # TODO optimize
         child_list = []
         for editag in Globals.editag_dictionary.values():
-            if editag.parent_editag.id == self.id:
+            if (editag.parent_editag is not None) and (editag.parent_editag.id == self.id):
                 child_list.append(editag)
         child_list = sorted(child_list, key=methodcaller('get_xml_position'))
 
@@ -207,8 +207,8 @@ class EdiTag(object):
 
     @staticmethod
     def build(base_editag, mode, xml_tag=None, is_comment=False, text=''):
-        if not base_editag:
-            if not base_editag.get_parent():
+        if base_editag is not None:
+            if base_editag.get_parent() is not None:
                 # consigo datos para xml tag
                 tag_label = ''
                 if is_comment:
@@ -240,7 +240,7 @@ class EdiTag(object):
                     new_tag = xml_tag
 
                 # creo nuevo EdiTag
-                new_editag = EdiTag(new_tag, parent_tag, order=order, is_comment=is_comment)
+                new_editag = EdiTag(new_tag, base_editag, order=order, is_comment=is_comment)
 
                 Globals.app_treeview.select_and_focus(new_editag.id)
                 return new_editag
