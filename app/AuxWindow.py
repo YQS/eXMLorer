@@ -74,7 +74,7 @@ class AuxWindow(Toplevel):
 
         # SQL buttons from module
         params = {'parent': self.upper, 'field': self.first_field, 'useButtons': self.use_sql_buttons}
-        module_interface.runModules('TOPLEVEL', params)
+        module_interface.run_modules('TOPLEVEL', params)
 
     def show(self):
         self.wait_visibility()

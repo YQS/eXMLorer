@@ -222,10 +222,10 @@ class App(Tk):
     def get_path_from_user(self):
         file_path = tkFileDialog.askopenfilename(defaultextension='.xml',
                                                  filetypes=[('XML files', '.xml'), ('all files', '.*')],
-                                                 initialdir=self.temp.getValue('lastVisitedFolder'))
+                                                 initialdir=self.temp.get_value('lastVisitedFolder'))
         if not isinstance(file_path, tuple):
             # TODO: CAMBIAR EL RFIND PARA ACEPTAR CUALQUIER TIPO DE OS
-            self.temp.setValue('lastVisitedFolder', file_path[:file_path.rfind('\\')])
+            self.temp.set_value('lastVisitedFolder', file_path[:file_path.rfind('\\')])
             return file_path
         else:
             return ''

@@ -1,4 +1,4 @@
-#encoding: UTF-8
+# encoding: UTF-8
 
 import ConfigParser
 from os.path import isfile
@@ -15,46 +15,45 @@ PER FILE:
 lastSelectedTag
 '''
 
+
 class TempData(ConfigParser.RawConfigParser):
     def __init__(self, filename):
         ConfigParser.RawConfigParser.__init__(self)
         self.filename = filename
         for section in GL.temp_data_sections:
             self.add_section(section)
-        #self.add_section('GLOBAL')
-        #self.add_section('FILE')
-        self.loadData()
-        
+        self.load_data()
+
     def __del__(self):
         with open(self.filename, 'wb') as file:
             self.write(self.filename)
-        
-    def loadData(self):
+
+    def load_data(self):
         if isfile(self.filename):
             self.read(self.filename)
         else:
-            self.createFile()
-            
-    def createFile(self):
+            self.create_file()
+
+    def create_file(self):
         self.set('GLOBAL', 'lastVisitedFolder', '')
         self.set('GLOBAL', 'treeviewColumnSize_subname', 120)
         self.set('GLOBAL', 'treeviewColumnSize_data', 480)
         self.set('FILE', 'lastFocusTag', None)
-        with open(self.filename, 'wb') as file:
-            self.write(file)
-            
-    def getValue(self, key):
+        with open(self.filename, 'wb') as temp_file:
+            self.write(temp_file)
+
+    def get_value(self, key):
         value = None
         for section in GL.temp_data_sections:
             try:
                 value = self.get(section, key)
-                if value <> None:
+                if value is not None:
                     break
             except:
                 pass
         return value
-    
-    def setValue(self, key, value):
+
+    def set_value(self, key, value):
         for section in GL.temp_data_sections:
             try:
                 self.set(section, key, value)

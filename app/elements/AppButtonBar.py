@@ -75,7 +75,7 @@ class ButtonBar(FrameExtension):
         id_focused_tag = Globals.app_treeview.focus()
 
         if search_string != '':
-            if (self.app.currentSearch is None) or (self.app.currentSearch.searchString != search_string):
+            if (self.app.currentSearch is None) or (self.app.currentSearch.search_string != search_string):
                 try:
                     starting_point = Globals.editag_dictionary[id_focused_tag].tag_order
                 except IndexError:

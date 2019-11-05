@@ -89,7 +89,7 @@ class AppContextMenu(Menu):
 
     def run_modules(self):
         params = {'parent': self, 'parentTIG': self.focus_tag, 'mainApp': Globals.app}
-        module_interface.runModules('TREEVIEW_MENU', params)
+        module_interface.run_modules('TREEVIEW_MENU', params)
 
     @staticmethod
     def get_focus_tag(event):

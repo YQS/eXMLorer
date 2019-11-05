@@ -91,7 +91,7 @@ def prettify(elem, level=0, identation='	', linefy=False):
             elem.tail = i
             if elem.text:
                 if linefy:
-                    # copiado de simpleLinefy del modulo sql_buttons.py
+                    # copiado de simple_linefy del modulo sql_buttons.py
                     elem.text = re.sub('[\s]+', ' ', elem.text.strip())
                 else:
                     elem.text = elem.text.rstrip()

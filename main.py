@@ -27,7 +27,7 @@ def main(filepath=''):
                                ]
 
     Globals.config = Config.ConfigFile()
-    module_interface.startModules()
+    module_interface.start_modules()
 
     Globals.app = App.App(exclude_buttons=exclude_items_from_menu)
     if filepath is not None:

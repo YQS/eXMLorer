@@ -1,14 +1,14 @@
 # encoding: UTF-8
-# Stolen Scrollable Frame
-# Taken from: http://stackoverflow.com/questions/32063868/scrollable-frame-does-not-resize-properly-using-tkinter-in-python
+# Stolen Scrollable Frame Taken from:
+# http://stackoverflow.com/questions/32063868/scrollable-frame-does-not-resize-properly-using-tkinter-in-python
 
 from Tkinter import *
 from ttk import *
 
 
 class scrollingFrame(Frame):
-    def __init__(self, parentObject, background="#FFFFFF"):
-        Frame.__init__(self, parentObject)
+    def __init__(self, parent_object, background="#FFFFFF"):
+        Frame.__init__(self, parent_object)
         self.canvas = Canvas(self, borderwidth=0, highlightthickness=0)
         self.frame = Frame(self.canvas)
         self.frame.pack(expand=True, fill=BOTH)
@@ -27,37 +27,37 @@ class scrollingFrame(Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.frame.bind("<Configure>", self.onFrameConfigure)
-        self.canvas.bind("<Configure>", self.onCanvasConfigure)
+        self.frame.bind("<Configure>", self.on_frame_configure)
+        self.canvas.bind("<Configure>", self.on_canvas_configure)
 
-    def onFrameConfigure(self, event):
+    def on_frame_configure(self, event):
         # Reset the scroll region to encompass the inner frame
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-    def onCanvasConfigure(self, event):
+    def on_canvas_configure(self, event):
         # Resize the inner frame to match the canvas
-        minWidth = self.frame.winfo_reqwidth()
-        minHeight = self.frame.winfo_reqheight()
+        min_width = self.frame.winfo_reqwidth()
+        min_height = self.frame.winfo_reqheight()
 
-        if self.winfo_width() >= minWidth:
-            newWidth = self.winfo_width()
+        if self.winfo_width() >= min_width:
+            new_width = self.winfo_width()
             # Hide the scrollbar when not needed
             self.hsb.grid_remove()
         else:
-            newWidth = minWidth
+            new_width = min_width
             # Show the scrollbar when needed
             self.hsb.grid()
 
-        if self.winfo_height() >= minHeight:
-            newHeight = self.winfo_height()
+        if self.winfo_height() >= min_height:
+            new_height = self.winfo_height()
             # Hide the scrollbar when not needed
             self.vsb.grid_remove()
         else:
-            newHeight = minHeight
+            new_height = min_height
             # Show the scrollbar when needed
             self.vsb.grid()
 
-        self.canvas.itemconfig(self.window, width=newWidth, height=newHeight)
+        self.canvas.itemconfig(self.window, width=new_width, height=new_height)
 
     def create_separator(self):
         Separator(self.frame, orient=HORIZONTAL).grid(row=2, column=0, pady=4, columnspan=2, sticky='we')
@@ -86,7 +86,7 @@ class messageList(object):
         self.widget_list.append(cb)
 
         self.innerFrame.update_idletasks()
-        self.scrollFrame.onCanvasConfigure(None)
+        self.scrollFrame.on_canvas_configure(None)
 
     # delete all messages
     def del_message(self):
@@ -96,7 +96,7 @@ class messageList(object):
 
         self.placeholder.grid()
         self.innerFrame.update_idletasks()
-        self.scrollFrame.onCanvasConfigure(None)
+        self.scrollFrame.on_canvas_configure(None)
 
 deviceBkgColor = "#FFFFFF"
 root = Tk() # Makes the window
