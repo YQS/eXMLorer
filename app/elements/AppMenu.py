@@ -2,6 +2,7 @@
 from Tkinter import *
 
 from config import Globals, Language
+from config.Utils import SaveType
 
 
 class AppMenu(Menu):
@@ -17,10 +18,10 @@ class AppMenu(Menu):
         if 'menu_file' not in app.exclude_buttons:
             menu_file = Menu(self, tearoff=0)
             self.add_cascade(label=Globals.lang['menu_file'], menu=menu_file)
-            menu_file.add_command(label=Globals.lang['menu_file_open'], command=lambda: self.app.open_xml())
-            menu_file.add_command(label=Globals.lang['menu_file_save'], command=lambda: App.saveXML(app, 'SAVE'))
-            menu_file.add_command(label=Globals.lang['menu_file_saveas'], command=lambda: App.saveXML(app, 'SAVEAS'))
-            menu_file.add_command(label=Globals.lang['menu_file_exit'], command=lambda: App.quit_app(app))
+            menu_file.add_command(label=Globals.lang['menu_file_open'], command=lambda: app.open_xml())
+            menu_file.add_command(label=Globals.lang['menu_file_save'], command=lambda: app.saveXML(app, SaveType.SAVE))
+            menu_file.add_command(label=Globals.lang['menu_file_saveas'], command=lambda: app.saveXML(app, SaveType.SAVE_AS))
+            menu_file.add_command(label=Globals.lang['menu_file_exit'], command=lambda: app.quit_app(app))
 
         if 'menu_config' not in app.exclude_buttons:
             # seteo menu Configuración
@@ -78,7 +79,7 @@ class AppMenu(Menu):
 
     def switch_global_and_refresh(self, variable_name):
         self.switch_global(variable_name)
-        app.App.refreshTreeview(self.app)
+        self.app.refreshTreeview(self.app)
 
     def switch_global(self, variable_name):
         if eval('Globals.' + variable_name):

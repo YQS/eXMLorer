@@ -8,6 +8,7 @@ from app import search_man
 from app.FrameExtension import FrameExtension
 from config import Globals, Utils
 from app.EdiTag import EdiTag
+from config.Utils import TagRelation, SaveType
 
 
 class ButtonBar(FrameExtension):
@@ -31,14 +32,16 @@ class ButtonBar(FrameExtension):
 
         Utils.create_button(self, 'button_newFromText', 0, 0, command=lambda: self.app.open_xml_from_text())
         Utils.create_button(self, 'button_open', 0, 1, command=lambda: self.app.open_xml())
-        Utils.create_button(self, 'button_save', 0, 2, command=lambda: self.app.saveXML('SAVE'))
-        Utils.create_button(self, 'button_saveAs', 0, 3, command=lambda: self.app.saveXML('SAVEAS'))
+        Utils.create_button(self, 'button_save', 0, 2, command=lambda: self.app.save_xml(SaveType.SAVE))
+        Utils.create_button(self, 'button_saveAs', 0, 3, command=lambda: self.app.save_xml(SaveType.SAVE_AS))
         Utils.create_button(self, 'button_newTag', 1, 0,
                             command=lambda: EdiTag.build(
-                                Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 'SIBLING'))
+                                Globals.editag_dictionary.setdefault(
+                                    Globals.app_treeview.focus(), None), TagRelation.SIBLING))
         Utils.create_button(self, 'button_newChildTag', 1, 1,
                             command=lambda: EdiTag.build(
-                                Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None), 'CHILD'))
+                                Globals.editag_dictionary.setdefault(
+                                    Globals.app_treeview.focus(), None), TagRelation.CHILD))
         Utils.create_button(self, 'button_copyTag', 1, 2,
                             command=lambda: EdiTag.copy(
                                 Globals.editag_dictionary.setdefault(Globals.app_treeview.focus(), None)))

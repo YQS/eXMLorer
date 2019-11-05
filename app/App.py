@@ -9,6 +9,7 @@ import os.path
 
 from config import Globals
 from EdiTag import EdiTag
+from config.Utils import SaveType
 from xml_parser import XmlParser
 from FrameExtension import FrameExtension
 from TempData import TempData
@@ -146,7 +147,7 @@ class App(Tk):
             self.destroy()
 
     def check_for_changes(self):
-        default_save_type = 'SAVE'
+        default_save_type = SaveType.SAVE
 
         if self.root is None:
             response, save_type = 'no', default_save_type

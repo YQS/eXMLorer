@@ -7,6 +7,7 @@ from app.EdiTag import EdiTag
 from app.elements import AppMessageBox
 from config import Globals
 from app import module_interface
+from config.Utils import TagRelation
 from xml_parser import XmlParser
 
 
@@ -46,7 +47,7 @@ class AppContextMenu(Menu):
 
         self.add_command(label=Globals.lang['submenu_cuttag'],
                          state=ACTIVE,
-                         command=lambda: self.action_provider.copy_to_clipboard(mode='CUIT'))
+                         command=lambda: self.action_provider.copy_to_clipboard(mode='CUT'))
 
         self.add_command(label=Globals.lang['submenu_pastetag'],
                          state=ACTIVE,
@@ -54,7 +55,7 @@ class AppContextMenu(Menu):
 
         self.add_command(label=Globals.lang['submenu_pastetagaschild'],
                          state=ACTIVE,
-                         command=lambda: self.action_provider.paste_from_clipboard(mode='CHILD'))
+                         command=lambda: self.action_provider.paste_from_clipboard(mode=TagRelation.CHILD))
 
     def load_fold_submenu(self):
         self.add_command(label=Globals.lang['submenu_fold'],
@@ -124,7 +125,7 @@ class ContextMenuActions:
             if mode == 'CUT':
                 del self.focus_tag
 
-    def paste_from_clipboard(self, mode='SIBLING'):
+    def paste_from_clipboard(self, mode=TagRelation.SIBLING):
         if self.focus_tag is not None:
             xml_string = Globals.app.get_clipboard_string()
 
@@ -145,7 +146,7 @@ class ContextMenuActions:
 
     def comment_tag(self):
         if self.focus_tag is not None:
-            EdiTag.build(self.focus_tag, 'SIBLING', is_comment=True)
+            EdiTag.build(self.focus_tag, TagRelation.SIBLING, is_comment=True)
             del self.focus_tag
 
     def uncomment_tag(self):
@@ -154,7 +155,7 @@ class ContextMenuActions:
 
         try:
             new_editag = EdiTag.build(self.focus_tag,
-                                      'SIBLING',
+                                      TagRelation.SIBLING,
                                       xml_tag=XmlParser.get_xml_from_string(xml_string))
         except:
             response = AppMessageBox.warning(Globals.lang['message_uncomment_newtag'],
@@ -162,7 +163,7 @@ class ContextMenuActions:
 
             if response == 'yes':
                 new_editag = EdiTag.build(self.focus_tag,
-                                          'SIBLING',
+                                          TagRelation.SIBLING,
                                           text=xml_string)
 
         if new_editag is not None:
@@ -175,7 +176,7 @@ class ContextMenuActions:
 
         for child_tag in editag.xmltag:
             print 'paste has child level', level, 'Q', children_qty
-            child_editag = EdiTag.build(editag, 'CHILD', xml_tag=child_tag)
+            child_editag = EdiTag.build(editag, TagRelation.CHILD, xml_tag=child_tag)
             self.create_child_editags(child_editag, level=level + 1)
 
             children_qty -= 1

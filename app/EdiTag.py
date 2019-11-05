@@ -5,6 +5,7 @@ from ttk import *
 
 from app.EdiTagEntry import EdiTagEntry
 from config import Globals
+from config.Utils import TagRelation
 from xml_parser import XmlParser
 
 
@@ -223,10 +224,10 @@ class EdiTag(object):
 
                 # consigo datos para editag
                 if (tag_label <> '') or (not xml_tag is None):
-                    if mode == 'SIBLING':
+                    if mode == TagRelation.SIBLING:
                         parent_tag = base_editag.get_parent()
                         order = base_editag.get_treeview_index() + 1
-                    elif mode == 'CHILD':
+                    elif mode == TagRelation.CHILD:
                         parent_tag = base_editag.xmltag
                         order = base_editag.get_number_of_children() +1
 

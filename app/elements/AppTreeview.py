@@ -5,6 +5,7 @@ from ttk import *
 import tkMessageBox
 
 from config import Globals
+from config.Utils import TagRelation
 from xml_parser import XmlParser
 import app.module_interface as MOD
 import app.SSF
@@ -80,15 +81,15 @@ class AppTreeview(Treeview):
                   .paste_from_clipboard())
         self.bind('<Control-Alt-Key-v>',
                   lambda: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
-                  .paste_from_clipboard(mode='CHILD'))
+                  .paste_from_clipboard(mode=TagRelation.CHILD))
         self.bind('<Control-Alt-Key-V>',
                   lambda: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
-                  .paste_from_clipboard(mode='CHILD'))
+                  .paste_from_clipboard(mode=TagRelation.CHILD))
 
-        self.bind('<Control-Key-n>', lambda: EdiTag.build(self.get_focused_editag(), 'SIBLING'))
-        self.bind('<Control-Key-N>', lambda: EdiTag.build(self.get_focused_editag(), 'SIBLING'))
-        self.bind('<Control-Key-i>', lambda: EdiTag.build(self.get_focused_editag(), 'CHILD'))
-        self.bind('<Control-Key-I>', lambda: EdiTag.build(self.get_focused_editag(), 'CHILD'))
+        self.bind('<Control-Key-n>', lambda: EdiTag.build(self.get_focused_editag(), TagRelation.SIBLING))
+        self.bind('<Control-Key-N>', lambda: EdiTag.build(self.get_focused_editag(), TagRelation.SIBLING))
+        self.bind('<Control-Key-i>', lambda: EdiTag.build(self.get_focused_editag(), TagRelation.CHILD))
+        self.bind('<Control-Key-I>', lambda: EdiTag.build(self.get_focused_editag(), TagRelation.CHILD))
 
         self.bind('<Delete>', lambda: self.delete_selection())
 
