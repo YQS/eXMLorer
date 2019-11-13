@@ -41,6 +41,7 @@ class AppTreeview(Treeview):
 
     def delete_selection(self):
         for id in self.selection():
+            Globals.editag_dictionary[id].delete()
             del Globals.editag_dictionary[id]
 
     def set_scrollbar(self):

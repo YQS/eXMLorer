@@ -31,8 +31,8 @@ class EdiTag(object):
         self.set_column_value('data', self.xmltag.text)
         self.set_column_value('subname', self.subname)
 
-    def __del__(self):
-        self.parent_editag.remove(self.xmltag)
+    def delete(self):
+        self.parent_editag.xmltag.remove(self.xmltag)
         if Globals.app_treeview.exists(self.id):
             Globals.app_treeview.delete(self.id)
         del Globals.editag_dictionary[self.id]
