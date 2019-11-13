@@ -167,7 +167,7 @@ class App(Tk):
             response = AppMessageBox.warning(Globals.lang['message_filenotdefined'])
 
             if response == 'yes':
-                save_type = 'SAVEAS'
+                save_type = SaveType.SAVE_AS
 
         elif not os.path.isfile(Globals.config_filename):
             response = AppMessageBox.warning(Globals.lang['message_filenotfound'] % Globals.config_filename)
@@ -297,7 +297,7 @@ class App(Tk):
 
     @staticmethod
     def get_save_filename(save_type):
-        if save_type == 'SAVEAS':
+        if save_type == SaveType.SAVE_AS:
             return AppMessageBox.file_dialog()
         else:
             return Globals.config_filename

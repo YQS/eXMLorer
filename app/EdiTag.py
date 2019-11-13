@@ -225,7 +225,7 @@ class EdiTag(object):
                 # consigo datos para editag
                 if (tag_label <> '') or (not xml_tag is None):
                     if mode == TagRelation.SIBLING:
-                        parent_tag = base_editag.get_parent()
+                        parent_tag = base_editag.get_parent().xmltag
                         order = base_editag.get_treeview_index() + 1
                     elif mode == TagRelation.CHILD:
                         parent_tag = base_editag.xmltag
@@ -250,13 +250,13 @@ class EdiTag(object):
     def copy(old_editag, new_parent=None):
         if not old_editag is None:
             if new_parent:
-                parent_tag = new_parent.xmltag
+                parent_tag = new_parent
             else:
                 parent_tag = old_editag.get_parent()
 
             order = old_editag.get_treeview_index() + 1
 
-            new_tag = XmlParser.new_element(parent_tag,
+            new_tag = XmlParser.new_element(parent_tag.xmltag,
                                             old_editag.xmltag.tag,
                                             old_editag.xmltag.text,
                                             old_editag.xmltag.attrib,
