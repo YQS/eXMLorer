@@ -260,7 +260,7 @@ class App(Tk):
     def save_xml(self, save_type):
         try:
             save_filename = self.get_save_filename(save_type)
-            if save_filename:
+            if save_filename is not None:
                 save_filename = self.validate_extension(save_filename)
                 XmlParser.save_xml(Globals.xml_tree, save_filename)
                 self.update_filename_label(save_filename)
@@ -295,12 +295,17 @@ class App(Tk):
                 child_editag = EdiTag(child, base_editag)
                 self.add_xml_to_tree(child_editag)
 
-    @staticmethod
-    def get_save_filename(save_type):
-        if save_type == SaveType.SAVE_AS:
+    def get_save_filename(self, save_type):
+        file_name = self.get_filename()
+        if save_type == SaveType.SAVE_AS or file_name is None:
             return AppMessageBox.file_dialog()
         else:
-            return Globals.config_filename
+            return file_name
+
+    def get_filename(self):
+        if Globals.file_path == '':
+            return None
+        return Globals.file_path[Globals.file_path.rfind('\\') + 1:]
 
     @staticmethod
     def validate_extension(save_filename):

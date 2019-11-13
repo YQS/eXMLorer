@@ -62,36 +62,36 @@ class AppTreeview(Treeview):
         self.bind('<Shift-Up>', lambda event: self.move_node_bind(event))
         self.bind('<Shift-Down>', lambda event: self.move_node_bind(event))
         self.bind('<Control-Key-c>',
-                  lambda: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
+                  lambda event: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
                   .copy_to_clipboard())
         self.bind('<Control-Key-C>',
-                  lambda: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
+                  lambda event: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
                   .copy_to_clipboard())
         self.bind('<Control-Key-x>',
-                  lambda: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
+                  lambda event: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
                   .copy_to_clipboard('CUT'))
         self.bind('<Control-Key-X>',
-                  lambda: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
+                  lambda event: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
                   .copy_to_clipboard('CUT'))
         self.bind('<Control-Key-v>',
-                  lambda: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
+                  lambda event: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
                   .paste_from_clipboard())
         self.bind('<Control-Key-V>',
-                  lambda: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
+                  lambda event: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
                   .paste_from_clipboard())
         self.bind('<Control-Alt-Key-v>',
-                  lambda: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
+                  lambda event: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
                   .paste_from_clipboard(mode=TagRelation.CHILD))
         self.bind('<Control-Alt-Key-V>',
-                  lambda: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
+                  lambda event: ContextMenuActions(Globals.editag_dictionary.setdefault(self.focus(), None))
                   .paste_from_clipboard(mode=TagRelation.CHILD))
 
-        self.bind('<Control-Key-n>', lambda: EdiTag.build(self.get_focused_editag(), TagRelation.SIBLING))
-        self.bind('<Control-Key-N>', lambda: EdiTag.build(self.get_focused_editag(), TagRelation.SIBLING))
-        self.bind('<Control-Key-i>', lambda: EdiTag.build(self.get_focused_editag(), TagRelation.CHILD))
-        self.bind('<Control-Key-I>', lambda: EdiTag.build(self.get_focused_editag(), TagRelation.CHILD))
+        self.bind('<Control-Key-n>', lambda event: EdiTag.build(self.get_focused_editag(), TagRelation.SIBLING))
+        self.bind('<Control-Key-N>', lambda event: EdiTag.build(self.get_focused_editag(), TagRelation.SIBLING))
+        self.bind('<Control-Key-i>', lambda event: EdiTag.build(self.get_focused_editag(), TagRelation.CHILD))
+        self.bind('<Control-Key-I>', lambda event: EdiTag.build(self.get_focused_editag(), TagRelation.CHILD))
 
-        self.bind('<Delete>', lambda: self.delete_selection())
+        self.bind('<Delete>', lambda event: self.delete_selection())
 
     def fill_buttons_frame(self):
         buttons_frame = Globals.app.frames.buttons

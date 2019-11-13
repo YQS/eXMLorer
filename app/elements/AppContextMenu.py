@@ -117,7 +117,7 @@ class ContextMenuActions:
     def copy_to_clipboard(self, mode='COPY'):
         if self.focus_tag is not None:
             xml_string = XmlParser.get_string_from_xml_node(self.focus_tag.xmltag)
-            xml_string = xml_string[xml_string.find('\n') + 1:]
+            # xml_string = xml_string[xml_string.find('\n') + 1:]
 
             Globals.app.clipboard_clear()
             Globals.app.clipboard_append(xml_string)
