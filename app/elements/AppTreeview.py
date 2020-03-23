@@ -123,17 +123,16 @@ class AppTreeview(Treeview):
 
     def move_node_bind(self, event):
         direction = 0
-        if event.keycode == 38:  # Up
+        if event.keysym == 'Up':
             direction = -1
-        elif event.keycode == 40:  # Down
+        elif event.keysym == 'Down':
             direction = 1
 
         focus_id = self.focus()
-        parent_id = Globals.editag_dictionary[focus_id].parent_id
         position = Globals.editag_dictionary[focus_id].get_treeview_index() + direction
-        self.move_node(focus_id, parent_id, position)
+        self.move_node(focus_id, position)
 
-    def move_node(self, focus_id, parent_id, position):
+    def move_node(self, focus_id, position):
         focus_editag = Globals.editag_dictionary[focus_id]
 
         self.move(focus_id, focus_editag.get_parent().id, position)
@@ -141,6 +140,6 @@ class AppTreeview(Treeview):
         if position == 'end':
             position = focus_editag.get_number_of_siblings()
 
-        XmlParser.move_tag(Globals.editag_dictionary[parent_id].xmltag,
+        XmlParser.move_tag(focus_editag.get_parent().xmltag,
                            focus_editag.xmltag,
                            position)
